@@ -27,7 +27,9 @@
     "firebase": "^11.10.0",
     "firebase-admin": "^13.4.0",
     "helmet": "^8.1.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
