@@ -24,8 +24,8 @@ GET {{baseUrl}}/api/books?status=TBR
 GET {{baseUrl}}/api/books?status=TBR,Reading
 
 ###
-# GET /api/books - Filter by author
-GET {{baseUrl}}/api/books?author=sanderson
+# GET /api/books - Filter by author (existing book)
+GET {{baseUrl}}/api/books?author=Chelsea%20Curto
 
 ###
 # GET /api/books - Filter by genre
@@ -46,6 +46,14 @@ GET {{baseUrl}}/api/books?spice=3
 ###
 # GET /api/books - Filter by liked books
 GET {{baseUrl}}/api/books?liked=true
+
+###
+# GET /api/books - Search for existing books
+GET {{baseUrl}}/api/books?author=Chelsea
+
+###
+# GET /api/books - Search for specific book title
+GET {{baseUrl}}/api/books?limit=5&sort=title&order=asc
 
 ###
 # GET /api/books - Filter by series
@@ -76,12 +84,12 @@ GET {{baseUrl}}/api/queue
 GET {{baseUrl}}/api/classifications
 
 ###
-# POST /api/books - Add new fantasy book
+# POST /api/books - Add new fantasy book with real tropes
 POST {{baseUrl}}/api/books
 Content-Type: {{contentType}}
 
 {
-  "goodreads_id": "123456",
+  "goodreads_id": "7235533",
   "title": "The Way of Kings",
   "author_name": "Brandon Sanderson",
   "series_name": "The Stormlight Archive",
@@ -89,13 +97,13 @@ Content-Type: {{contentType}}
   "status": "TBR",
   "genre": "Fantasy",
   "subgenre": "High / Epic Fantasy",
-  "tropes": ["Chosen One", "Epic Quest", "Magic in the Mundane"],
+  "tropes": ["Epic Quest", "Chosen One", "Ancient Prophecy"],
   "spice": 1,
   "book_description": "Epic fantasy about a world torn apart by storms and war.",
   "isbn": "9780765326355",
   "average_rating": 4.65,
   "book_published": 2010,
-  "link": "https://www.goodreads.com/book/show/123456",
+  "link": "https://www.goodreads.com/book/show/7235533",
   "image_url": "https://images-na.ssl-images-amazon.com/images/I/example.jpg",
   "pages": 1007,
   "availability_source": "library",
@@ -104,18 +112,18 @@ Content-Type: {{contentType}}
 }
 
 ###
-# POST /api/books - Add new romance book
+# POST /api/books - Add new romance book with real tropes
 POST {{baseUrl}}/api/books
 Content-Type: {{contentType}}
 
 {
-  "goodreads_id": "789012",
+  "goodreads_id": "61431922",
   "title": "Fourth Wing",
-  "author_name": "Rebecca Ross",
+  "author_name": "Rebecca Yarros",
   "status": "TBR",
   "genre": "Romance",
   "subgenre": "Fantasy Romance (Romantasy)",
-  "tropes": ["Enemies-to-Lovers", "Dragons", "Military Academy"],
+  "tropes": ["Enemies-to-Lovers", "Dragons", "Training Academy"],
   "spice": 4,
   "book_description": "Dragons, war college, and enemies-to-lovers romance.",
   "average_rating": 4.32,
@@ -126,15 +134,19 @@ Content-Type: {{contentType}}
 }
 
 ###
-# POST /api/books - Add book with minimal data
+# POST /api/books - Add paranormal romance with real tropes
 POST {{baseUrl}}/api/books
 Content-Type: {{contentType}}
 
 {
   "goodreads_id": "345678",
-  "title": "The Priory of the Orange Tree",
-  "author_name": "Samantha Shannon",
-  "status": "TBR"
+  "title": "Hunt on Dark Waters",
+  "author_name": "Katee Robert",
+  "status": "TBR",
+  "genre": "Romance",
+  "subgenre": "Paranormal Romance",
+  "tropes": ["Fated Mates", "Alpha Hero", "Kidnapping"],
+  "spice": 5
 }
 
 ###
@@ -212,12 +224,12 @@ Content-Type: {{contentType}}
 }
 
 ###
-# PATCH /api/books/:id - Update tropes
+# PATCH /api/books/:id - Update tropes with real ones
 PATCH {{baseUrl}}/api/books/345678
 Content-Type: {{contentType}}
 
 {
-  "tropes": ["Dragons", "Female Warriors", "Epic Quest"]
+  "tropes": ["Fated Mates", "Vampires", "Enemies-to-Lovers"]
 }
 
 ###
@@ -282,7 +294,7 @@ PATCH {{baseUrl}}/api/books/123456
 Content-Type: {{contentType}}
 
 {
-  "tropes": ["enemies-to-lovers", "CHOSEN ONE", "Epic Quest"]
+  "tropes": ["enemies-to-lovers", "ALPHA HERO", "Fake Relationship"]
 }
 
 ###

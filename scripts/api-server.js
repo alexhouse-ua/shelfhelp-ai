@@ -14,28 +14,32 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Initialize Firebase Admin with graceful fallback
+// Firebase configuration - disabled by default to prevent socket hangs
 let db = null;
 let firebaseEnabled = false;
 
-try {
-  if (isFirebaseConfigured() && hasFirebaseCredentials()) {
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-      databaseURL: firebaseConfig.databaseURL
-    });
-    
-    db = admin.database();
-    firebaseEnabled = true;
-    console.log('✅ Firebase initialized successfully');
-  } else {
-    console.log('⚠️ Firebase credentials not available - running in local mode only');
-    console.log('   Firebase sync will be skipped. Set FIREBASE_* environment variables to enable.');
+// Only initialize Firebase if explicitly requested via environment variable
+if (process.env.ENABLE_FIREBASE === 'true') {
+  try {
+    if (isFirebaseConfigured() && hasFirebaseCredentials()) {
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+        databaseURL: firebaseConfig.databaseURL
+      });
+      
+      db = admin.database();
+      firebaseEnabled = true;
+      console.log('✅ Firebase initialized successfully');
+    } else {
+      console.log('⚠️ Firebase credentials not properly configured');
+    }
+  } catch (error) {
+    console.warn('⚠️ Firebase initialization failed:', error.message);
+    firebaseEnabled = false;
   }
-} catch (error) {
-  console.warn('⚠️ Firebase initialization failed:', error.message);
-  console.log('   Continuing in local mode without Firebase sync');
-  firebaseEnabled = false;
+} else {
+  console.log('📁 Running in local-only mode (Firebase disabled)');
+  console.log('   Set ENABLE_FIREBASE=true to enable Firebase sync');
 }
 
 // Paths
@@ -150,8 +154,12 @@ async function writeBooksFile(books) {
 async function syncToFirebase(books) {
   // Skip Firebase sync if not enabled
   if (!firebaseEnabled || !db) {
-    console.log('📝 Firebase sync skipped (not configured)');
-    return { success: false, reason: 'Firebase not configured' };
+    return { 
+      success: true, 
+      mode: 'local-only', 
+      message: 'Data saved locally (Firebase sync disabled)',
+      count: books.length 
+    };
   }
   
   try {
@@ -166,7 +174,12 @@ async function syncToFirebase(books) {
     
     await booksRef.set(syncData);
     console.log('✅ Synced to Firebase successfully');
-    return { success: true, count: Object.keys(syncData).length };
+    return { 
+      success: true, 
+      mode: 'firebase-sync', 
+      message: 'Data saved locally and synced to Firebase',
+      count: Object.keys(syncData).length 
+    };
   } catch (error) {
     console.error('❌ Firebase sync error:', error.message);
     
@@ -179,7 +192,13 @@ async function syncToFirebase(books) {
       console.error('   Check Firebase credentials and service account key');
     }
     
-    return { success: false, error: error.message, code: error.code };
+    return { 
+      success: false, 
+      mode: 'local-fallback',
+      message: 'Data saved locally (Firebase sync failed)',
+      error: error.message, 
+      code: error.code 
+    };
   }
 }
 
@@ -656,8 +675,10 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
+    mode: firebaseEnabled ? 'firebase-enabled' : 'local-only',
     firebase: {
       enabled: firebaseEnabled,
+      env_flag: process.env.ENABLE_FIREBASE === 'true',
       configured: isFirebaseConfigured(),
       has_credentials: hasFirebaseCredentials()
     }
