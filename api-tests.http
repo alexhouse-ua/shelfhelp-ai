@@ -277,6 +277,15 @@ Content-Type: {{contentType}}
 }
 
 ###
+# PATCH /api/books/:id - Test valid tropes (case-insensitive)
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "tropes": ["enemies-to-lovers", "CHOSEN ONE", "Epic Quest"]
+}
+
+###
 # PATCH /api/books/:id - Test not found error
 PATCH {{baseUrl}}/api/books/nonexistent
 Content-Type: {{contentType}}

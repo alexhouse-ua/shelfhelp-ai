@@ -97,8 +97,22 @@ function validateBookFields(bookData, classifications) {
   
   // Validate tropes
   if (bookData.tropes && Array.isArray(bookData.tropes) && classifications.Tropes) {
-    const validTropes = classifications.Tropes.flatMap(t => t.Tropes || []);
-    const invalidTropes = bookData.tropes.filter(trope => !validTropes.includes(trope));
+    // Get all valid tropes from all genre groups (case-insensitive)
+    const validTropes = [];
+    classifications.Tropes.forEach(genreGroup => {
+      if (genreGroup.Tropes && Array.isArray(genreGroup.Tropes)) {
+        genreGroup.Tropes.forEach(trope => {
+          validTropes.push(trope.toLowerCase());
+        });
+      }
+    });
+    
+    // Check each provided trope against valid tropes (case-insensitive)
+    const invalidTropes = bookData.tropes.filter(trope => {
+      const lowerTrope = trope.toLowerCase();
+      return !validTropes.includes(lowerTrope);
+    });
+    
     if (invalidTropes.length > 0) {
       errors.push(`Invalid tropes: ${invalidTropes.join(', ')}. Must be from classifications.yaml`);
     }
