@@ -1,0 +1,12 @@
+{
+  "created_at": "2025-07-08T20:07:47.624Z",
+  "total_chunks": 235,
+  "total_documents": 235,
+  "sources": {
+    "books": 100,
+    "reflections": 0,
+    "knowledge": 2,
+    "classifications": 1,
+    "preferences": 0
+  }
+}

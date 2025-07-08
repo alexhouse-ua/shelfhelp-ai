@@ -2698,5 +2698,53 @@
     "notes": null,
     "updated_at": "2025-07-08T19:48:18.605Z",
     "added_at": "2025-07-08T19:48:18.605Z"
+  },
+  {
+    "goodreads_id": "123456",
+    "title": "The Way of Kings",
+    "author_name": "Brandon Sanderson",
+    "status": "Finished",
+    "queue_position": null,
+    "updated_at": "2025-07-08T21:26:20.253Z",
+    "added_at": "2025-07-08T21:08:42.739Z",
+    "series_name": "The Stormlight Archive",
+    "series_number": 1,
+    "genre": "Fantasy",
+    "subgenre": "High / Epic Fantasy",
+    "tropes": [
+      "Chosen One",
+      "Epic Quest",
+      "Magic in the Mundane"
+    ],
+    "spice": 1,
+    "book_description": "Epic fantasy about a world torn apart by storms and war.",
+    "isbn": "9780765326355",
+    "average_rating": 4.65,
+    "book_published": 2010,
+    "link": "https://www.goodreads.com/book/show/123456",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/example.jpg",
+    "pages": 1007,
+    "availability_source": "library",
+    "library_due_date": "2025-07-25T00:00:00Z",
+    "goal_year": 2025,
+    "liked": true,
+    "notes": "Incredible world-building and character development. Slow start but worth it.",
+    "rating_scale_tag": "5-star"
+  },
+  {
+    "goodreads_id": "345678",
+    "title": "The Priory of the Orange Tree",
+    "author_name": "Samantha Shannon",
+    "status": "TBR",
+    "queue_position": 101,
+    "updated_at": "2025-07-08T21:26:14.515Z",
+    "added_at": "2025-07-08T21:24:15.121Z",
+    "genre": "Fantasy",
+    "subgenre": "High / Epic Fantasy",
+    "tropes": [
+      "Dragons",
+      "Female Warriors",
+      "Epic Quest"
+    ]
   }
 ]

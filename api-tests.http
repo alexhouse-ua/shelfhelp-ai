@@ -1,0 +1,343 @@
+###
+# ShelfHelp AI API Tests
+# Use with REST Client extension in VS Code or similar HTTP client
+# Server should be running on localhost:3000 (npm run dev)
+###
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+###
+# Health Check
+GET {{baseUrl}}/health
+
+###
+# GET /api/books - Get all books
+GET {{baseUrl}}/api/books
+
+###
+# GET /api/books - Filter by status
+GET {{baseUrl}}/api/books?status=TBR
+
+###
+# GET /api/books - Filter by multiple statuses
+GET {{baseUrl}}/api/books?status=TBR,Reading
+
+###
+# GET /api/books - Filter by author
+GET {{baseUrl}}/api/books?author=sanderson
+
+###
+# GET /api/books - Filter by genre
+GET {{baseUrl}}/api/books?genre=Fantasy
+
+###
+# GET /api/books - Filter by subgenre
+GET {{baseUrl}}/api/books?subgenre=High%20Fantasy
+
+###
+# GET /api/books - Filter by tropes
+GET {{baseUrl}}/api/books?tropes=Chosen%20One,Epic%20Quest
+
+###
+# GET /api/books - Filter by spice level
+GET {{baseUrl}}/api/books?spice=3
+
+###
+# GET /api/books - Filter by liked books
+GET {{baseUrl}}/api/books?liked=true
+
+###
+# GET /api/books - Filter by series
+GET {{baseUrl}}/api/books?series=Stormlight
+
+###
+# GET /api/books - With pagination
+GET {{baseUrl}}/api/books?limit=10&offset=0
+
+###
+# GET /api/books - With sorting
+GET {{baseUrl}}/api/books?sort=title&order=asc
+
+###
+# GET /api/books - Complex query with multiple filters
+GET {{baseUrl}}/api/books?status=TBR&genre=Fantasy&sort=queue_position&order=asc&limit=5
+
+###
+# GET /api/books/:id - Get specific book
+GET {{baseUrl}}/api/books/123456
+
+###
+# GET /api/queue - Get TBR queue
+GET {{baseUrl}}/api/queue
+
+###
+# GET /api/classifications - Get available classifications
+GET {{baseUrl}}/api/classifications
+
+###
+# POST /api/books - Add new fantasy book
+POST {{baseUrl}}/api/books
+Content-Type: {{contentType}}
+
+{
+  "goodreads_id": "123456",
+  "title": "The Way of Kings",
+  "author_name": "Brandon Sanderson",
+  "series_name": "The Stormlight Archive",
+  "series_number": 1,
+  "status": "TBR",
+  "genre": "Fantasy",
+  "subgenre": "High / Epic Fantasy",
+  "tropes": ["Chosen One", "Epic Quest", "Magic in the Mundane"],
+  "spice": 1,
+  "book_description": "Epic fantasy about a world torn apart by storms and war.",
+  "isbn": "9780765326355",
+  "average_rating": 4.65,
+  "book_published": 2010,
+  "link": "https://www.goodreads.com/book/show/123456",
+  "image_url": "https://images-na.ssl-images-amazon.com/images/I/example.jpg",
+  "pages": 1007,
+  "availability_source": "library",
+  "library_due_date": "2025-07-15T00:00:00Z",
+  "goal_year": 2025
+}
+
+###
+# POST /api/books - Add new romance book
+POST {{baseUrl}}/api/books
+Content-Type: {{contentType}}
+
+{
+  "goodreads_id": "789012",
+  "title": "Fourth Wing",
+  "author_name": "Rebecca Ross",
+  "status": "TBR",
+  "genre": "Romance",
+  "subgenre": "Fantasy Romance (Romantasy)",
+  "tropes": ["Enemies-to-Lovers", "Dragons", "Military Academy"],
+  "spice": 4,
+  "book_description": "Dragons, war college, and enemies-to-lovers romance.",
+  "average_rating": 4.32,
+  "book_published": 2023,
+  "pages": 498,
+  "availability_source": "ku",
+  "ku_expires_on": "2025-07-20T00:00:00Z"
+}
+
+###
+# POST /api/books - Add book with minimal data
+POST {{baseUrl}}/api/books
+Content-Type: {{contentType}}
+
+{
+  "goodreads_id": "345678",
+  "title": "The Priory of the Orange Tree",
+  "author_name": "Samantha Shannon",
+  "status": "TBR"
+}
+
+###
+# POST /api/books - Test validation error (invalid status)
+POST {{baseUrl}}/api/books
+Content-Type: {{contentType}}
+
+{
+  "goodreads_id": "999999",
+  "title": "Test Book",
+  "author_name": "Test Author",
+  "status": "INVALID_STATUS"
+}
+
+###
+# POST /api/books - Test validation error (invalid genre)
+POST {{baseUrl}}/api/books
+Content-Type: {{contentType}}
+
+{
+  "goodreads_id": "888888",
+  "title": "Test Book",
+  "author_name": "Test Author",
+  "genre": "Invalid Genre"
+}
+
+###
+# POST /api/books - Test duplicate book error
+POST {{baseUrl}}/api/books
+Content-Type: {{contentType}}
+
+{
+  "goodreads_id": "123456",
+  "title": "Duplicate Test",
+  "author_name": "Test Author"
+}
+
+###
+# PATCH /api/books/:id - Update book status
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "status": "Reading"
+}
+
+###
+# PATCH /api/books/:id - Update book rating and notes
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "liked": true,
+  "notes": "Incredible world-building and character development. Slow start but worth it.",
+  "rating_scale_tag": "5-star"
+}
+
+###
+# PATCH /api/books/:id - Update queue position
+PATCH {{baseUrl}}/api/books/789012
+Content-Type: {{contentType}}
+
+{
+  "queue_position": 1
+}
+
+###
+# PATCH /api/books/:id - Update genre and subgenre
+PATCH {{baseUrl}}/api/books/345678
+Content-Type: {{contentType}}
+
+{
+  "genre": "Fantasy",
+  "subgenre": "High / Epic Fantasy"
+}
+
+###
+# PATCH /api/books/:id - Update tropes
+PATCH {{baseUrl}}/api/books/345678
+Content-Type: {{contentType}}
+
+{
+  "tropes": ["Dragons", "Female Warriors", "Epic Quest"]
+}
+
+###
+# PATCH /api/books/:id - Update spice level
+PATCH {{baseUrl}}/api/books/789012
+Content-Type: {{contentType}}
+
+{
+  "spice": 3
+}
+
+###
+# PATCH /api/books/:id - Update library information
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "availability_source": "library",
+  "library_due_date": "2025-07-25T00:00:00Z"
+}
+
+###
+# PATCH /api/books/:id - Update KU information
+PATCH {{baseUrl}}/api/books/789012
+Content-Type: {{contentType}}
+
+{
+  "availability_source": "ku",
+  "ku_expires_on": "2025-08-01T00:00:00Z"
+}
+
+###
+# PATCH /api/books/:id - Mark as finished
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "status": "Finished"
+}
+
+###
+# PATCH /api/books/:id - Test validation error (invalid spice)
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "spice": 10
+}
+
+###
+# PATCH /api/books/:id - Test validation error (invalid trope)
+PATCH {{baseUrl}}/api/books/123456
+Content-Type: {{contentType}}
+
+{
+  "tropes": ["Invalid Trope"]
+}
+
+###
+# PATCH /api/books/:id - Test not found error
+PATCH {{baseUrl}}/api/books/nonexistent
+Content-Type: {{contentType}}
+
+{
+  "status": "Reading"
+}
+
+###
+# POST /api/generate_report - Generate weekly report
+POST {{baseUrl}}/api/generate_report
+Content-Type: {{contentType}}
+
+{
+  "type": "weekly"
+}
+
+###
+# POST /api/generate_report - Generate monthly report
+POST {{baseUrl}}/api/generate_report
+Content-Type: {{contentType}}
+
+{
+  "type": "monthly"
+}
+
+###
+# POST /api/generate_report - Generate report for specific date
+POST {{baseUrl}}/api/generate_report
+Content-Type: {{contentType}}
+
+{
+  "type": "weekly",
+  "date": "2025-07-01"
+}
+
+###
+# POST /api/generate_report - Test validation error (invalid type)
+POST {{baseUrl}}/api/generate_report
+Content-Type: {{contentType}}
+
+{
+  "type": "daily"
+}
+
+###
+# Test error handling - Invalid endpoint
+GET {{baseUrl}}/api/invalid
+
+###
+# Test error handling - Invalid method
+DELETE {{baseUrl}}/api/books/123456
+
+###
+# Test large request - Get all books with complex filtering
+GET {{baseUrl}}/api/books?status=TBR,Reading,Finished&genre=Fantasy,Romance&sort=updated_at&order=desc&limit=50
+
+###
+# Test request with special characters in query
+GET {{baseUrl}}/api/books?author=N.K.%20Jemisin&genre=Science%20Fiction
+
+###
+# Test request with array parameters
+GET {{baseUrl}}/api/books?tropes=Enemies-to-Lovers,Dragons&status=TBR
