@@ -4,6 +4,8 @@
   "description": "AI-powered reading assistant with real-time queue management",
   "main": "index.js",
   "scripts": {
+    "start": "node scripts/api-server.js",
+    "dev": "nodemon scripts/api-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,5 +19,17 @@
   "bugs": {
     "url": "https://github.com/alexhouse-ua/shelfhelp-ai/issues"
   },
-  "homepage": "https://github.com/alexhouse-ua/shelfhelp-ai#readme"
+  "homepage": "https://github.com/alexhouse-ua/shelfhelp-ai#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.1.0",
+    "express": "^5.1.0",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^13.4.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
