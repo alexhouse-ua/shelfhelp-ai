@@ -6,6 +6,7 @@
 - Claude Code installed and integrated
 - VS Code with REST Client extension for API testing
 - GitHub repository with automated workflows
+- Add in code snippet to commit to GitHub after every step.
 - Local development server: `npm run dev`
 - Test endpoints via api-tests.http file
 

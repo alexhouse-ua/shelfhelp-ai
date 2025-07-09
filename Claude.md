@@ -15,7 +15,7 @@ shelfhelp-ai/
 ├── history/            # Audit trail (append-only JSONL)
 ├── reflections/        # User reflection markdown files
 └── vectorstore/        # RAG index files
-└── _knowledge/         # Knowledge files for this project. Always refer to it.
+└── _knowledge/         # Knowledge files for this project. Do not complete a task without referring to these files.
 
 ## Core Constraints
 - **Zero cost beyond subscriptions** - no paid APIs or premium tiers
