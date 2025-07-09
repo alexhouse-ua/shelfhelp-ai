@@ -46,6 +46,8 @@ if (process.env.ENABLE_FIREBASE === 'true') {
 const BOOKS_FILE = path.join(__dirname, '../data/books.json');
 const CLASSIFICATIONS_FILE = path.join(__dirname, '../data/classifications.yaml');
 const HISTORY_DIR = path.join(__dirname, '../history');
+const REFLECTIONS_DIR = path.join(__dirname, '../reflections');
+const REFLECTION_TEMPLATE = path.join(__dirname, '../reflections/template.md');
 const REPORTS_DIR = path.join(__dirname, '../reports');
 
 // Helper functions
@@ -200,6 +202,419 @@ async function syncToFirebase(books) {
       code: error.code 
     };
   }
+}
+
+// Reflection system functions
+async function createReflectionFile(book) {
+  try {
+    // Create book-specific reflection directory
+    const bookReflectionDir = path.join(REFLECTIONS_DIR, book.goodreads_id);
+    await fs.mkdir(bookReflectionDir, { recursive: true });
+    
+    // Generate timestamp for reflection file
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const reflectionFile = path.join(bookReflectionDir, `${timestamp}.md`);
+    
+    // Read and process template
+    const template = await fs.readFile(REFLECTION_TEMPLATE, 'utf8');
+    const processedTemplate = processReflectionTemplate(template, book);
+    
+    // Write reflection file
+    await fs.writeFile(reflectionFile, processedTemplate);
+    
+    console.log(`✅ Created reflection file: ${reflectionFile}`);
+    return {
+      success: true,
+      file: reflectionFile,
+      message: 'Reflection file created successfully'
+    };
+  } catch (error) {
+    console.error('❌ Error creating reflection file:', error.message);
+    return {
+      success: false,
+      error: error.message,
+      message: 'Failed to create reflection file'
+    };
+  }
+}
+
+function processReflectionTemplate(template, book) {
+  const completionDate = new Date().toISOString().split('T')[0];
+  const reflectionDate = new Date().toISOString();
+  
+  // Basic template substitutions
+  let processed = template
+    .replace(/\{\{title\}\}/g, book.title || 'Unknown Title')
+    .replace(/\{\{author_name\}\}/g, book.author_name || 'Unknown Author')
+    .replace(/\{\{series_name\}\}/g, book.series_name || 'N/A')
+    .replace(/\{\{series_number\}\}/g, book.series_number || '')
+    .replace(/\{\{genre\}\}/g, book.genre || 'Unspecified')
+    .replace(/\{\{subgenre\}\}/g, book.subgenre || 'Unspecified')
+    .replace(/\{\{completion_date\}\}/g, completionDate)
+    .replace(/\{\{spice\}\}/g, book.spice || 'Not rated')
+    .replace(/\{\{tropes\}\}/g, book.tropes ? book.tropes.join(', ') : 'None listed')
+    .replace(/\{\{book_id\}\}/g, book.goodreads_id)
+    .replace(/\{\{reflection_date\}\}/g, reflectionDate);
+  
+  // Genre-specific conditional sections
+  const isRomance = book.genre && book.genre.toLowerCase().includes('romance');
+  const isFantasy = book.genre && book.genre.toLowerCase().includes('fantasy');
+  const isMystery = book.genre && (book.genre.toLowerCase().includes('mystery') || book.genre.toLowerCase().includes('crime'));
+  
+  // Process conditional sections
+  processed = processConditionalSection(processed, 'if_romance', isRomance);
+  processed = processConditionalSection(processed, 'if_fantasy', isFantasy);
+  processed = processConditionalSection(processed, 'if_mystery', isMystery);
+  
+  return processed;
+}
+
+function processConditionalSection(template, condition, shouldInclude) {
+  const startTag = `{{#${condition}}}`;
+  const endTag = `{{/${condition}}}`;
+  
+  const startIndex = template.indexOf(startTag);
+  const endIndex = template.indexOf(endTag);
+  
+  if (startIndex === -1 || endIndex === -1) {
+    return template;
+  }
+  
+  const beforeSection = template.substring(0, startIndex);
+  const sectionContent = template.substring(startIndex + startTag.length, endIndex);
+  const afterSection = template.substring(endIndex + endTag.length);
+  
+  if (shouldInclude) {
+    return beforeSection + sectionContent + afterSection;
+  } else {
+    return beforeSection + afterSection;
+  }
+}
+
+// Weekly Report Generation Functions
+async function generateWeeklyReport(weekOffset = 0) {
+  try {
+    const books = await readBooksFile();
+    const { startDate, endDate, weekNumber, year } = getWeekRange(weekOffset);
+    
+    // Filter books finished this week
+    const finishedThisWeek = books.filter(book => {
+      if (book.status !== 'Finished' || !book.completed_at) return false;
+      const completedDate = new Date(book.completed_at);
+      return completedDate >= startDate && completedDate <= endDate;
+    });
+    
+    // Calculate statistics
+    const stats = calculateWeeklyStats(books, finishedThisWeek);
+    
+    // Get reflection highlights
+    const reflectionHighlights = await getReflectionHighlights(finishedThisWeek);
+    
+    // Generate report content
+    const reportContent = generateWeeklyReportContent({
+      weekNumber,
+      year,
+      startDate,
+      endDate,
+      finishedThisWeek,
+      stats,
+      reflectionHighlights
+    });
+    
+    // Save report
+    const reportPath = await saveWeeklyReport(weekNumber, year, reportContent);
+    
+    return {
+      success: true,
+      reportPath,
+      stats,
+      finishedBooks: finishedThisWeek.length,
+      message: `Weekly report generated for week ${weekNumber}, ${year}`
+    };
+  } catch (error) {
+    console.error('❌ Error generating weekly report:', error.message);
+    return {
+      success: false,
+      error: error.message,
+      message: 'Failed to generate weekly report'
+    };
+  }
+}
+
+function getWeekRange(weekOffset = 0) {
+  const now = new Date();
+  const currentWeek = new Date(now);
+  currentWeek.setDate(currentWeek.getDate() - (weekOffset * 7));
+  
+  // Get start of week (Monday)
+  const startOfWeek = new Date(currentWeek);
+  const day = startOfWeek.getDay();
+  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+  startOfWeek.setDate(diff);
+  startOfWeek.setHours(0, 0, 0, 0);
+  
+  // Get end of week (Sunday)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(endOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+  
+  // Calculate week number
+  const weekNumber = getWeekNumber(startOfWeek);
+  const year = startOfWeek.getFullYear();
+  
+  return {
+    startDate: startOfWeek,
+    endDate: endOfWeek,
+    weekNumber,
+    year
+  };
+}
+
+function getWeekNumber(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  return 1 + Math.round(((d - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
+function calculateWeeklyStats(allBooks, finishedThisWeek) {
+  const stats = {
+    totalBooks: allBooks.length,
+    finishedThisWeek: finishedThisWeek.length,
+    totalPages: 0,
+    averageRating: 0,
+    topGenres: {},
+    topAuthors: {},
+    topTropes: {},
+    statusBreakdown: {}
+  };
+  
+  // Calculate total pages for finished books this week
+  finishedThisWeek.forEach(book => {
+    if (book.pages) {
+      stats.totalPages += parseInt(book.pages) || 0;
+    }
+  });
+  
+  // Calculate average spice level for finished books
+  const ratedBooks = finishedThisWeek.filter(book => book.spice);
+  if (ratedBooks.length > 0) {
+    stats.averageRating = (ratedBooks.reduce((sum, book) => sum + book.spice, 0) / ratedBooks.length).toFixed(1);
+  }
+  
+  // Count genres, authors, and tropes
+  finishedThisWeek.forEach(book => {
+    // Genres
+    if (book.genre) {
+      stats.topGenres[book.genre] = (stats.topGenres[book.genre] || 0) + 1;
+    }
+    
+    // Authors
+    if (book.author_name) {
+      stats.topAuthors[book.author_name] = (stats.topAuthors[book.author_name] || 0) + 1;
+    }
+    
+    // Tropes
+    if (book.tropes && Array.isArray(book.tropes)) {
+      book.tropes.forEach(trope => {
+        stats.topTropes[trope] = (stats.topTropes[trope] || 0) + 1;
+      });
+    }
+  });
+  
+  // Status breakdown for all books
+  allBooks.forEach(book => {
+    const status = book.status || 'Unknown';
+    stats.statusBreakdown[status] = (stats.statusBreakdown[status] || 0) + 1;
+  });
+  
+  return stats;
+}
+
+async function getReflectionHighlights(finishedBooks) {
+  const highlights = [];
+  
+  for (const book of finishedBooks) {
+    if (!book.goodreads_id) continue;
+    
+    try {
+      const reflectionDir = path.join(REFLECTIONS_DIR, book.goodreads_id);
+      const files = await fs.readdir(reflectionDir);
+      
+      // Get the most recent reflection file
+      if (files.length > 0) {
+        const latestFile = files.sort().reverse()[0];
+        const reflectionPath = path.join(reflectionDir, latestFile);
+        const reflectionContent = await fs.readFile(reflectionPath, 'utf8');
+        
+        // Extract highlights from reflection
+        const bookHighlights = extractReflectionHighlights(reflectionContent, book);
+        if (bookHighlights.length > 0) {
+          highlights.push({
+            book: book.title,
+            author: book.author_name,
+            highlights: bookHighlights
+          });
+        }
+      }
+    } catch (error) {
+      console.log(`⚠️  Could not read reflection for ${book.title}: ${error.message}`);
+    }
+  }
+  
+  return highlights;
+}
+
+function extractReflectionHighlights(content, book) {
+  const highlights = [];
+  const lines = content.split('\n');
+  
+  // Look for sections with content (not just template questions)
+  let currentSection = '';
+  let hasContent = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Skip empty lines and template instructions
+    if (!line || line.startsWith('*') || line.startsWith('##') || line.startsWith('###')) {
+      if (hasContent && currentSection) {
+        // End of a section with content
+        currentSection = '';
+        hasContent = false;
+      }
+      
+      // Check if this is a section header we care about
+      if (line.startsWith('### ') && !line.includes('*')) {
+        currentSection = line.replace('### ', '');
+      }
+      continue;
+    }
+    
+    // If we have a section and this line has actual content
+    if (currentSection && line.length > 20 && !line.includes('{{')) {
+      hasContent = true;
+      highlights.push({
+        section: currentSection,
+        content: line
+      });
+    }
+  }
+  
+  return highlights.slice(0, 3); // Limit to top 3 highlights per book
+}
+
+function generateWeeklyReportContent({ weekNumber, year, startDate, endDate, finishedThisWeek, stats, reflectionHighlights }) {
+  const formatDate = (date) => date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+  
+  let content = `# Weekly Reading Report - Week ${weekNumber}, ${year}\n\n`;
+  content += `**Generated**: ${new Date().toISOString()}\n`;
+  content += `**Period**: ${formatDate(startDate)} - ${formatDate(endDate)}\n\n`;
+  
+  // Statistics
+  content += `## 📊 Statistics\n\n`;
+  content += `- **Books Finished This Week**: ${stats.finishedThisWeek}\n`;
+  content += `- **Total Pages Read**: ${stats.totalPages.toLocaleString()}\n`;
+  content += `- **Average Spice Level**: ${stats.averageRating || 'N/A'}\n`;
+  content += `- **Total Books in Library**: ${stats.totalBooks}\n\n`;
+  
+  // Status breakdown
+  content += `### 📚 Library Status\n\n`;
+  Object.entries(stats.statusBreakdown)
+    .sort(([,a], [,b]) => b - a)
+    .forEach(([status, count]) => {
+      content += `- **${status}**: ${count} books\n`;
+    });
+  content += '\n';
+  
+  // Books finished this week
+  if (finishedThisWeek.length > 0) {
+    content += `## 📖 Books Finished This Week\n\n`;
+    finishedThisWeek.forEach(book => {
+      content += `### ${book.title}\n`;
+      content += `**Author**: ${book.author_name || 'Unknown'}\n`;
+      if (book.series_name) {
+        content += `**Series**: ${book.series_name}${book.series_number ? ` #${book.series_number}` : ''}\n`;
+      }
+      content += `**Genre**: ${book.genre || 'Unspecified'}${book.subgenre ? ` → ${book.subgenre}` : ''}\n`;
+      if (book.spice) {
+        content += `**Spice Level**: ${book.spice}/5\n`;
+      }
+      if (book.pages) {
+        content += `**Pages**: ${book.pages}\n`;
+      }
+      if (book.tropes && book.tropes.length > 0) {
+        content += `**Tropes**: ${book.tropes.join(', ')}\n`;
+      }
+      content += `**Completed**: ${new Date(book.completed_at).toLocaleDateString()}\n\n`;
+    });
+  }
+  
+  // Top genres
+  if (Object.keys(stats.topGenres).length > 0) {
+    content += `## 🎭 Top Genres This Week\n\n`;
+    Object.entries(stats.topGenres)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .forEach(([genre, count]) => {
+        content += `- **${genre}**: ${count} book${count > 1 ? 's' : ''}\n`;
+      });
+    content += '\n';
+  }
+  
+  // Top authors
+  if (Object.keys(stats.topAuthors).length > 0) {
+    content += `## ✍️ Top Authors This Week\n\n`;
+    Object.entries(stats.topAuthors)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .forEach(([author, count]) => {
+        content += `- **${author}**: ${count} book${count > 1 ? 's' : ''}\n`;
+      });
+    content += '\n';
+  }
+  
+  // Top tropes
+  if (Object.keys(stats.topTropes).length > 0) {
+    content += `## 🏷️ Popular Tropes This Week\n\n`;
+    Object.entries(stats.topTropes)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 8)
+      .forEach(([trope, count]) => {
+        content += `- **${trope}**: ${count} book${count > 1 ? 's' : ''}\n`;
+      });
+    content += '\n';
+  }
+  
+  // Reflection highlights
+  if (reflectionHighlights.length > 0) {
+    content += `## 💭 Reflection Highlights\n\n`;
+    reflectionHighlights.forEach(({ book, author, highlights }) => {
+      content += `### ${book} by ${author}\n`;
+      highlights.forEach(highlight => {
+        content += `**${highlight.section}**: ${highlight.content}\n\n`;
+      });
+    });
+  }
+  
+  content += `---\n\n`;
+  content += `*Report generated automatically by ShelfHelp AI Assistant*\n`;
+  
+  return content;
+}
+
+async function saveWeeklyReport(weekNumber, year, content) {
+  const weeklyDir = path.join(REPORTS_DIR, 'weekly');
+  await fs.mkdir(weeklyDir, { recursive: true });
+  
+  const filename = `${year}-W${weekNumber.toString().padStart(2, '0')}.md`;
+  const reportPath = path.join(weeklyDir, filename);
+  
+  await fs.writeFile(reportPath, content);
+  console.log(`✅ Weekly report saved: ${reportPath}`);
+  
+  return reportPath;
 }
 
 // Routes
@@ -416,6 +831,23 @@ app.patch('/api/books/:id', async (req, res) => {
       } else {
         books[bookIndex].queue_position = null;
       }
+      
+      // Create reflection file when book is marked as 'Finished'
+      if (updates.status === 'Finished') {
+        books[bookIndex].reflection_pending = true;
+        books[bookIndex].completed_at = new Date().toISOString();
+        
+        // Create reflection file asynchronously
+        createReflectionFile(books[bookIndex]).then(reflectionResult => {
+          if (reflectionResult.success) {
+            console.log(`✅ Reflection created for "${books[bookIndex].title}"`);
+          } else {
+            console.error(`❌ Failed to create reflection for "${books[bookIndex].title}": ${reflectionResult.error}`);
+          }
+        }).catch(error => {
+          console.error(`❌ Error creating reflection for "${books[bookIndex].title}": ${error.message}`);
+        });
+      }
     }
     
     await writeBooksFile(books);
@@ -473,37 +905,53 @@ app.get('/api/queue', async (req, res) => {
 // POST /api/generate_report - Generate weekly/monthly reports
 app.post('/api/generate_report', async (req, res) => {
   try {
-    const { type = 'weekly', date } = req.body;
+    const { type = 'weekly', week_offset = 0 } = req.body;
     
     if (!['weekly', 'monthly'].includes(type)) {
       return res.status(400).json({ error: 'Invalid report type. Must be "weekly" or "monthly"' });
     }
     
-    const books = await readBooksFile();
-    const reportDate = date ? new Date(date) : new Date();
-    const report = await generateReport(books, type, reportDate);
-    
-    // Save report to file
-    await fs.mkdir(REPORTS_DIR, { recursive: true });
-    const reportDir = path.join(REPORTS_DIR, type);
-    await fs.mkdir(reportDir, { recursive: true });
-    
-    const filename = type === 'weekly' 
-      ? `${reportDate.getFullYear()}-W${getWeekNumber(reportDate)}.md`
-      : `${reportDate.getFullYear()}-${String(reportDate.getMonth() + 1).padStart(2, '0')}.md`;
-    
-    const reportPath = path.join(reportDir, filename);
-    await fs.writeFile(reportPath, report.content);
-    
-    res.status(202).json({
-      message: 'Report generated successfully',
-      type,
-      date: reportDate.toISOString(),
-      filename,
-      path: reportPath,
-      url: `/reports/${type}/${filename}`,
-      stats: report.stats
-    });
+    if (type === 'weekly') {
+      const result = await generateWeeklyReport(week_offset);
+      
+      if (result.success) {
+        res.status(200).json({
+          message: result.message,
+          type: 'weekly',
+          reportPath: result.reportPath,
+          stats: result.stats,
+          finishedBooks: result.finishedBooks,
+          success: true
+        });
+      } else {
+        res.status(500).json({
+          error: result.error,
+          message: result.message,
+          success: false
+        });
+      }
+    } else {
+      // Monthly reports use the old logic for now
+      const books = await readBooksFile();
+      const reportDate = new Date();
+      const report = await generateReport(books, type, reportDate);
+      
+      await fs.mkdir(REPORTS_DIR, { recursive: true });
+      const reportDir = path.join(REPORTS_DIR, type);
+      await fs.mkdir(reportDir, { recursive: true });
+      
+      const filename = `${reportDate.getFullYear()}-${String(reportDate.getMonth() + 1).padStart(2, '0')}.md`;
+      const reportPath = path.join(reportDir, filename);
+      await fs.writeFile(reportPath, report.content);
+      
+      res.status(200).json({
+        message: 'Monthly report generated successfully',
+        type: 'monthly',
+        reportPath,
+        stats: report.stats,
+        success: true
+      });
+    }
   } catch (error) {
     console.error('Error generating report:', error);
     res.status(500).json({ error: 'Internal server error' });
