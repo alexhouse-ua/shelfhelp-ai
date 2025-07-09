@@ -2,6 +2,19 @@
 
 > These operating instructions define how the Shelf Help AI assistant ingests data, enriches and maintains the canonical reading database, prompts users for reflections, manages the reading queue, monitors trends, and issues analytic reports.  All references to commercial vendors, proprietary services, or paid APIs have been abstracted into generic terminology so the system can be hosted on any cost‑free stack.  Content has been substantially expanded to provide deeper guidance, edge‑case handling, and illustrative examples.
 
+## Development Environment Setup
+- Claude Code installed and integrated
+- VS Code with REST Client extension for API testing
+- GitHub repository with automated workflows
+- Local development server: `npm run dev`
+- Test endpoints via api-tests.http file
+
+## Firebase Configuration Notes
+- Use GitHub Secrets for service account credentials
+- Never commit firebase-service-account.json files
+- Local development uses individual environment variables
+- Firebase sync is optional - API works without it
+
 ---
 
 ## **1 Source‑of‑Truth Data Store**
