@@ -1,0 +1,43 @@
+context:
+  include:
+    - _knowledge/**
+    - Claude.md
+    - scripts/**
+    - data/classifications.yaml
+    - api-tests.http
+    - .github/workflows/**
+  exclude:
+    - node_modules/**
+    - .git/**
+    - history/**
+    - reflections/**
+    - vectorstore/**
+    - firebase-service-account.json
+    - .env
+
+memory:
+  token_budget: 150000
+
+tools:
+  test:
+    command: "node scripts/test-endpoints.js"
+    description: "Run API endpoint tests"
+  dev:
+    command: "npm run dev"
+    description: "Start development server with nodemon"
+  lint:
+    command: "npm run lint"
+    description: "Check code quality"
+  format:
+    command: "npm run format"
+    description: "Format code with prettier"
+  validate:
+    command: "npm run validate-schema"
+    description: "Validate books.json schema"
+  
+git:
+  auto_commit: false
+  suggest_commit: true
+
+summaries:
+  auto: true

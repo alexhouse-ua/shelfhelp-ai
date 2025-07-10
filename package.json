@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "AI-powered reading assistant with real-time queue management",
   "main": "index.js",
+
   "scripts": {
-    "start": "node scripts/api-server.js",
     "dev": "nodemon scripts/api-server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node scripts/api-server.js",
+    "test": "node scripts/test-endpoints.js",
+    "lint": "eslint scripts/ --fix",
+    "format": "prettier --write scripts/ data/ _knowledge/",
+    "validate-schema": "node scripts/validate-schema.js"
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexhouse-ua/shelfhelp-ai.git"
@@ -37,6 +42,9 @@
     "yaml": "^2.8.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "eslint": "^9.30.1",
+    "husky": "^9.1.7",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   }
 }

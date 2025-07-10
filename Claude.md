@@ -1,103 +1,187 @@
-# Claude Code Guidelines for Shelf Help AI Assistant
+# Claude.md - ShelfHelp AI Assistant
+
+## How to Use This File
+- This file contains essential project information needed for every development session
+- Detailed documentation can be found in referenced files in the `_knowledge/` directory
+- Update both this file and referenced files when making changes
+- Always review this file before starting any development work
+- Complex coding should happen in Claude Code for optimal performance
 
 ## Project Overview
-AI-powered reading assistant with real-time queue management. Uses Node.js + Vercel + Firebase architecture.
 
-## File Structure
+AI-powered reading assistant with real-time queue management and intelligent book classification. The system provides conversational interfaces for managing reading queues, generating personalized recommendations, and automating reflection workflows.
 
+**Architecture**: Node.js Express API + File-based storage + Optional Firebase sync + RAG-powered recommendations
+
+**Core Philosophy**: Zero-cost operation beyond existing subscriptions, file-based canonical storage, comprehensive audit trails, and mobile-first conversational interfaces.
+
+### Key Requirements
+
+- **Zero incremental cost** - no paid APIs beyond existing ChatGPT Plus/Claude Pro subscriptions
+- **File-based canonical store** - `books.json` is the single source of truth
+- **All CRUD through API layer** - never write directly to JSON files
+- **RAG before recommendations** - always query vector index first for contextual responses
+- **Git audit trail** - every change logged in `history/*.jsonl`
+- **Mobile-first UX** - all essential flows must work within chat interfaces
+- **Maintain backward compatibility** - never change existing field names without migration
+- **Validate against classifications** - all genre/trope values must exist in `classifications.yaml`
+
+## Important References
+
+| File | Purpose | When to Reference |
+|------|---------|-------------------|
+| `_knowledge/Operating_Instructions.md` | Field dictionary and operational rules | Before any book data modifications |
+| `_knowledge/Project_Plan.md` | Complete project strategy and architecture | For major feature decisions |
+| `_knowledge/Session_History.txt` | Development progress and decisions | At session start for context |
+| `_knowledge/summary.md` | Current project status and priorities | Every session to understand current state |
+| `data/classifications.yaml` | Authoritative genre/trope taxonomy | When adding/validating book metadata |
+| `data/books.json` | Canonical book records | Never modify directly - use API only |
+| `scripts/api-server.js` | Main API server | For all API modifications |
+
+## Code Style Guidelines
+
+### General Principles
+- **Consistency**: Follow existing patterns in the codebase
+- **Validation**: All inputs must be validated before processing
+- **Error Handling**: Graceful degradation and informative error messages
+- **Token Conservation**: Optimize for efficient token usage - reference existing files instead of recreating
+
+### File Structure
+```
 shelfhelp-ai/
 ├── data/                 # Canonical data store (Git-tracked)
-│   ├── books.json       # Primary book records
+│   ├── books.json       # Primary book records - DO NOT EDIT DIRECTLY
 │   ├── classifications.yaml # Genre/subgenre/tropes taxonomy
 │   └── preferences.json # User preference vectors
 ├── scripts/             # API server and background jobs
 ├── .github/workflows/   # GitHub Actions for automation
 ├── history/            # Audit trail (append-only JSONL)
 ├── reflections/        # User reflection markdown files
-└── vectorstore/        # RAG index files
-└── _knowledge/         # Knowledge files for this project. Do not complete a task without referring to these files.
+├── vectorstore/        # RAG index files
+└── _knowledge/         # Project documentation - READ BEFORE TASKS
+```
 
-## Core Constraints
-- **Zero cost beyond subscriptions** - no paid APIs or premium tiers
-- **File-based canonical store** - books.json is source of truth
-- **All CRUD through API layer** - never write directly to JSON files
-- **RAG before recommendations** - always query vector index first
-- **Git audit trail** - every change logged in history/*.jsonl
+### API Design
+- **REST conventions**: Proper HTTP status codes and response formats
+- **Consistent error responses**: Use standard error format across all endpoints
+- **Rate limiting**: Consider performance implications
+- **Documentation**: Include helpful usage tips in API responses
 
-## Field Schema (Critical - Don't Modify)
-Books must have these exact field names:
-- `guid` (string) - Primary key from RSS
-- `goodreads_id` (string) - For enrichment
-- `status` (enum) - "TBR"|"Reading"|"Finished"|"DNF"|"Archived"
-- `title`, `author_name`, `series_name`, `series_number`
-- `genre`, `subgenre` (from classifications.yaml)
-- `tropes` (array from classifications.yaml)
-- `spice` (int 1-5)
-- `queue_position`, `queue_priority`
-- `liked`, `disliked`, `notes` (reflection data)
+### Code Quality
+- **Modular design**: Separate concerns into focused modules
+- **Comprehensive validation**: Validate all inputs against expected schemas
+- **Status reporting**: Include health checks and status endpoints
+- **Fallback mechanisms**: Graceful degradation when optional features fail
 
-## API Endpoints (Follow Exactly)
-- `GET /api/books` - Query with filters
-- `POST /api/books` - Add new book
-- `PATCH /api/books/:id` - Update single field
-- `POST /api/sync_rss` - RSS ingestion
-- `POST /api/generate_report` - Weekly/monthly reports
+## Project SDLC
 
-## Token Conservation Rules
-1. **Reference existing files** instead of recreating from scratch
-2. **Make incremental changes** - modify existing code, don't rewrite
-3. **Use specific requests** - "Add error handling to api-server.js line 45" not "improve the API"
-4. **Check current implementation first** - read files before suggesting changes
+### Development Process
+1. **Session Start**: Review `Claude.md` and `_knowledge/summary.md` for current state
+2. **Planning**: Identify specific tasks and check against existing documentation
+3. **Implementation**: Make incremental changes, prefer modification over rewriting
+4. **Testing**: Test with sample data before full implementation
+5. **Documentation**: Update relevant files in `_knowledge/` as needed
+6. **Commit Preparation**: Generate git commit command - never commit automatically
 
-## Error Prevention
-- **Never hardcode credentials** - use .env variables
-- **Validate against classifications.yaml** - all genre/trope values must exist there
-- **Maintain backward compatibility** - don't change existing field names
-- **Test with sample data** - use small JSON arrays for testing
-- **Follow REST conventions** - proper HTTP status codes and response formats
+### Quality Gates
+- **Field Dictionary Compliance**: All book fields must match `Operating_Instructions.md`
+- **Classification Validation**: All genre/trope values must exist in `classifications.yaml`
+- **API Compatibility**: Changes must not break existing endpoints
+- **Error Handling**: All endpoints must handle errors gracefully
+- **Token Efficiency**: Minimize token usage by referencing existing implementations
 
-## Common Tasks
-- **Adding new book fields:** Update field dictionary in Operating Instructions first
-- **RSS changes:** Modify scripts/rss_ingest.js, test with sample feed
-- **Queue logic:** Changes go in scripts/queue_manager.js
-- **Reflection prompts:** Update templates in reflections/ directory
+### Change Management
+- **Incremental Updates**: Prefer small, focused changes over large rewrites
+- **Backward Compatibility**: Never break existing functionality without migration
+- **Documentation**: Update both code comments and knowledge files
+- **Testing**: Validate changes with representative data
+- **Audit Trail**: All changes logged in `history/*.jsonl`
 
-## Firebase Integration
-- **Realtime Database structure:** Mirror books.json at `/books/{id}`
-- **Security rules:** Authenticated read/write only
-- **Sync direction:** Always Git → Firebase, never reverse
-- **Rate limits:** Batch updates, avoid individual writes per book
+## Build/Test Commands
 
-## GitHub Actions
-- **RSS sync:** Every 6 hours via cron
-- **RAG rebuild:** On every push to main
-- **Reports:** Weekly Sunday 8PM, Monthly 1st Sunday
-- **Free tier limits:** 2000 minutes/month, optimize job duration
+```bash
+# Development server
+npm run dev
 
-## Development Workflow
-1. Make changes locally
-2. Test with `npm run dev`
-3. Commit to Git (triggers RAG rebuild)
-4. Deploy via Vercel (auto from main branch)
-5. Monitor Firebase console for real-time sync
+# Production server
+npm start
 
-## Don't Do
-- ❌ Write directly to books.json (use API)
-- ❌ Modify classifications.yaml structure without updating docs
-- ❌ Add paid services or APIs
-- ❌ Ignore the Operating Instructions field dictionary
-- ❌ Create endpoints not in the Project Plan
-- ❌ Hardcode any URLs or credentials
+# Install dependencies
+npm install
 
-## Current Status (Session 1 Complete)
-- Basic API infrastructure working (Firebase temporarily disabled)
-- RSS ingestion pipeline operational
-- RAG vector store implemented
-- All core directories and files created
-- Testing framework established
+# Test API endpoints (manual)
+# Use api-tests.http file for manual testing
+```
 
-## Known Issues
-- Firebase credentials need GitHub Secrets configuration
-- Trope validation needs nested structure handling
-- API tests need alignment with actual data schema
+### Testing Strategy
+- **Manual API Testing**: Use `api-tests.http` file for endpoint validation
+- **Sample Data**: Always test with small JSON arrays before full implementation
+- **Error Scenarios**: Test graceful failure modes
+- **Performance**: Monitor response times, especially for fuzzy matching operations
 
+## Development Status
+
+### Completed Features
+- **Core API Infrastructure**: Express server with CRUD operations (`scripts/api-server.js`)
+- **RSS Ingestion Pipeline**: Automated Goodreads RSS polling (`scripts/rss_ingest.js`)
+- **RAG Vector Store**: Chromadb integration for contextual recommendations (`scripts/rag_ingest.js`)
+- **Fuzzy Classification System**: Intelligent book classification with confidence scoring
+- **Book Management**: Complete lifecycle management with validation
+- **Reflection System**: Automated reflection file generation
+- **Reporting System**: Weekly/monthly report generation
+- **Firebase Integration**: Optional real-time sync with graceful degradation
+- **GitHub Actions**: Automated workflows for RSS sync and RAG rebuilds
+
+### Enhanced API Endpoints
+- **`/api/classifications`**: Returns fuzzy matching capabilities with classification data
+- **`/api/classify-book`**: AI agent endpoint for intelligent book classification
+- **`/api/match-classification`**: Targeted matching for specific classification fields
+- **Enhanced validation**: `validateBookFields()` with fuzzy matching integration
+
+### Current Architecture Status
+- **Backend**: Express.js with modular design ✅
+- **Data Storage**: Local JSON with optional Firebase sync ✅
+- **Classification**: YAML-based taxonomy with fuzzy matching ✅
+- **AI Integration**: Endpoints optimized for AI agent consumption ✅
+- **Error Handling**: Comprehensive validation and graceful degradation ✅
+
+## Next Development Steps
+
+### Immediate Priorities
+1. **API Testing**: Comprehensive testing of new fuzzy matching endpoints with real book data
+2. **Integration Testing**: Verify fuzzy matcher works correctly with existing workflows
+3. **Edge Case Testing**: Test behavior when fuzzy matcher fails to initialize
+4. **Performance Testing**: Ensure fuzzy matching doesn't impact API response times
+
+### AI Agent Integration
+- **Claude Integration**: Update AI assistant to use new classification endpoints
+- **Workflow Optimization**: Streamline book addition/update processes using fuzzy matching
+- **Error Recovery**: Improve handling of classification mismatches
+- **User Experience**: Provide clear feedback when fuzzy matching suggests corrections
+
+### Technical Debt
+- **Test Coverage**: Implement comprehensive test suite
+- **Documentation**: Update API documentation to reflect new endpoints
+- **Performance**: Consider caching for classification data
+- **Security**: Implement rate limiting for production use
+
+### Outstanding Issues
+- **Firebase Credentials**: GitHub Secrets configuration needed for full Firebase integration
+- **Trope Validation**: Nested structure handling in classifications needs refinement
+- **Schema Alignment**: API tests need alignment with actual data schema
+
+### Before Next Session
+1. Test all new fuzzy matching endpoints with sample data
+2. Verify integration with existing book management workflows
+3. Address any initialization failures in fuzzy matching system
+4. Document any issues or edge cases discovered during testing
+5. Generate git commit command for completed work
+
+---
+
+**Important Notes**:
+- After any testing, generate command for git commit - never commit automatically
+- The user is on Claude Pro plan - optimize for efficient token usage
+- Complex coding tasks should be handled in Claude Code
+- Always validate changes against the field dictionary in `Operating_Instructions.md`
+- Never modify `books.json` directly - use API endpoints only
