@@ -32,7 +32,6 @@ AI-powered reading assistant with real-time queue management and intelligent boo
 |------|---------|-------------------|
 | `_knowledge/Operating_Instructions.md` | Field dictionary and operational rules | Before any book data modifications |
 | `_knowledge/Project_Plan.md` | Complete project strategy and architecture | For major feature decisions |
-| `_knowledge/Session_History.txt` | Development progress and decisions | At session start for context |
 | `_knowledge/summary.md` | Current project status and priorities | Every session to understand current state |
 | `data/classifications.yaml` | Authoritative genre/trope taxonomy | When adding/validating book metadata |
 | `data/books.json` | Canonical book records | Never modify directly - use API only |
