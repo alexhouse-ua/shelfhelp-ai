@@ -365,3 +365,69 @@ GET {{baseUrl}}/api/books?author=N.K.%20Jemisin&genre=Science%20Fiction
 ###
 # Test request with array parameters
 GET {{baseUrl}}/api/books?tropes=Enemies-to-Lovers,Dragons&status=TBR
+
+###
+# POST /api/classify-book - Test fuzzy book classification
+POST {{baseUrl}}/api/classify-book
+Content-Type: {{contentType}}
+
+{
+  "title": "Test Fantasy Book",
+  "author_name": "Test Author",
+  "genre": "fantsy",
+  "subgenre": "urben fantasy",
+  "tropes": ["enemies to lovers", "magic sistem", "chosen won"]
+}
+
+###
+# POST /api/classify-book - Test with Romance book
+POST {{baseUrl}}/api/classify-book
+Content-Type: {{contentType}}
+
+{
+  "title": "Test Romance",
+  "author_name": "Romance Author",
+  "genre": "romace",
+  "subgenre": "paranormal romace",
+  "tropes": ["fated mates", "alpha heros", "instalove"]
+}
+
+###
+# POST /api/match-classification - Test genre matching
+POST {{baseUrl}}/api/match-classification
+Content-Type: {{contentType}}
+
+{
+  "type": "genre",
+  "value": "fantsy"
+}
+
+###
+# POST /api/match-classification - Test subgenre matching
+POST {{baseUrl}}/api/match-classification
+Content-Type: {{contentType}}
+
+{
+  "type": "subgenre",
+  "value": "urben fantasy"
+}
+
+###
+# POST /api/match-classification - Test trope matching
+POST {{baseUrl}}/api/match-classification
+Content-Type: {{contentType}}
+
+{
+  "type": "tropes",
+  "value": "enemies to lovers"
+}
+
+###
+# POST /api/match-classification - Test spice matching
+POST {{baseUrl}}/api/match-classification
+Content-Type: {{contentType}}
+
+{
+  "type": "spice",
+  "value": "mild"
+}
