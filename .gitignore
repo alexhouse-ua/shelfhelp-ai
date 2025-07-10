@@ -44,3 +44,5 @@ reports/*summary*.json
 scripts/*analysis*.js
 scripts/*migration*.js
 scripts/*strategy*.js
+scripts/analyze-*.js
+scripts/execute-*.js
