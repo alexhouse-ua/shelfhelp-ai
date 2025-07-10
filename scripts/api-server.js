@@ -364,8 +364,12 @@ async function generateWeeklyReport(weekOffset = 0) {
     // Calculate statistics
     const stats = calculateWeeklyStats(books, finishedThisWeek);
     
-    // Get reflection highlights
+    // Get reflection highlights and analytics
     const reflectionHighlights = await getReflectionHighlights(finishedThisWeek);
+    const reflectionAnalytics = await getReflectionAnalytics(books);
+    
+    // Generate comprehensive reading analytics
+    const readingAnalytics = await generateReadingAnalytics(books, 'all');
     
     // Generate report content
     const reportContent = generateWeeklyReportContent({
@@ -375,7 +379,9 @@ async function generateWeeklyReport(weekOffset = 0) {
       endDate,
       finishedThisWeek,
       stats,
-      reflectionHighlights
+      reflectionHighlights,
+      reflectionAnalytics,
+      readingAnalytics
     });
     
     // Save report
@@ -644,13 +650,19 @@ async function getReflectionHighlights(finishedBooks) {
         const reflectionPath = path.join(reflectionDir, latestFile);
         const reflectionContent = await fs.readFile(reflectionPath, 'utf8');
         
-        // Extract highlights from reflection
-        const bookHighlights = extractReflectionHighlights(reflectionContent, book);
-        if (bookHighlights.length > 0) {
+        // Enhanced reflection analysis
+        const analysis = analyzeReflectionContent(reflectionContent, book);
+        
+        if (analysis.hasContent) {
           highlights.push({
             book: book.title,
             author: book.author_name,
-            highlights: bookHighlights
+            goodreads_id: book.goodreads_id,
+            highlights: analysis.highlights,
+            completeness: analysis.completeness,
+            sentiment: analysis.sentiment,
+            recommendation: analysis.recommendation,
+            reflectionPath: reflectionPath
           });
         }
       }
@@ -660,6 +672,600 @@ async function getReflectionHighlights(finishedBooks) {
   }
   
   return highlights;
+}
+
+// Enhanced reflection content analysis with sentiment and completeness scoring
+function analyzeReflectionContent(content, book) {
+  const analysis = {
+    hasContent: false,
+    completeness: 0,
+    highlights: [],
+    sentiment: 'neutral',
+    recommendation: null,
+    sectionsCompleted: 0,
+    totalSections: 0,
+    insights: {}
+  };
+
+  const lines = content.split('\n');
+  const sections = [
+    'Overall Experience', 'Story Elements', 'Genre-Specific Questions',
+    'Tropes & Themes', 'Personal Impact', 'Recommendations', 
+    'Reading Journey', 'Future Reading', 'Final Thoughts'
+  ];
+
+  let currentSection = '';
+  let sectionContent = [];
+  let completedSections = [];
+  
+  // Sentiment indicators
+  const positiveWords = ['love', 'loved', 'amazing', 'fantastic', 'wonderful', 'great', 'excellent', 'enjoyed', 'favorite', 'perfect', 'brilliant', 'captivating', 'engaging', 'compelling'];
+  const negativeWords = ['hate', 'hated', 'terrible', 'awful', 'boring', 'disappointing', 'confusing', 'slow', 'frustrating', 'annoying', 'worst', 'dislike'];
+  
+  let sentimentScore = 0;
+  let wordCount = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Track sections
+    if (line.startsWith('## ') && !line.includes('---')) {
+      // Process previous section if it had content
+      if (currentSection && sectionContent.length > 0) {
+        const hasRealContent = sectionContent.some(l => 
+          l.length > 20 && 
+          !l.startsWith('*') && 
+          !l.includes('{{') &&
+          !l.includes('Rate your') &&
+          !l.includes('explain why') &&
+          !l.toLowerCase().includes('how was') &&
+          !l.toLowerCase().includes('did you')
+        );
+        
+        if (hasRealContent) {
+          completedSections.push(currentSection);
+          analysis.highlights.push({
+            section: currentSection,
+            content: sectionContent.filter(l => l.length > 20).slice(0, 2).join(' ')
+          });
+        }
+      }
+      
+      currentSection = line.replace('## ', '');
+      sectionContent = [];
+      analysis.totalSections++;
+    }
+    
+    // Collect content for current section
+    if (currentSection && line && !line.startsWith('#') && !line.startsWith('*') && !line.startsWith('**') && !line.includes('{{')) {
+      sectionContent.push(line);
+      wordCount += line.split(' ').length;
+      
+      // Simple sentiment analysis
+      const lowerLine = line.toLowerCase();
+      positiveWords.forEach(word => {
+        if (lowerLine.includes(word)) sentimentScore++;
+      });
+      negativeWords.forEach(word => {
+        if (lowerLine.includes(word)) sentimentScore--;
+      });
+      
+      // Extract recommendation intent
+      if (lowerLine.includes('recommend') || lowerLine.includes('suggestion')) {
+        if (lowerLine.includes('would recommend') || lowerLine.includes('definitely')) {
+          analysis.recommendation = 'positive';
+        } else if (lowerLine.includes('would not') || lowerLine.includes("wouldn't")) {
+          analysis.recommendation = 'negative';
+        }
+      }
+    }
+  }
+  
+  // Process final section
+  if (currentSection && sectionContent.length > 0) {
+    const hasRealContent = sectionContent.some(l => 
+      l.length > 20 && 
+      !l.startsWith('*') && 
+      !l.includes('{{')
+    );
+    
+    if (hasRealContent) {
+      completedSections.push(currentSection);
+      analysis.highlights.push({
+        section: currentSection,
+        content: sectionContent.filter(l => l.length > 20).slice(0, 2).join(' ')
+      });
+    }
+  }
+
+  // Calculate metrics
+  analysis.sectionsCompleted = completedSections.length;
+  analysis.completeness = analysis.totalSections > 0 ? 
+    Math.round((analysis.sectionsCompleted / analysis.totalSections) * 100) : 0;
+  
+  analysis.hasContent = analysis.sectionsCompleted > 0 && wordCount > 100;
+  
+  // Determine sentiment
+  if (sentimentScore > 2) {
+    analysis.sentiment = 'positive';
+  } else if (sentimentScore < -2) {
+    analysis.sentiment = 'negative';
+  } else {
+    analysis.sentiment = 'neutral';
+  }
+
+  // Generate insights
+  analysis.insights = {
+    wordCount: wordCount,
+    detailLevel: wordCount > 500 ? 'detailed' : wordCount > 200 ? 'moderate' : 'brief',
+    sectionsCompleted: completedSections,
+    hasRecommendation: analysis.recommendation !== null,
+    engagementLevel: analysis.completeness > 70 ? 'high' : analysis.completeness > 30 ? 'medium' : 'low'
+  };
+
+  return analysis;
+}
+
+// Get comprehensive reflection analytics for all books
+async function getReflectionAnalytics(allBooks) {
+  const analytics = {
+    totalReflections: 0,
+    completedReflections: 0,
+    pendingReflections: 0,
+    averageCompleteness: 0,
+    sentimentDistribution: { positive: 0, neutral: 0, negative: 0 },
+    recommendationPatterns: { positive: 0, negative: 0, none: 0 },
+    engagementLevels: { high: 0, medium: 0, low: 0 },
+    topCompleteReflections: [],
+    pendingBooks: []
+  };
+
+  let totalCompleteness = 0;
+  const reflectionAnalyses = [];
+
+  for (const book of allBooks) {
+    if (!book.goodreads_id) continue;
+    
+    try {
+      const reflectionDir = path.join(REFLECTIONS_DIR, book.goodreads_id);
+      const files = await fs.readdir(reflectionDir);
+      
+      if (files.length > 0) {
+        analytics.totalReflections++;
+        
+        const latestFile = files.sort().reverse()[0];
+        const reflectionPath = path.join(reflectionDir, latestFile);
+        const reflectionContent = await fs.readFile(reflectionPath, 'utf8');
+        
+        const analysis = analyzeReflectionContent(reflectionContent, book);
+        
+        if (analysis.hasContent) {
+          analytics.completedReflections++;
+          totalCompleteness += analysis.completeness;
+          
+          analytics.sentimentDistribution[analysis.sentiment]++;
+          analytics.recommendationPatterns[analysis.recommendation || 'none']++;
+          analytics.engagementLevels[analysis.insights.engagementLevel]++;
+          
+          reflectionAnalyses.push({
+            book: book.title,
+            author: book.author_name,
+            completeness: analysis.completeness,
+            sentiment: analysis.sentiment,
+            wordCount: analysis.insights.wordCount
+          });
+        } else {
+          analytics.pendingReflections++;
+          analytics.pendingBooks.push({
+            title: book.title,
+            author: book.author_name,
+            goodreads_id: book.goodreads_id
+          });
+        }
+      } else if (book.reflection_pending) {
+        analytics.pendingReflections++;
+        analytics.pendingBooks.push({
+          title: book.title,
+          author: book.author_name,
+          goodreads_id: book.goodreads_id
+        });
+      }
+    } catch (error) {
+      // Directory doesn't exist or other error - count as pending if reflection_pending is true
+      if (book.reflection_pending) {
+        analytics.pendingReflections++;
+        analytics.pendingBooks.push({
+          title: book.title,
+          author: book.author_name,
+          goodreads_id: book.goodreads_id
+        });
+      }
+    }
+  }
+
+  // Calculate averages and sort results
+  analytics.averageCompleteness = analytics.completedReflections > 0 ? 
+    Math.round(totalCompleteness / analytics.completedReflections) : 0;
+  
+  analytics.topCompleteReflections = reflectionAnalyses
+    .sort((a, b) => b.completeness - a.completeness)
+    .slice(0, 5);
+
+  return analytics;
+}
+
+// Comprehensive reading analytics and trend detection
+async function generateReadingAnalytics(allBooks, timeframe = 'all') {
+  const analytics = {
+    overview: {},
+    readingVelocity: {},
+    genreTrends: {},
+    authorTrends: {},
+    temporalPatterns: {},
+    queueAnalytics: {},
+    ratingTrends: {},
+    timeBasedInsights: {}
+  };
+
+  // Filter books by timeframe
+  const filteredBooks = filterBooksByTimeframe(allBooks, timeframe);
+  const finishedBooks = filteredBooks.filter(book => 
+    (book.status === 'Read' || book.status === 'Finished') && book.user_read_at
+  );
+
+  // Overview Analytics
+  analytics.overview = {
+    totalBooks: allBooks.length,
+    booksInTimeframe: filteredBooks.length,
+    finishedBooks: finishedBooks.length,
+    currentlyReading: allBooks.filter(b => b.status === 'Reading').length,
+    tbrQueue: allBooks.filter(b => b.status === 'TBR').length,
+    completionRate: filteredBooks.length > 0 ? 
+      Math.round((finishedBooks.length / filteredBooks.length) * 100) : 0
+  };
+
+  // Reading Velocity Analytics
+  analytics.readingVelocity = calculateReadingVelocity(finishedBooks);
+
+  // Genre Trends
+  analytics.genreTrends = analyzeGenreTrends(finishedBooks, timeframe);
+
+  // Author Trends
+  analytics.authorTrends = analyzeAuthorTrends(finishedBooks, timeframe);
+
+  // Temporal Patterns
+  analytics.temporalPatterns = analyzeTemporalPatterns(finishedBooks);
+
+  // TBR Queue Analytics
+  analytics.queueAnalytics = analyzeTbrQueue(allBooks);
+
+  // Rating Trends
+  analytics.ratingTrends = analyzeRatingTrends(finishedBooks);
+
+  // Time-based insights
+  analytics.timeBasedInsights = generateTimeBasedInsights(finishedBooks);
+
+  return analytics;
+}
+
+function filterBooksByTimeframe(books, timeframe) {
+  const now = new Date();
+  let cutoffDate;
+
+  switch (timeframe) {
+    case 'week':
+      cutoffDate = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+      break;
+    case 'month':
+      cutoffDate = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+      break;
+    case 'quarter':
+      cutoffDate = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
+      break;
+    case 'year':
+      cutoffDate = new Date(now.getTime() - (365 * 24 * 60 * 60 * 1000));
+      break;
+    default:
+      return books; // 'all' timeframe
+  }
+
+  return books.filter(book => {
+    const bookDate = book.user_read_at ? new Date(book.user_read_at) : 
+                     book.user_date_added ? new Date(book.user_date_added) : null;
+    return bookDate && bookDate >= cutoffDate;
+  });
+}
+
+function calculateReadingVelocity(finishedBooks) {
+  if (finishedBooks.length === 0) {
+    return { booksPerMonth: 0, averageDaysBetweenBooks: 0, readingStreak: 0 };
+  }
+
+  // Sort by completion date
+  const sortedBooks = finishedBooks
+    .sort((a, b) => new Date(a.user_read_at) - new Date(b.user_read_at));
+
+  // Calculate books per month
+  const firstBook = new Date(sortedBooks[0].user_read_at);
+  const lastBook = new Date(sortedBooks[sortedBooks.length - 1].user_read_at);
+  const monthsDiff = Math.max(1, (lastBook - firstBook) / (1000 * 60 * 60 * 24 * 30));
+  const booksPerMonth = Math.round((finishedBooks.length / monthsDiff) * 10) / 10;
+
+  // Calculate average days between books
+  let totalDaysBetween = 0;
+  for (let i = 1; i < sortedBooks.length; i++) {
+    const prevDate = new Date(sortedBooks[i - 1].user_read_at);
+    const currDate = new Date(sortedBooks[i].user_read_at);
+    totalDaysBetween += (currDate - prevDate) / (1000 * 60 * 60 * 24);
+  }
+  const averageDaysBetweenBooks = sortedBooks.length > 1 ? 
+    Math.round(totalDaysBetween / (sortedBooks.length - 1)) : 0;
+
+  // Calculate current reading streak
+  const readingStreak = calculateReadingStreak(sortedBooks);
+
+  return {
+    booksPerMonth,
+    averageDaysBetweenBooks,
+    readingStreak,
+    totalFinished: finishedBooks.length,
+    readingPeriod: `${Math.round(monthsDiff)} months`
+  };
+}
+
+function calculateReadingStreak(sortedBooks) {
+  if (sortedBooks.length === 0) return 0;
+
+  const now = new Date();
+  let streak = 0;
+  let currentDate = new Date(now);
+
+  // Start from most recent book and work backwards
+  for (let i = sortedBooks.length - 1; i >= 0; i--) {
+    const bookDate = new Date(sortedBooks[i].user_read_at);
+    const daysDiff = (currentDate - bookDate) / (1000 * 60 * 60 * 24);
+
+    // If book was read within the last 14 days, continue streak
+    if (daysDiff <= 14) {
+      streak++;
+      currentDate = bookDate;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+function analyzeGenreTrends(finishedBooks, timeframe) {
+  const genreCount = {};
+  const monthlyGenres = {};
+
+  finishedBooks.forEach(book => {
+    if (book.genre) {
+      genreCount[book.genre] = (genreCount[book.genre] || 0) + 1;
+
+      // Track monthly trends
+      const month = new Date(book.user_read_at).toISOString().slice(0, 7);
+      if (!monthlyGenres[month]) monthlyGenres[month] = {};
+      monthlyGenres[month][book.genre] = (monthlyGenres[month][book.genre] || 0) + 1;
+    }
+  });
+
+  // Find trending genres (increasing in recent months)
+  const recentMonths = Object.keys(monthlyGenres).sort().slice(-3);
+  const trendingGenres = [];
+
+  Object.keys(genreCount).forEach(genre => {
+    const recentCounts = recentMonths.map(month => monthlyGenres[month]?.[genre] || 0);
+    const isIncreasing = recentCounts.length > 1 && 
+      recentCounts[recentCounts.length - 1] > recentCounts[0];
+    
+    if (isIncreasing) {
+      trendingGenres.push({
+        genre,
+        trend: 'increasing',
+        recentCount: recentCounts[recentCounts.length - 1]
+      });
+    }
+  });
+
+  return {
+    topGenres: Object.entries(genreCount)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([genre, count]) => ({ genre, count })),
+    trendingGenres: trendingGenres.slice(0, 3),
+    monthlyBreakdown: monthlyGenres,
+    diversity: Object.keys(genreCount).length
+  };
+}
+
+function analyzeAuthorTrends(finishedBooks, timeframe) {
+  const authorCount = {};
+  const rereadAuthors = {};
+
+  finishedBooks.forEach(book => {
+    if (book.author_name) {
+      authorCount[book.author_name] = (authorCount[book.author_name] || 0) + 1;
+      
+      if (authorCount[book.author_name] > 1) {
+        rereadAuthors[book.author_name] = authorCount[book.author_name];
+      }
+    }
+  });
+
+  return {
+    topAuthors: Object.entries(authorCount)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([author, count]) => ({ author, count })),
+    rereadAuthors: Object.entries(rereadAuthors)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([author, count]) => ({ author, count })),
+    authorDiversity: Object.keys(authorCount).length
+  };
+}
+
+function analyzeTemporalPatterns(finishedBooks) {
+  const dayOfWeek = {};
+  const monthOfYear = {};
+  const hourOfDay = {};
+
+  finishedBooks.forEach(book => {
+    const date = new Date(book.user_read_at);
+    
+    // Day of week pattern
+    const day = date.getDay();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = dayNames[day];
+    dayOfWeek[dayName] = (dayOfWeek[dayName] || 0) + 1;
+
+    // Month pattern
+    const month = date.getMonth();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthName = monthNames[month];
+    monthOfYear[monthName] = (monthOfYear[monthName] || 0) + 1;
+
+    // Hour pattern (if time info available)
+    const hour = date.getHours();
+    hourOfDay[hour] = (hourOfDay[hour] || 0) + 1;
+  });
+
+  return {
+    favoriteDay: Object.entries(dayOfWeek)
+      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'No data',
+    favoriteMonth: Object.entries(monthOfYear)
+      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'No data',
+    peakHour: Object.entries(hourOfDay)
+      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'No data',
+    patterns: {
+      dayOfWeek,
+      monthOfYear,
+      hourOfDay
+    }
+  };
+}
+
+function analyzeTbrQueue(allBooks) {
+  const tbrBooks = allBooks.filter(book => book.status === 'TBR');
+  const queueAges = tbrBooks.map(book => {
+    const addedDate = new Date(book.user_date_added);
+    const now = new Date();
+    return Math.floor((now - addedDate) / (1000 * 60 * 60 * 24));
+  });
+
+  const avgQueueAge = queueAges.length > 0 ? 
+    Math.round(queueAges.reduce((sum, age) => sum + age, 0) / queueAges.length) : 0;
+
+  const staleBooksThreshold = 180; // 6 months
+  const staleBooks = tbrBooks.filter(book => {
+    const addedDate = new Date(book.user_date_added);
+    const daysSinceAdded = (new Date() - addedDate) / (1000 * 60 * 60 * 24);
+    return daysSinceAdded > staleBooksThreshold;
+  });
+
+  return {
+    queueSize: tbrBooks.length,
+    averageAge: avgQueueAge,
+    staleBooks: staleBooks.length,
+    staleBooksThreshold,
+    queueGrowthRate: calculateQueueGrowthRate(allBooks)
+  };
+}
+
+function calculateQueueGrowthRate(allBooks) {
+  const oneMonthAgo = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
+  const recentAdditions = allBooks.filter(book => 
+    book.status === 'TBR' && 
+    book.user_date_added && 
+    new Date(book.user_date_added) >= oneMonthAgo
+  );
+  return recentAdditions.length;
+}
+
+function analyzeRatingTrends(finishedBooks) {
+  const ratedBooks = finishedBooks.filter(book => book.user_rating);
+  
+  if (ratedBooks.length === 0) {
+    return { averageRating: 0, ratingDistribution: {}, trend: 'No ratings available' };
+  }
+
+  const ratings = ratedBooks.map(book => book.user_rating);
+  const averageRating = Math.round((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) * 10) / 10;
+
+  const ratingDistribution = {};
+  ratings.forEach(rating => {
+    ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1;
+  });
+
+  // Analyze trend over time
+  const recentBooks = ratedBooks.slice(-10); // Last 10 rated books
+  const earlierBooks = ratedBooks.slice(0, Math.min(10, ratedBooks.length - 10));
+  
+  const recentAvg = recentBooks.length > 0 ? 
+    recentBooks.reduce((sum, book) => sum + book.user_rating, 0) / recentBooks.length : 0;
+  const earlierAvg = earlierBooks.length > 0 ? 
+    earlierBooks.reduce((sum, book) => sum + book.user_rating, 0) / earlierBooks.length : 0;
+
+  let trend = 'stable';
+  if (recentAvg > earlierAvg + 0.3) trend = 'increasing';
+  if (recentAvg < earlierAvg - 0.3) trend = 'decreasing';
+
+  return {
+    averageRating,
+    ratingDistribution,
+    trend,
+    totalRatedBooks: ratedBooks.length,
+    ratingPercentage: Math.round((ratedBooks.length / finishedBooks.length) * 100)
+  };
+}
+
+function generateTimeBasedInsights(finishedBooks) {
+  const insights = [];
+  const now = new Date();
+  
+  // Recent reading acceleration
+  const last30Days = finishedBooks.filter(book => {
+    const bookDate = new Date(book.user_read_at);
+    return (now - bookDate) <= (30 * 24 * 60 * 60 * 1000);
+  });
+  
+  if (last30Days.length >= 3) {
+    insights.push({
+      type: 'reading_acceleration',
+      message: `Reading momentum is strong - ${last30Days.length} books finished in the last 30 days!`,
+      level: 'positive'
+    });
+  }
+
+  // Genre diversification
+  const recentGenres = new Set(last30Days.map(book => book.genre).filter(Boolean));
+  if (recentGenres.size >= 3) {
+    insights.push({
+      type: 'genre_diversity',
+      message: `Great genre diversity lately - exploring ${recentGenres.size} different genres`,
+      level: 'positive'
+    });
+  }
+
+  // Reading drought detection
+  if (finishedBooks.length > 0) {
+    const lastBookDate = new Date(finishedBooks[finishedBooks.length - 1].user_read_at);
+    const daysSinceLastBook = (now - lastBookDate) / (1000 * 60 * 60 * 24);
+    
+    if (daysSinceLastBook > 14) {
+      insights.push({
+        type: 'reading_drought',
+        message: `It's been ${Math.floor(daysSinceLastBook)} days since your last finished book`,
+        level: 'caution'
+      });
+    }
+  }
+
+  return insights;
 }
 
 function extractReflectionHighlights(content, book) {
@@ -701,7 +1307,7 @@ function extractReflectionHighlights(content, book) {
   return highlights.slice(0, 3); // Limit to top 3 highlights per book
 }
 
-function generateWeeklyReportContent({ weekNumber, year, startDate, endDate, finishedThisWeek, stats, reflectionHighlights }) {
+function generateWeeklyReportContent({ weekNumber, year, startDate, endDate, finishedThisWeek, stats, reflectionHighlights, reflectionAnalytics, readingAnalytics }) {
   const formatDate = (date) => date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
   
   let content = `# Weekly Reading Report - Week ${weekNumber}, ${year}\n\n`;
@@ -829,15 +1435,168 @@ function generateWeeklyReportContent({ weekNumber, year, startDate, endDate, fin
     }
   }
   
-  // Reflection highlights
-  if (reflectionHighlights.length > 0) {
-    content += `## 💭 Reflection Highlights\n\n`;
-    reflectionHighlights.forEach(({ book, author, highlights }) => {
-      content += `### ${book} by ${author}\n`;
-      highlights.forEach(highlight => {
-        content += `**${highlight.section}**: ${highlight.content}\n\n`;
+  // Enhanced reflection analysis
+  if (reflectionAnalytics && Object.keys(reflectionAnalytics).length > 0) {
+    content += `## 📝 Reflection Analytics\n\n`;
+    
+    // Overall reflection stats
+    content += `### 📊 Reflection Status Overview\n\n`;
+    content += `- **Total Reflection Files**: ${reflectionAnalytics.totalReflections}\n`;
+    content += `- **Completed Reflections**: ${reflectionAnalytics.completedReflections}\n`;
+    content += `- **Pending Reflections**: ${reflectionAnalytics.pendingReflections}\n`;
+    content += `- **Average Completeness**: ${reflectionAnalytics.averageCompleteness}%\n\n`;
+    
+    // Sentiment analysis
+    if (reflectionAnalytics.completedReflections > 0) {
+      content += `### 😊 Reading Sentiment Distribution\n\n`;
+      content += `- **Positive**: ${reflectionAnalytics.sentimentDistribution.positive} books\n`;
+      content += `- **Neutral**: ${reflectionAnalytics.sentimentDistribution.neutral} books\n`;
+      content += `- **Negative**: ${reflectionAnalytics.sentimentDistribution.negative} books\n\n`;
+      
+      // Recommendation patterns
+      content += `### 👍 Recommendation Patterns\n\n`;
+      content += `- **Would Recommend**: ${reflectionAnalytics.recommendationPatterns.positive} books\n`;
+      content += `- **Would Not Recommend**: ${reflectionAnalytics.recommendationPatterns.negative} books\n`;
+      content += `- **No Clear Recommendation**: ${reflectionAnalytics.recommendationPatterns.none} books\n\n`;
+      
+      // Engagement levels
+      content += `### 📈 Reflection Engagement\n\n`;
+      content += `- **High Engagement**: ${reflectionAnalytics.engagementLevels.high} detailed reflections\n`;
+      content += `- **Medium Engagement**: ${reflectionAnalytics.engagementLevels.medium} moderate reflections\n`;
+      content += `- **Low Engagement**: ${reflectionAnalytics.engagementLevels.low} brief reflections\n\n`;
+    }
+    
+    // Pending reflections that need attention
+    if (reflectionAnalytics.pendingBooks.length > 0) {
+      content += `### ⏳ Books Needing Reflections\n\n`;
+      reflectionAnalytics.pendingBooks.slice(0, 5).forEach(book => {
+        content += `- **${book.title}** by ${book.author}\n`;
       });
+      if (reflectionAnalytics.pendingBooks.length > 5) {
+        content += `- ...and ${reflectionAnalytics.pendingBooks.length - 5} more books\n`;
+      }
+      content += '\n';
+    }
+    
+    // Top complete reflections
+    if (reflectionAnalytics.topCompleteReflections.length > 0) {
+      content += `### 🌟 Most Complete Reflections\n\n`;
+      reflectionAnalytics.topCompleteReflections.slice(0, 3).forEach((reflection, index) => {
+        content += `${index + 1}. **${reflection.book}** by ${reflection.author} (${reflection.completeness}% complete, ${reflection.wordCount} words)\n`;
+      });
+      content += '\n';
+    }
+  }
+  
+  // Enhanced reflection highlights
+  if (reflectionHighlights.length > 0) {
+    content += `## 💭 This Week's Reflection Highlights\n\n`;
+    reflectionHighlights.forEach(({ book, author, highlights, completeness, sentiment, recommendation }) => {
+      content += `### ${book} by ${author}\n`;
+      if (completeness) {
+        content += `**Reflection Status**: ${completeness}% complete, ${sentiment} sentiment`;
+        if (recommendation) {
+          content += `, ${recommendation} recommendation`;
+        }
+        content += '\n\n';
+      }
+      if (highlights && highlights.length > 0) {
+        highlights.forEach(highlight => {
+          content += `**${highlight.section}**: ${highlight.content}\n\n`;
+        });
+      } else {
+        content += `*Reflection file exists but needs completion*\n\n`;
+      }
     });
+  }
+  
+  // Advanced Reading Analytics & Trends
+  if (readingAnalytics && Object.keys(readingAnalytics).length > 0) {
+    content += `## 📈 Reading Analytics & Trends\n\n`;
+    
+    // Reading Velocity
+    if (readingAnalytics.readingVelocity) {
+      const velocity = readingAnalytics.readingVelocity;
+      content += `### 🚀 Reading Velocity\n\n`;
+      content += `- **Reading Pace**: ${velocity.booksPerMonth} books/month over ${velocity.readingPeriod}\n`;
+      content += `- **Average Gap**: ${velocity.averageDaysBetweenBooks} days between books\n`;
+      content += `- **Current Streak**: ${velocity.readingStreak} books in recent reading streak\n`;
+      content += `- **Total Finished**: ${velocity.totalFinished} books\n\n`;
+    }
+    
+    // Genre Trends
+    if (readingAnalytics.genreTrends) {
+      const genres = readingAnalytics.genreTrends;
+      content += `### 🎭 Genre Analysis\n\n`;
+      content += `**Top Genres**: `;
+      content += genres.topGenres.map(g => `${g.genre} (${g.count})`).join(', ') + '\n';
+      content += `**Genre Diversity**: ${genres.diversity} different genres explored\n`;
+      
+      if (genres.trendingGenres.length > 0) {
+        content += `**Trending**: `;
+        content += genres.trendingGenres.map(g => `${g.genre} ↗️`).join(', ') + '\n';
+      }
+      content += '\n';
+    }
+    
+    // Author Trends
+    if (readingAnalytics.authorTrends) {
+      const authors = readingAnalytics.authorTrends;
+      content += `### ✍️ Author Patterns\n\n`;
+      content += `**Top Authors**: `;
+      content += authors.topAuthors.slice(0, 3).map(a => `${a.author} (${a.count})`).join(', ') + '\n';
+      content += `**Author Diversity**: ${authors.authorDiversity} unique authors\n`;
+      
+      if (authors.rereadAuthors.length > 0) {
+        content += `**Favorite Authors**: `;
+        content += authors.rereadAuthors.map(a => `${a.author} (${a.count} books)`).join(', ') + '\n';
+      }
+      content += '\n';
+    }
+    
+    // Temporal Patterns
+    if (readingAnalytics.temporalPatterns) {
+      const temporal = readingAnalytics.temporalPatterns;
+      content += `### ⏰ Reading Patterns\n\n`;
+      content += `- **Favorite Reading Day**: ${temporal.favoriteDay}\n`;
+      content += `- **Most Active Month**: ${temporal.favoriteMonth}\n`;
+      if (temporal.peakHour !== 'No data') {
+        content += `- **Peak Reading Hour**: ${temporal.peakHour}:00\n`;
+      }
+      content += '\n';
+    }
+    
+    // TBR Queue Analytics
+    if (readingAnalytics.queueAnalytics) {
+      const queue = readingAnalytics.queueAnalytics;
+      content += `### 📚 TBR Queue Health\n\n`;
+      content += `- **Queue Size**: ${queue.queueSize} books\n`;
+      content += `- **Average Age**: ${queue.averageAge} days in queue\n`;
+      content += `- **Recent Additions**: ${queue.queueGrowthRate} books added this month\n`;
+      if (queue.staleBooks > 0) {
+        content += `- **⚠️ Stale Books**: ${queue.staleBooks} books older than ${Math.round(queue.staleBooksThreshold/30)} months\n`;
+      }
+      content += '\n';
+    }
+    
+    // Rating Trends
+    if (readingAnalytics.ratingTrends && readingAnalytics.ratingTrends.totalRatedBooks > 0) {
+      const ratings = readingAnalytics.ratingTrends;
+      content += `### ⭐ Rating Insights\n\n`;
+      content += `- **Average Rating**: ${ratings.averageRating}/5 stars\n`;
+      content += `- **Rating Coverage**: ${ratings.ratingPercentage}% of finished books rated\n`;
+      content += `- **Rating Trend**: ${ratings.trend === 'increasing' ? '📈 Increasing' : 
+                     ratings.trend === 'decreasing' ? '📉 Decreasing' : '➡️ Stable'}\n\n`;
+    }
+    
+    // Time-based Insights
+    if (readingAnalytics.timeBasedInsights && readingAnalytics.timeBasedInsights.length > 0) {
+      content += `### 💡 Reading Insights\n\n`;
+      readingAnalytics.timeBasedInsights.forEach(insight => {
+        const emoji = insight.level === 'positive' ? '🎉' : insight.level === 'caution' ? '⚠️' : 'ℹ️';
+        content += `${emoji} ${insight.message}\n\n`;
+      });
+    }
   }
   
   content += `---\n\n`;
@@ -1492,6 +2251,102 @@ app.post('/api/match-classification', async (req, res) => {
   } catch (error) {
     console.error('Error in classification matching:', error);
     res.status(500).json({ error: 'Matching failed' });
+  }
+});
+
+// POST /api/backfill - Execute intelligent backfill strategy
+app.post('/api/backfill', async (req, res) => {
+  try {
+    const { BackfillStrategy } = require('./backfill-strategy');
+    const strategy = new BackfillStrategy();
+    
+    const {
+      dryRun = false,
+      confidence = 0.7,
+      promptLimit = 20,
+      skipPrompts = false,
+      phase = 'all' // 'classification', 'patterns', 'prompts', 'all'
+    } = req.body;
+    
+    console.log(`🚀 Starting backfill strategy: ${phase} phase`);
+    
+    await strategy.initialize();
+    const books = await strategy.loadBooks();
+    
+    let results = {
+      phase,
+      dryRun,
+      stats: strategy.backfillStats,
+      booksProcessed: 0,
+      prompts: []
+    };
+    
+    switch (phase) {
+      case 'classification':
+        results.booksProcessed = await strategy.classificationBackfill(books, { dryRun, confidence });
+        break;
+        
+      case 'patterns':
+        results.booksProcessed = await strategy.patternBasedBackfill(books, { dryRun });
+        break;
+        
+      case 'prompts':
+        results.prompts = await strategy.generateUserPrompts(books, { limit: promptLimit });
+        break;
+        
+      case 'all':
+      default:
+        const fullResults = await strategy.executeFullBackfill({
+          dryRun, confidence, promptLimit, skipPrompts
+        });
+        results = { ...results, ...fullResults };
+        break;
+    }
+    
+    res.json({
+      success: true,
+      message: `Backfill ${phase} phase completed`,
+      results,
+      recommendations: phase === 'all' ? results.summary?.nextSteps : [],
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Backfill error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Backfill process failed'
+    });
+  }
+});
+
+// GET /api/backfill/analysis - Get field completeness analysis
+app.get('/api/backfill/analysis', async (req, res) => {
+  try {
+    const { analyzeFieldCompleteness } = require('./analyze-field-completeness');
+    await analyzeFieldCompleteness();
+    
+    // Read the generated analysis file
+    const reportPath = path.join(__dirname, '../reports/field-completeness-analysis.json');
+    const analysisData = await fs.readFile(reportPath, 'utf-8');
+    const analysis = JSON.parse(analysisData);
+    
+    res.json({
+      success: true,
+      message: 'Field completeness analysis completed',
+      analysis: analysis,
+      recommendations: analysis.summary.recommendedActions,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Analysis error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Field completeness analysis failed'
+    });
   }
 });
 
