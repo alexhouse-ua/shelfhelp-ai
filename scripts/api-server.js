@@ -1889,6 +1889,43 @@ app.patch('/api/books/:id', async (req, res) => {
   }
 });
 
+// GET /api/books/unclassified - Get books missing classification data
+app.get('/api/books/unclassified', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    const unclassifiedBooks = books.filter(book => 
+      !book.genre || !book.subgenre || !book.tropes || !book.spice_level
+    );
+    
+    res.json({
+      success: true,
+      message: `Found ${unclassifiedBooks.length} books needing classification`,
+      books: unclassifiedBooks.map(book => ({
+        id: book.goodreads_id || book.guid,
+        title: book.title,
+        author_name: book.author_name,
+        series: book.series,
+        description: book.description,
+        missing_fields: {
+          genre: !book.genre,
+          subgenre: !book.subgenre,
+          tropes: !book.tropes,
+          spice_level: !book.spice_level
+        }
+      })),
+      count: unclassifiedBooks.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching unclassified books:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to fetch unclassified books'
+    });
+  }
+});
+
 // GET /api/books/:id - Get a specific book
 app.get('/api/books/:id', async (req, res) => {
   try {
@@ -2346,6 +2383,189 @@ app.get('/api/backfill/analysis', async (req, res) => {
       success: false,
       error: error.message,
       message: 'Field completeness analysis failed'
+    });
+  }
+});
+
+// AI-Enhanced Classification Endpoints
+
+// POST /api/ai-classify - AI classification with web search integration
+app.post('/api/ai-classify', async (req, res) => {
+  try {
+    const { title, author, series, description, webSearch = false, sources = [] } = req.body;
+    
+    if (!title || !author) {
+      return res.status(400).json({
+        success: false,
+        error: 'Title and author are required',
+        message: 'Please provide both title and author for classification'
+      });
+    }
+    
+    // This endpoint is designed to be called by AI assistants
+    // The AI assistant should perform web searches and provide results
+    const response = {
+      success: true,
+      message: 'AI classification endpoint ready',
+      book: { title, author, series, description },
+      instructions: {
+        webSearch: webSearch,
+        recommendedSources: sources.length > 0 ? sources : ['goodreads', 'amazon', 'publisher'],
+        searchPatterns: [
+          `"${title}" by ${author} genre classification`,
+          `"${title}" ${author} book review genre`,
+          `"${title}" book summary tropes`,
+          `"${title}" spice level content warning`,
+          `books similar to "${title}" genre`
+        ],
+        fuzzyMatchEndpoint: '/api/match-classification',
+        updateEndpoint: `/api/books/${req.body.bookId || 'BOOK_ID'}`,
+        confidenceThreshold: 0.7
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    // If fuzzy matcher is ready, provide available classifications
+    if (fuzzyMatcherReady) {
+      const classifications = await readClassificationsFile();
+      response.availableClassifications = {
+        genres: classifications.Genres?.map(g => g.name) || [],
+        subgenres: classifications.Genres?.flatMap(g => g.subgenres || []) || [],
+        tropes: classifications.Tropes || [],
+        spice_levels: classifications.Spice_Levels || []
+      };
+    }
+    
+    res.json(response);
+  } catch (error) {
+    console.error('AI classify error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'AI classification endpoint failed'
+    });
+  }
+});
+
+// POST /api/ai-research - AI research endpoint for book analysis
+app.post('/api/ai-research', async (req, res) => {
+  try {
+    const { bookId, findings, sources, confidence } = req.body;
+    
+    if (!bookId || !findings) {
+      return res.status(400).json({
+        success: false,
+        error: 'Book ID and findings are required',
+        message: 'Please provide book ID and research findings'
+      });
+    }
+    
+    const books = await readBooksFile();
+    const bookIndex = books.findIndex(b => b.goodreads_id === bookId || b.guid === bookId);
+    
+    if (bookIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Book not found',
+        message: `Book with ID ${bookId} not found`
+      });
+    }
+    
+    const book = books[bookIndex];
+    
+    // Validate findings against fuzzy matcher if available
+    let validationResults = {};
+    if (fuzzyMatcherReady && findings) {
+      try {
+        if (findings.genre) {
+          const genreMatch = fuzzyMatcher.findBestMatch(findings.genre, 'genre');
+          validationResults.genre = genreMatch;
+        }
+        if (findings.subgenre) {
+          const subgenreMatch = fuzzyMatcher.findBestMatch(findings.subgenre, 'subgenre');
+          validationResults.subgenre = subgenreMatch;
+        }
+        if (findings.tropes && Array.isArray(findings.tropes)) {
+          validationResults.tropes = findings.tropes.map(trope => 
+            fuzzyMatcher.findBestMatch(trope, 'trope')
+          );
+        }
+      } catch (error) {
+        console.warn('Fuzzy matching validation failed:', error.message);
+      }
+    }
+    
+    // Prepare classification update
+    const classificationUpdate = {
+      ...(validationResults.genre?.confidence > 0.7 && { genre: validationResults.genre.match }),
+      ...(validationResults.subgenre?.confidence > 0.7 && { subgenre: validationResults.subgenre.match }),
+      ...(validationResults.tropes && {
+        tropes: validationResults.tropes
+          .filter(t => t.confidence > 0.7)
+          .map(t => t.match)
+      }),
+      ...(findings.spice_level && { spice_level: findings.spice_level }),
+      classification_source: 'AI Research',
+      classification_confidence: confidence || 0,
+      classification_sources: sources || [],
+      classification_timestamp: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      message: 'AI research analysis completed',
+      book: {
+        id: bookId,
+        title: book.title,
+        author: book.author_name
+      },
+      findings: findings,
+      validation: validationResults,
+      suggestedUpdate: classificationUpdate,
+      autoUpdateRecommended: confidence > 0.8,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('AI research error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'AI research analysis failed'
+    });
+  }
+});
+
+// GET /api/backfill/status - Monitor backfill progress
+app.get('/api/backfill/status', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    const total = books.length;
+    const classified = books.filter(book => 
+      book.genre && book.subgenre && book.tropes && book.spice_level
+    ).length;
+    
+    const completion = total > 0 ? (classified / total * 100).toFixed(1) : 0;
+    
+    res.json({
+      success: true,
+      message: 'Backfill status retrieved',
+      status: {
+        total_books: total,
+        classified_books: classified,
+        unclassified_books: total - classified,
+        completion_percentage: completion,
+        fuzzy_matcher_ready: fuzzyMatcherReady,
+        firebase_enabled: firebaseEnabled
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Status check error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to get backfill status'
     });
   }
 });
