@@ -97,6 +97,9 @@ shelfhelp-ai/
 - **Testing**: Validate changes with representative data
 - **Audit Trail**: All changes logged in `history/*.jsonl`
 
+### Summary Instructions
+- when you are using compact, focus on tasks complete, decisions made, code changes, completed and outstanding tests and issues, and recommended next steps.
+
 ## Build/Test Commands
 
 ```bash

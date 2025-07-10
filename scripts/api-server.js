@@ -97,7 +97,7 @@ function validateBookFields(bookData, classifications, options = {}) {
   const matched = {};
   
   // Validate status (keep strict validation)
-  const validStatuses = ['TBR', 'Reading', 'Finished', 'DNF', 'Archived'];
+  const validStatuses = ['TBR', 'Reading', 'Read', 'Finished', 'DNF', 'Archived'];
   if (bookData.status && !validStatuses.includes(bookData.status)) {
     errors.push(`Invalid status: ${bookData.status}. Must be one of: ${validStatuses.join(', ')}`);
   }
@@ -356,8 +356,8 @@ async function generateWeeklyReport(weekOffset = 0) {
     
     // Filter books finished this week
     const finishedThisWeek = books.filter(book => {
-      if (book.status !== 'Finished' || !book.completed_at) return false;
-      const completedDate = new Date(book.completed_at);
+      if ((book.status !== 'Finished' && book.status !== 'Read') || !book.user_read_at) return false;
+      const completedDate = new Date(book.user_read_at);
       return completedDate >= startDate && completedDate <= endDate;
     });
     
@@ -444,7 +444,8 @@ function calculateWeeklyStats(allBooks, finishedThisWeek) {
     topGenres: {},
     topAuthors: {},
     topTropes: {},
-    statusBreakdown: {}
+    statusBreakdown: {},
+    classificationInsights: {}
   };
   
   // Calculate total pages for finished books this week
@@ -486,7 +487,145 @@ function calculateWeeklyStats(allBooks, finishedThisWeek) {
     stats.statusBreakdown[status] = (stats.statusBreakdown[status] || 0) + 1;
   });
   
+  // Enhanced fuzzy classification analysis
+  if (fuzzyMatcherReady) {
+    stats.classificationInsights = analyzeBooksForClassificationOpportunities(allBooks, finishedThisWeek);
+  }
+  
   return stats;
+}
+
+// Analyze books for classification opportunities using fuzzy matching
+function analyzeBooksForClassificationOpportunities(allBooks, finishedThisWeek) {
+  const insights = {
+    totalAnalyzed: allBooks.length,
+    missingClassification: {
+      total: 0,
+      genre: 0,
+      subgenre: 0,
+      tropes: 0,
+      spice: 0
+    },
+    improvementOpportunities: [],
+    weeklyFinishedNeedsWork: [],
+    topMissingFields: {},
+    classificationCompleteness: 0
+  };
+
+  let totalClassifiableFields = 0;
+  let completedFields = 0;
+
+  allBooks.forEach(book => {
+    const analysis = analyzeBookClassification(book);
+    
+    // Count total and completed classification fields
+    totalClassifiableFields += 4; // genre, subgenre, tropes, spice
+    completedFields += analysis.completedFields;
+    
+    // Track missing classifications
+    if (!book.genre) insights.missingClassification.genre++;
+    if (!book.subgenre) insights.missingClassification.subgenre++;
+    if (!book.tropes || book.tropes.length === 0) insights.missingClassification.tropes++;
+    if (!book.spice) insights.missingClassification.spice++;
+    
+    if (analysis.missingFields > 0) {
+      insights.missingClassification.total++;
+      
+      // If this book needs work and was finished this week, highlight it
+      if (finishedThisWeek.includes(book)) {
+        insights.weeklyFinishedNeedsWork.push({
+          title: book.title,
+          author: book.author_name,
+          missing: analysis.missing,
+          suggestions: analysis.suggestions
+        });
+      }
+      
+      // Track improvement opportunities for highly incomplete books
+      if (analysis.missingFields >= 3) {
+        insights.improvementOpportunities.push({
+          title: book.title,
+          author: book.author_name,
+          goodreads_id: book.goodreads_id,
+          missing: analysis.missing,
+          suggestions: analysis.suggestions,
+          priority: analysis.missingFields >= 4 ? 'high' : 'medium'
+        });
+      }
+    }
+    
+    // Track which fields are missing most often
+    analysis.missing.forEach(field => {
+      insights.topMissingFields[field] = (insights.topMissingFields[field] || 0) + 1;
+    });
+  });
+
+  // Calculate overall completeness percentage
+  insights.classificationCompleteness = Math.round((completedFields / totalClassifiableFields) * 100);
+
+  // Sort improvement opportunities by priority and limit to top 10
+  insights.improvementOpportunities = insights.improvementOpportunities
+    .sort((a, b) => {
+      if (a.priority === 'high' && b.priority !== 'high') return -1;
+      if (b.priority === 'high' && a.priority !== 'high') return 1;
+      return b.missing.length - a.missing.length;
+    })
+    .slice(0, 10);
+
+  return insights;
+}
+
+// Analyze a single book for classification completeness
+function analyzeBookClassification(book) {
+  const analysis = {
+    completedFields: 0,
+    missingFields: 0,
+    missing: [],
+    suggestions: {}
+  };
+
+  // Check core classification fields
+  if (book.genre) {
+    analysis.completedFields++;
+  } else {
+    analysis.missingFields++;
+    analysis.missing.push('genre');
+    
+    // Try to suggest genre from description/title if fuzzy matcher is available
+    if (fuzzyMatcherReady && (book.book_description || book.title)) {
+      const genreMatch = fuzzyMatcher.classifyBook({
+        title: book.title,
+        description: book.book_description,
+        author: book.author_name
+      });
+      if (genreMatch.matched.genre) {
+        analysis.suggestions.genre = genreMatch.matched.genre;
+      }
+    }
+  }
+
+  if (book.subgenre) {
+    analysis.completedFields++;
+  } else {
+    analysis.missingFields++;
+    analysis.missing.push('subgenre');
+  }
+
+  if (book.tropes && book.tropes.length > 0) {
+    analysis.completedFields++;
+  } else {
+    analysis.missingFields++;
+    analysis.missing.push('tropes');
+  }
+
+  if (book.spice) {
+    analysis.completedFields++;
+  } else {
+    analysis.missingFields++;
+    analysis.missing.push('spice');
+  }
+
+  return analysis;
 }
 
 async function getReflectionHighlights(finishedBooks) {
@@ -604,7 +743,7 @@ function generateWeeklyReportContent({ weekNumber, year, startDate, endDate, fin
       if (book.tropes && book.tropes.length > 0) {
         content += `**Tropes**: ${book.tropes.join(', ')}\n`;
       }
-      content += `**Completed**: ${new Date(book.completed_at).toLocaleDateString()}\n\n`;
+      content += `**Completed**: ${new Date(book.user_read_at).toLocaleDateString()}\n\n`;
     });
   }
   
@@ -642,6 +781,52 @@ function generateWeeklyReportContent({ weekNumber, year, startDate, endDate, fin
         content += `- **${trope}**: ${count} book${count > 1 ? 's' : ''}\n`;
       });
     content += '\n';
+  }
+  
+  // Classification insights (new feature)
+  if (stats.classificationInsights && Object.keys(stats.classificationInsights).length > 0) {
+    const insights = stats.classificationInsights;
+    content += `## 🏷️ Classification Insights\n\n`;
+    
+    // Overall completeness
+    content += `### 📊 Classification Completeness: ${insights.classificationCompleteness}%\n\n`;
+    content += `- **Books Analyzed**: ${insights.totalAnalyzed}\n`;
+    content += `- **Books Missing Classifications**: ${insights.missingClassification.total}\n\n`;
+    
+    // Missing field breakdown
+    if (Object.keys(insights.topMissingFields).length > 0) {
+      content += `### 📋 Most Common Missing Classifications\n\n`;
+      Object.entries(insights.topMissingFields)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 4)
+        .forEach(([field, count]) => {
+          content += `- **${field.charAt(0).toUpperCase() + field.slice(1)}**: ${count} books\n`;
+        });
+      content += '\n';
+    }
+    
+    // Books finished this week that need classification work
+    if (insights.weeklyFinishedNeedsWork.length > 0) {
+      content += `### 📚 Recently Finished Books Needing Classification\n\n`;
+      insights.weeklyFinishedNeedsWork.forEach(book => {
+        content += `**${book.title}** by ${book.author}\n`;
+        content += `Missing: ${book.missing.join(', ')}\n`;
+        if (Object.keys(book.suggestions).length > 0) {
+          content += `Suggestions: ${Object.entries(book.suggestions).map(([field, value]) => `${field}: ${value}`).join(', ')}\n`;
+        }
+        content += '\n';
+      });
+    }
+    
+    // Top improvement opportunities
+    if (insights.improvementOpportunities.length > 0) {
+      content += `### 🎯 Priority Classification Opportunities\n\n`;
+      insights.improvementOpportunities.slice(0, 5).forEach(book => {
+        content += `- **${book.title}** by ${book.author} (${book.priority} priority)\n`;
+        content += `  Missing: ${book.missing.join(', ')}\n`;
+      });
+      content += '\n';
+    }
   }
   
   // Reflection highlights
@@ -826,7 +1011,7 @@ app.post('/api/books', async (req, res) => {
       status,
       queue_position: status === 'TBR' ? books.filter(b => b.status === 'TBR').length + 1 : null,
       updated_at: new Date().toISOString(),
-      added_at: new Date().toISOString(),
+      user_date_added: new Date().toISOString(),
       ...bookData
     };
     
@@ -903,10 +1088,10 @@ app.patch('/api/books/:id', async (req, res) => {
         books[bookIndex].queue_position = null;
       }
       
-      // Create reflection file when book is marked as 'Finished'
-      if (updates.status === 'Finished') {
+      // Create reflection file when book is marked as 'Finished' or 'Read'
+      if (updates.status === 'Finished' || updates.status === 'Read') {
         books[bookIndex].reflection_pending = true;
-        books[bookIndex].completed_at = new Date().toISOString();
+        books[bookIndex].user_read_at = new Date().toISOString();
         
         // Create reflection file asynchronously
         createReflectionFile(books[bookIndex]).then(reflectionResult => {
@@ -1075,7 +1260,7 @@ async function generateReport(books, type, date) {
   const stats = {
     total_books: books.length,
     period_updates: periodBooks.length,
-    finished_books: periodBooks.filter(b => b.status === 'Finished').length,
+    finished_books: periodBooks.filter(b => b.status === 'Finished' || b.status === 'Read').length,
     tbr_books: books.filter(b => b.status === 'TBR').length,
     reading_books: books.filter(b => b.status === 'Reading').length,
     genres: {},

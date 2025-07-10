@@ -150,8 +150,6 @@ All endpoints return ISO‑8601 timestamps and follow REST semantics.  The Orche
 
 ## **5 — Comprehensive Field Dictionary (Unified, Authoritative)**
 
-Below, all individual fields from the previous “5A” and “5B” tables are regrouped under their appropriate **Domain Category**. This single dictionary now supersedes earlier partial tables.
-
 ### 5.1 Identifiers & Metadata
 
 | Field                 | Type         | Description                                                        |
@@ -226,8 +224,6 @@ Below, all individual fields from the previous “5A” and “5B” tables are 
 | **goal\_year**         | int/null     | Calendar year auto‑filled from `user_read_at` or current date when finished. |
 
 > **Validation:** Enumerations and allowed values are centrally defined in `classifications.yaml`. Numeric fields default to `null` and are cast during ETL jobs.
-
----
 
 ---
 

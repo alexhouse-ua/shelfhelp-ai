@@ -1,0 +1,2644 @@
+{
+  "timestamp": "2025-07-10T18:52:11.902Z",
+  "stats": {
+    "totalBooks": 504,
+    "exactMatches": 0,
+    "similarMatches": 93,
+    "uniqueBooks": 323,
+    "duplicatesFound": 93
+  },
+  "duplicateGroups": [
+    {
+      "primary": {
+        "title": "Heartless (Chestnut Springs, #2)",
+        "book_title": "Heartless",
+        "author": "Elsie Silver",
+        "goodreads_id": "7299605122",
+        "user_rating": null,
+        "user_read_at": "2025-02-08T00:00:00.000Z",
+        "index": 5
+      },
+      "duplicates": [
+        {
+          "title": "Heartless (Chestnut Springs, #2)",
+          "book_title": "Heartless",
+          "author": "Elsie Silver",
+          "goodreads_id": "61373532",
+          "user_rating": 4,
+          "user_read_at": "2025-02-08T06:00:00.000Z",
+          "index": 408,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Daydream (Maple Hills, #3)",
+        "book_title": "Daydream",
+        "author": "Hannah  Grace",
+        "goodreads_id": "7312636222",
+        "user_rating": null,
+        "user_read_at": "2025-06-19T00:00:00.000Z",
+        "index": 10
+      },
+      "duplicates": [
+        {
+          "title": "Daydream (Maple Hills, #3)",
+          "book_title": "Daydream",
+          "author": "Hannah  Grace",
+          "goodreads_id": "199897904",
+          "user_rating": 2,
+          "user_read_at": "2025-06-19T05:00:00.000Z",
+          "index": 502,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Trust Me Always (Boys of Avix, #3)",
+        "book_title": "Trust Me Always",
+        "author": "Meagan Brandy",
+        "goodreads_id": "7668652235",
+        "user_rating": null,
+        "user_read_at": "2025-06-20T00:00:00.000Z",
+        "index": 11
+      },
+      "duplicates": [
+        {
+          "title": "Trust Me Always (Boys of Avix, #3)",
+          "book_title": "Trust Me Always",
+          "author": "Meagan Brandy",
+          "goodreads_id": "220237305",
+          "user_rating": 3,
+          "user_read_at": "2025-06-20T05:00:00.000Z",
+          "index": 503,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Great Big Beautiful Life",
+        "book_title": "Great Big Beautiful Life",
+        "author": "Emily Henry",
+        "goodreads_id": "7669830746",
+        "user_rating": null,
+        "user_read_at": null,
+        "index": 12
+      },
+      "duplicates": [
+        {
+          "title": "Great Big Beautiful Life",
+          "book_title": "Great Big Beautiful Life",
+          "author": "Emily Henry",
+          "goodreads_id": "7299610673",
+          "user_rating": null,
+          "user_read_at": "2025-05-19T00:00:00.000Z",
+          "index": 32,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        },
+        {
+          "title": "Great Big Beautiful Life",
+          "book_title": "Great Big Beautiful Life",
+          "author": "Emily Henry",
+          "goodreads_id": "218572920",
+          "user_rating": 5,
+          "user_read_at": "2025-05-19T05:00:00.000Z",
+          "index": 482,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Wildfire (Maple Hills, #2)",
+        "book_title": "Wildfire",
+        "author": "Hannah  Grace",
+        "goodreads_id": "7657379307",
+        "user_rating": null,
+        "user_read_at": "2025-06-17T00:00:00.000Z",
+        "index": 13
+      },
+      "duplicates": [
+        {
+          "title": "Wildfire (Maple Hills, #2)",
+          "book_title": "Wildfire",
+          "author": "Hannah  Grace",
+          "goodreads_id": "111172922",
+          "user_rating": 3,
+          "user_read_at": "2025-06-17T05:00:00.000Z",
+          "index": 501,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Not Another Love Song",
+        "book_title": "Not Another Love Song",
+        "author": "Julie  Soto",
+        "goodreads_id": "7411311838",
+        "user_rating": null,
+        "user_read_at": "2025-06-15T00:00:00.000Z",
+        "index": 14
+      },
+      "duplicates": [
+        {
+          "title": "Not Another Love Song",
+          "book_title": "Not Another Love Song",
+          "author": "Julie  Soto",
+          "goodreads_id": "201636084",
+          "user_rating": 4,
+          "user_read_at": "2025-06-15T05:00:00.000Z",
+          "index": 500,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Tomorrow, and Tomorrow, and Tomorrow",
+        "book_title": "Tomorrow, and Tomorrow, and Tomorrow",
+        "author": "Gabrielle Zevin",
+        "goodreads_id": "7631222575",
+        "user_rating": null,
+        "user_read_at": "2025-06-13T00:00:00.000Z",
+        "index": 15
+      },
+      "duplicates": [
+        {
+          "title": "Tomorrow, and Tomorrow, and Tomorrow",
+          "book_title": "Tomorrow, and Tomorrow, and Tomorrow",
+          "author": "Gabrielle Zevin",
+          "goodreads_id": "77262337",
+          "user_rating": 5,
+          "user_read_at": "2025-06-13T05:00:00.000Z",
+          "index": 499,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Caught Up: Into Darkness Trilogy (Into Darkness Series)",
+        "book_title": "Caught Up: Into Darkness Trilogy",
+        "author": "Navessa Allen",
+        "goodreads_id": "7299611578",
+        "user_rating": null,
+        "user_read_at": "2025-06-11T00:00:00.000Z",
+        "index": 16
+      },
+      "duplicates": [
+        {
+          "title": "Caught Up: Into Darkness Trilogy (Into Darkness Series)",
+          "book_title": "Caught Up: Into Darkness Trilogy",
+          "author": "Navessa Allen",
+          "goodreads_id": "220237227",
+          "user_rating": 4,
+          "user_read_at": "2025-06-11T05:00:00.000Z",
+          "index": 498,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Remember Me This Way (The Sound of Us #3)",
+        "book_title": "Remember Me This Way",
+        "author": "C.R. Jane",
+        "goodreads_id": "7638817305",
+        "user_rating": null,
+        "user_read_at": "2025-06-08T00:00:00.000Z",
+        "index": 17
+      },
+      "duplicates": [
+        {
+          "title": "Remember Us This Way (The Sound of Us, #1)",
+          "book_title": "Remember Us This Way",
+          "author": "C.R. Jane",
+          "goodreads_id": "7636577200",
+          "user_rating": null,
+          "user_read_at": "2025-06-08T00:00:00.000Z",
+          "index": 19,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 0.9605263157894737,
+            "reason": "Title: 92.1%, Author: 100.0%",
+            "titleSimilarity": 0.9210526315789473,
+            "authorSimilarity": 1
+          }
+        },
+        {
+          "title": "Remember Me This Way (The Sound of Us #3)",
+          "book_title": "Remember Me This Way",
+          "author": "C.R. Jane",
+          "goodreads_id": "48498018",
+          "user_rating": 3,
+          "user_read_at": "2025-06-08T05:00:00.000Z",
+          "index": 495,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        },
+        {
+          "title": "Remember Us This Way (The Sound of Us, #1)",
+          "book_title": "Remember Us This Way",
+          "author": "C.R. Jane",
+          "goodreads_id": "43693948",
+          "user_rating": 3,
+          "user_read_at": "2025-06-08T05:00:00.000Z",
+          "index": 497,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 0.9605263157894737,
+            "reason": "Title: 92.1%, Author: 100.0%",
+            "titleSimilarity": 0.9210526315789473,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Remember You This Way (The Sound of Us #2)",
+        "book_title": "Remember You This Way",
+        "author": "C.R. Jane",
+        "goodreads_id": "7638132777",
+        "user_rating": null,
+        "user_read_at": "2025-06-08T00:00:00.000Z",
+        "index": 18
+      },
+      "duplicates": [
+        {
+          "title": "Remember You This Way (The Sound of Us #2)",
+          "book_title": "Remember You This Way",
+          "author": "C.R. Jane",
+          "goodreads_id": "43802161",
+          "user_rating": 3,
+          "user_read_at": "2025-06-08T05:00:00.000Z",
+          "index": 496,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Perfect Fit",
+        "book_title": "The Perfect Fit",
+        "author": "Sadie Kincaid",
+        "goodreads_id": "7634736283",
+        "user_rating": null,
+        "user_read_at": "2025-06-07T00:00:00.000Z",
+        "index": 20
+      },
+      "duplicates": [
+        {
+          "title": "The Perfect Fit",
+          "book_title": "The Perfect Fit",
+          "author": "Sadie Kincaid",
+          "goodreads_id": "125310117",
+          "user_rating": 3,
+          "user_read_at": "2025-06-07T05:00:00.000Z",
+          "index": 494,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Duplicity (Seraph)",
+        "book_title": "Duplicity",
+        "author": "Elodie Hart",
+        "goodreads_id": "7632016670",
+        "user_rating": null,
+        "user_read_at": "2025-06-06T00:00:00.000Z",
+        "index": 21
+      },
+      "duplicates": [
+        {
+          "title": "Duplicity (Seraph)",
+          "book_title": "Duplicity",
+          "author": "Elodie Hart",
+          "goodreads_id": "222749723",
+          "user_rating": 3,
+          "user_read_at": "2025-06-06T05:00:00.000Z",
+          "index": 493,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Kings of Kearny",
+        "book_title": "The Kings of Kearny",
+        "author": "Navessa Allen",
+        "goodreads_id": "7628728799",
+        "user_rating": null,
+        "user_read_at": "2025-06-05T00:00:00.000Z",
+        "index": 22
+      },
+      "duplicates": [
+        {
+          "title": "The Kings of Kearny",
+          "book_title": "The Kings of Kearny",
+          "author": "Navessa Allen",
+          "goodreads_id": "53357042",
+          "user_rating": 3,
+          "user_read_at": "2025-06-05T05:00:00.000Z",
+          "index": 492,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Mr. Heartbreaker (The Nest, #1)",
+        "book_title": "Mr. Heartbreaker",
+        "author": "Piper Rayne",
+        "goodreads_id": "7583836727",
+        "user_rating": null,
+        "user_read_at": "2025-06-04T00:00:00.000Z",
+        "index": 23
+      },
+      "duplicates": [
+        {
+          "title": "Mr. Heartbreaker (The Nest, #1)",
+          "book_title": "Mr. Heartbreaker",
+          "author": "Piper Rayne",
+          "goodreads_id": "220146590",
+          "user_rating": 2,
+          "user_read_at": "2025-06-04T05:00:00.000Z",
+          "index": 491,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Done and Dusted (Rebel Blue Ranch, #1)",
+        "book_title": "Done and Dusted",
+        "author": "Lyla Sage",
+        "goodreads_id": "7411311176",
+        "user_rating": null,
+        "user_read_at": "2025-06-03T00:00:00.000Z",
+        "index": 24
+      },
+      "duplicates": [
+        {
+          "title": "Done and Dusted (Rebel Blue Ranch, #1)",
+          "book_title": "Done and Dusted",
+          "author": "Lyla Sage",
+          "goodreads_id": "198611001",
+          "user_rating": 3,
+          "user_read_at": "2025-06-03T05:00:00.000Z",
+          "index": 490,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Problematic Summer Romance (Not in Love, #2)",
+        "book_title": "Problematic Summer Romance",
+        "author": "Ali Hazelwood",
+        "goodreads_id": "7411331017",
+        "user_rating": null,
+        "user_read_at": "2025-05-31T00:00:00.000Z",
+        "index": 26
+      },
+      "duplicates": [
+        {
+          "title": "Problematic Summer Romance (Not in Love, #2)",
+          "book_title": "Problematic Summer Romance",
+          "author": "Ali Hazelwood",
+          "goodreads_id": "228731649",
+          "user_rating": 4,
+          "user_read_at": "2025-05-31T05:00:00.000Z",
+          "index": 488,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Releasing 10 (Boys of Tommen, #6)",
+        "book_title": "Releasing 10",
+        "author": "Chloe Walsh",
+        "goodreads_id": "7601829835",
+        "user_rating": null,
+        "user_read_at": "2025-05-30T00:00:00.000Z",
+        "index": 27
+      },
+      "duplicates": [
+        {
+          "title": "Releasing 10 (Boys of Tommen, #6)",
+          "book_title": "Releasing 10",
+          "author": "Chloe Walsh",
+          "goodreads_id": "229717312",
+          "user_rating": 0,
+          "user_read_at": "2025-05-30T05:00:00.000Z",
+          "index": 487,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "First-Time Caller (Heartstrings, #1)",
+        "book_title": "First-Time Caller",
+        "author": "B.K. Borison",
+        "goodreads_id": "7411313619",
+        "user_rating": null,
+        "user_read_at": "2025-05-23T00:00:00.000Z",
+        "index": 28
+      },
+      "duplicates": [
+        {
+          "title": "First-Time Caller (Heartstrings, #1)",
+          "book_title": "First-Time Caller",
+          "author": "B.K. Borison",
+          "goodreads_id": "213245287",
+          "user_rating": 3,
+          "user_read_at": "2025-05-23T05:00:00.000Z",
+          "index": 483,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "King of Envy (Kings of Sin, #5)",
+        "book_title": "King of Envy",
+        "author": "Ana Huang",
+        "goodreads_id": "7299610720",
+        "user_rating": null,
+        "user_read_at": "2025-05-27T00:00:00.000Z",
+        "index": 29
+      },
+      "duplicates": [
+        {
+          "title": "King of Envy (Kings of Sin, #5)",
+          "book_title": "King of Envy",
+          "author": "Ana Huang",
+          "goodreads_id": "210825471",
+          "user_rating": 3,
+          "user_read_at": "2025-05-27T05:00:00.000Z",
+          "index": 486,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Rewind It Back (Windy City, #5)",
+        "book_title": "Rewind It Back",
+        "author": "Liz Tomforde",
+        "goodreads_id": "7411330521",
+        "user_rating": null,
+        "user_read_at": "2025-05-25T00:00:00.000Z",
+        "index": 30
+      },
+      "duplicates": [
+        {
+          "title": "Rewind It Back (Windy City, #5)",
+          "book_title": "Rewind It Back",
+          "author": "Liz Tomforde",
+          "goodreads_id": "216156650",
+          "user_rating": 4,
+          "user_read_at": "2025-05-25T05:00:00.000Z",
+          "index": 485,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Dream Girl Drama (Big Shots, #3)",
+        "book_title": "Dream Girl Drama",
+        "author": "Tessa Bailey",
+        "goodreads_id": "7411326718",
+        "user_rating": null,
+        "user_read_at": "2025-05-24T00:00:00.000Z",
+        "index": 31
+      },
+      "duplicates": [
+        {
+          "title": "Dream Girl Drama (Big Shots, #3)",
+          "book_title": "Dream Girl Drama",
+          "author": "Tessa Bailey",
+          "goodreads_id": "214285914",
+          "user_rating": 3,
+          "user_read_at": "2025-05-24T05:00:00.000Z",
+          "index": 484,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Some Kind of Perfect (Calloway Sisters #5)",
+        "book_title": "Some Kind of Perfect",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7578850266",
+        "user_rating": null,
+        "user_read_at": "2025-05-18T00:00:00.000Z",
+        "index": 33
+      },
+      "duplicates": [
+        {
+          "title": "Some Kind of Perfect (Calloway Sisters #5)",
+          "book_title": "Some Kind of Perfect",
+          "author": "Krista Ritchie",
+          "goodreads_id": "30237534",
+          "user_rating": 4,
+          "user_read_at": "2025-05-18T05:00:00.000Z",
+          "index": 481,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Long Way Down (Calloway Sisters, #4)",
+        "book_title": "Long Way Down",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7569311581",
+        "user_rating": null,
+        "user_read_at": "2025-05-14T00:00:00.000Z",
+        "index": 34
+      },
+      "duplicates": [
+        {
+          "title": "Long Way Down (Calloway Sisters, #4)",
+          "book_title": "Long Way Down",
+          "author": "Krista Ritchie",
+          "goodreads_id": "22024907",
+          "user_rating": 4,
+          "user_read_at": "2025-05-14T05:00:00.000Z",
+          "index": 480,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Fuel the Fire (Calloway Sisters #3)",
+        "book_title": "Fuel the Fire",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7558335262",
+        "user_rating": null,
+        "user_read_at": "2025-05-11T00:00:00.000Z",
+        "index": 35
+      },
+      "duplicates": [
+        {
+          "title": "Fuel the Fire (Calloway Sisters #3)",
+          "book_title": "Fuel the Fire",
+          "author": "Krista Ritchie",
+          "goodreads_id": "25267855",
+          "user_rating": 4,
+          "user_read_at": "2025-05-11T05:00:00.000Z",
+          "index": 479,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Addicted After All (Addicted, #5)",
+        "book_title": "Addicted After All",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7558331561",
+        "user_rating": null,
+        "user_read_at": "2025-05-10T00:00:00.000Z",
+        "index": 36
+      },
+      "duplicates": [
+        {
+          "title": "Addicted After All (Addicted, #5)",
+          "book_title": "Addicted After All",
+          "author": "Krista Ritchie",
+          "goodreads_id": "55475504",
+          "user_rating": 4,
+          "user_read_at": "2025-05-10T05:00:00.000Z",
+          "index": 478,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Thrive (Addicted #4)",
+        "book_title": "Thrive",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7554468287",
+        "user_rating": null,
+        "user_read_at": "2025-05-08T00:00:00.000Z",
+        "index": 37
+      },
+      "duplicates": [
+        {
+          "title": "Thrive (Addicted #4)",
+          "book_title": "Thrive",
+          "author": "Krista Ritchie",
+          "goodreads_id": "22741732",
+          "user_rating": 4,
+          "user_read_at": "2025-05-08T05:00:00.000Z",
+          "index": 477,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Hothouse Flower (Calloway Sisters #2)",
+        "book_title": "Hothouse Flower",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7543530443",
+        "user_rating": null,
+        "user_read_at": "2025-05-05T00:00:00.000Z",
+        "index": 38
+      },
+      "duplicates": [
+        {
+          "title": "Hothouse Flower (Calloway Sisters #2)",
+          "book_title": "Hothouse Flower",
+          "author": "Krista Ritchie",
+          "goodreads_id": "21794355",
+          "user_rating": 4,
+          "user_read_at": "2025-05-05T05:00:00.000Z",
+          "index": 476,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Kiss the Sky (Calloway Sisters, #1)",
+        "book_title": "Kiss the Sky",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7543529171",
+        "user_rating": null,
+        "user_read_at": "2025-05-04T00:00:00.000Z",
+        "index": 39
+      },
+      "duplicates": [
+        {
+          "title": "Kiss the Sky (Calloway Sisters, #1)",
+          "book_title": "Kiss the Sky",
+          "author": "Krista Ritchie",
+          "goodreads_id": "20619577",
+          "user_rating": 4,
+          "user_read_at": "2025-05-04T05:00:00.000Z",
+          "index": 475,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Addicted for Now (Addicted #3)",
+        "book_title": "Addicted for Now",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7540349403",
+        "user_rating": null,
+        "user_read_at": "2025-05-03T00:00:00.000Z",
+        "index": 40
+      },
+      "duplicates": [
+        {
+          "title": "Addicted for Now (Addicted #3)",
+          "book_title": "Addicted for Now",
+          "author": "Krista Ritchie",
+          "goodreads_id": "19056817",
+          "user_rating": 4,
+          "user_read_at": "2025-05-03T05:00:00.000Z",
+          "index": 474,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Ricochet (Addicted, #2)",
+        "book_title": "Ricochet",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7537372169",
+        "user_rating": null,
+        "user_read_at": "2025-05-02T00:00:00.000Z",
+        "index": 41
+      },
+      "duplicates": [
+        {
+          "title": "Ricochet (Addicted, #2)",
+          "book_title": "Ricochet",
+          "author": "Krista Ritchie",
+          "goodreads_id": "60787120",
+          "user_rating": 4,
+          "user_read_at": "2025-05-02T05:00:00.000Z",
+          "index": 473,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Addicted to You (Addicted, #1)",
+        "book_title": "Addicted to You",
+        "author": "Krista Ritchie",
+        "goodreads_id": "7532606298",
+        "user_rating": null,
+        "user_read_at": "2025-04-30T00:00:00.000Z",
+        "index": 42
+      },
+      "duplicates": [
+        {
+          "title": "Addicted to You (Addicted, #1)",
+          "book_title": "Addicted to You",
+          "author": "Krista Ritchie",
+          "goodreads_id": "17830264",
+          "user_rating": 4,
+          "user_read_at": "2025-04-30T05:00:00.000Z",
+          "index": 472,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Bittersweet Melody (The Bittersweet Symphony Duet, #2.5)",
+        "book_title": "Bittersweet Melody",
+        "author": "Kate  Stewart",
+        "goodreads_id": "7524893977",
+        "user_rating": null,
+        "user_read_at": "2025-04-27T00:00:00.000Z",
+        "index": 43
+      },
+      "duplicates": [
+        {
+          "title": "Bittersweet Melody (The Bittersweet Symphony Duet, #2.5)",
+          "book_title": "Bittersweet Melody",
+          "author": "Kate  Stewart",
+          "goodreads_id": "118114114",
+          "user_rating": 4,
+          "user_read_at": "2025-04-27T05:00:00.000Z",
+          "index": 470,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Reverse (The Bittersweet Symphony Duet, #2)",
+        "book_title": "Reverse",
+        "author": "Kate  Stewart",
+        "goodreads_id": "7524518861",
+        "user_rating": null,
+        "user_read_at": "2025-04-27T00:00:00.000Z",
+        "index": 44
+      },
+      "duplicates": [
+        {
+          "title": "Reverse (The Bittersweet Symphony Duet, #2)",
+          "book_title": "Reverse",
+          "author": "Kate  Stewart",
+          "goodreads_id": "61486681",
+          "user_rating": 5,
+          "user_read_at": "2025-04-27T05:00:00.000Z",
+          "index": 471,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Drive (The Bittersweet Symphony Duet #1)",
+        "book_title": "Drive",
+        "author": "Kate  Stewart",
+        "goodreads_id": "6443668305",
+        "user_rating": null,
+        "user_read_at": "2025-04-26T00:00:00.000Z",
+        "index": 45
+      },
+      "duplicates": [
+        {
+          "title": "Drive (The Bittersweet Symphony Duet #1)",
+          "book_title": "Drive",
+          "author": "Kate  Stewart",
+          "goodreads_id": "36413250",
+          "user_rating": 5,
+          "user_read_at": "2025-04-26T05:00:00.000Z",
+          "index": 469,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Bridesmaid by Chance (Bridesmaid for Hire, #3)",
+        "book_title": "Bridesmaid by Chance",
+        "author": "Meghan Quinn",
+        "goodreads_id": "7511772868",
+        "user_rating": null,
+        "user_read_at": "2025-04-24T00:00:00.000Z",
+        "index": 46
+      },
+      "duplicates": [
+        {
+          "title": "Bridesmaid by Chance (Bridesmaid for Hire, #3)",
+          "book_title": "Bridesmaid by Chance",
+          "author": "Meghan Quinn",
+          "goodreads_id": "217459465",
+          "user_rating": 4,
+          "user_read_at": "2025-04-24T05:00:00.000Z",
+          "index": 468,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Fragile Sanctuary (Sparrow Falls #1)",
+        "book_title": "Fragile Sanctuary",
+        "author": "Catherine Cowles",
+        "goodreads_id": "7506960621",
+        "user_rating": null,
+        "user_read_at": "2025-04-22T00:00:00.000Z",
+        "index": 47
+      },
+      "duplicates": [
+        {
+          "title": "Fragile Sanctuary (Sparrow Falls #1)",
+          "book_title": "Fragile Sanctuary",
+          "author": "Catherine Cowles",
+          "goodreads_id": "204413950",
+          "user_rating": 1,
+          "user_read_at": "2025-04-22T05:00:00.000Z",
+          "index": 467,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "One Last Rainy Day (Ravenhood Legacy #1)",
+        "book_title": "One Last Rainy Day",
+        "author": "Kate  Stewart",
+        "goodreads_id": "7500749077",
+        "user_rating": null,
+        "user_read_at": "2025-04-21T00:00:00.000Z",
+        "index": 48
+      },
+      "duplicates": [
+        {
+          "title": "One Last Rainy Day (Ravenhood Legacy #1)",
+          "book_title": "One Last Rainy Day",
+          "author": "Kate  Stewart",
+          "goodreads_id": "216422444",
+          "user_rating": 5,
+          "user_read_at": "2025-04-21T05:00:00.000Z",
+          "index": 466,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Finish Line (The Ravenhood, #3)",
+        "book_title": "The Finish Line",
+        "author": "Kate  Stewart",
+        "goodreads_id": "7500659420",
+        "user_rating": null,
+        "user_read_at": "2025-04-19T00:00:00.000Z",
+        "index": 49
+      },
+      "duplicates": [
+        {
+          "title": "The Finish Line (The Ravenhood, #3)",
+          "book_title": "The Finish Line",
+          "author": "Kate  Stewart",
+          "goodreads_id": "214982347",
+          "user_rating": 5,
+          "user_read_at": "2025-04-19T05:00:00.000Z",
+          "index": 465,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Exodus (The Ravenhood #2)",
+        "book_title": "Exodus",
+        "author": "Kate  Stewart",
+        "goodreads_id": "7491950623",
+        "user_rating": null,
+        "user_read_at": "2025-04-17T00:00:00.000Z",
+        "index": 50
+      },
+      "duplicates": [
+        {
+          "title": "Exodus (The Ravenhood #2)",
+          "book_title": "Exodus",
+          "author": "Kate  Stewart",
+          "goodreads_id": "214568198",
+          "user_rating": 5,
+          "user_read_at": "2025-04-17T05:00:00.000Z",
+          "index": 464,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Flock (The Ravenhood Book 1)",
+        "book_title": "Flock",
+        "author": "Kate  Stewart",
+        "goodreads_id": "7491902541",
+        "user_rating": null,
+        "user_read_at": "2025-04-15T00:00:00.000Z",
+        "index": 51
+      },
+      "duplicates": [
+        {
+          "title": "Flock (The Ravenhood Book 1)",
+          "book_title": "Flock",
+          "author": "Kate  Stewart",
+          "goodreads_id": "214568110",
+          "user_rating": 5,
+          "user_read_at": "2025-04-15T05:00:00.000Z",
+          "index": 463,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Five Brothers",
+        "book_title": "Five Brothers",
+        "author": "Penelope Douglas",
+        "goodreads_id": "7411315556",
+        "user_rating": null,
+        "user_read_at": "2025-04-13T00:00:00.000Z",
+        "index": 52
+      },
+      "duplicates": [
+        {
+          "title": "Five Brothers",
+          "book_title": "Five Brothers",
+          "author": "Penelope Douglas",
+          "goodreads_id": "201101881",
+          "user_rating": 4,
+          "user_read_at": "2025-04-13T05:00:00.000Z",
+          "index": 462,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Book Lovers",
+        "book_title": "Book Lovers",
+        "author": "Emily Henry",
+        "goodreads_id": "6432658881",
+        "user_rating": null,
+        "user_read_at": "2025-04-11T00:00:00.000Z",
+        "index": 53
+      },
+      "duplicates": [
+        {
+          "title": "Book Lovers",
+          "book_title": "Book Lovers",
+          "author": "Emily Henry",
+          "goodreads_id": "58708383",
+          "user_rating": 5,
+          "user_read_at": "2025-04-11T05:00:00.000Z",
+          "index": 461,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Audacity (Seraph)",
+        "book_title": "Audacity",
+        "author": "Elodie Hart",
+        "goodreads_id": "7349922268",
+        "user_rating": null,
+        "user_read_at": "2025-04-10T00:00:00.000Z",
+        "index": 54
+      },
+      "duplicates": [
+        {
+          "title": "Audacity (Seraph)",
+          "book_title": "Audacity",
+          "author": "Elodie Hart",
+          "goodreads_id": "211373244",
+          "user_rating": 3,
+          "user_read_at": "2025-04-10T05:00:00.000Z",
+          "index": 460,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Fall with Me (Playing for Keeps, #4)",
+        "book_title": "Fall with Me",
+        "author": "Becka Mack",
+        "goodreads_id": "7473042453",
+        "user_rating": null,
+        "user_read_at": "2025-04-08T00:00:00.000Z",
+        "index": 55
+      },
+      "duplicates": [
+        {
+          "title": "Fall with Me (Playing for Keeps, #4)",
+          "book_title": "Fall with Me",
+          "author": "Becka Mack",
+          "goodreads_id": "208457093",
+          "user_rating": 3,
+          "user_read_at": "2025-04-08T05:00:00.000Z",
+          "index": 459,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Unravel Me (Playing For Keeps, #3)",
+        "book_title": "Unravel Me",
+        "author": "Becka Mack",
+        "goodreads_id": "7469831561",
+        "user_rating": null,
+        "user_read_at": "2025-04-07T00:00:00.000Z",
+        "index": 56
+      },
+      "duplicates": [
+        {
+          "title": "Unravel Me (Playing For Keeps, #3)",
+          "book_title": "Unravel Me",
+          "author": "Becka Mack",
+          "goodreads_id": "195227305",
+          "user_rating": 3,
+          "user_read_at": "2025-04-07T05:00:00.000Z",
+          "index": 458,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Play With Me (Playing for Keeps, #2)",
+        "book_title": "Play With Me",
+        "author": "Becka Mack",
+        "goodreads_id": "7463604325",
+        "user_rating": null,
+        "user_read_at": "2025-04-06T00:00:00.000Z",
+        "index": 57
+      },
+      "duplicates": [
+        {
+          "title": "Play With Me (Playing for Keeps, #2)",
+          "book_title": "Play With Me",
+          "author": "Becka Mack",
+          "goodreads_id": "62053325",
+          "user_rating": 4,
+          "user_read_at": "2025-04-06T05:00:00.000Z",
+          "index": 457,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Kiss the Villain (Villain #1)",
+        "book_title": "Kiss the Villain",
+        "author": "Rina Kent",
+        "goodreads_id": "7320108905",
+        "user_rating": null,
+        "user_read_at": "2025-04-04T00:00:00.000Z",
+        "index": 58
+      },
+      "duplicates": [
+        {
+          "title": "Kiss the Villain (Villain #1)",
+          "book_title": "Kiss the Villain",
+          "author": "Rina Kent",
+          "goodreads_id": "220287670",
+          "user_rating": 3,
+          "user_read_at": "2025-04-04T05:00:00.000Z",
+          "index": 456,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "People We Meet on Vacation",
+        "book_title": "People We Meet on Vacation",
+        "author": "Emily Henry",
+        "goodreads_id": "6475580960",
+        "user_rating": null,
+        "user_read_at": "2025-04-03T00:00:00.000Z",
+        "index": 59
+      },
+      "duplicates": [
+        {
+          "title": "People We Meet on Vacation",
+          "book_title": "People We Meet on Vacation",
+          "author": "Emily Henry",
+          "goodreads_id": "55076069",
+          "user_rating": 5,
+          "user_read_at": "2025-04-03T05:00:00.000Z",
+          "index": 455,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Goldfinch (The Plated Prisoner, #6)",
+        "book_title": "Goldfinch",
+        "author": "Raven Kennedy",
+        "goodreads_id": "7448986488",
+        "user_rating": null,
+        "user_read_at": "2025-04-02T00:00:00.000Z",
+        "index": 60
+      },
+      "duplicates": [
+        {
+          "title": "Goldfinch (The Plated Prisoner, #6)",
+          "book_title": "Goldfinch",
+          "author": "Raven Kennedy",
+          "goodreads_id": "200254250",
+          "user_rating": 5,
+          "user_read_at": "2025-04-02T05:00:00.000Z",
+          "index": 454,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Shatter Me (Shatter Me, #1)",
+        "book_title": "Shatter Me",
+        "author": "Tahereh Mafi",
+        "goodreads_id": "7414732990",
+        "user_rating": null,
+        "user_read_at": "2025-02-26T00:00:00.000Z",
+        "index": 61
+      },
+      "duplicates": [
+        {
+          "title": "Shatter Me (Shatter Me, #1)",
+          "book_title": "Shatter Me",
+          "author": "Tahereh Mafi",
+          "goodreads_id": "10429045",
+          "user_rating": 2,
+          "user_read_at": "2025-02-26T06:00:00.000Z",
+          "index": 423,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Gold (The Plated Prisoner, #5)",
+        "book_title": "Gold",
+        "author": "Raven Kennedy",
+        "goodreads_id": "7411320147",
+        "user_rating": null,
+        "user_read_at": "2025-03-30T00:00:00.000Z",
+        "index": 62
+      },
+      "duplicates": [
+        {
+          "title": "Gild (The Plated Prisoner, #1)",
+          "book_title": "Gild",
+          "author": "Raven Kennedy",
+          "goodreads_id": "7423177373",
+          "user_rating": null,
+          "user_read_at": "2025-03-23T00:00:00.000Z",
+          "index": 66,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 0.9615384615384616,
+            "reason": "Title: 92.3%, Author: 100.0%",
+            "titleSimilarity": 0.9230769230769231,
+            "authorSimilarity": 1
+          }
+        },
+        {
+          "title": "Gild (The Plated Prisoner, #1)",
+          "book_title": "Gild",
+          "author": "Raven Kennedy",
+          "goodreads_id": "56483061",
+          "user_rating": 4,
+          "user_read_at": "2025-03-23T05:00:00.000Z",
+          "index": 448,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 0.9615384615384616,
+            "reason": "Title: 92.3%, Author: 100.0%",
+            "titleSimilarity": 0.9230769230769231,
+            "authorSimilarity": 1
+          }
+        },
+        {
+          "title": "Gold (The Plated Prisoner, #5)",
+          "book_title": "Gold",
+          "author": "Raven Kennedy",
+          "goodreads_id": "61314205",
+          "user_rating": 4,
+          "user_read_at": "2025-03-30T05:00:00.000Z",
+          "index": 453,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Glow (The Plated Prisoner, #4)",
+        "book_title": "Glow",
+        "author": "Raven Kennedy",
+        "goodreads_id": "7443130715",
+        "user_rating": null,
+        "user_read_at": "2025-03-28T00:00:00.000Z",
+        "index": 63
+      },
+      "duplicates": [
+        {
+          "title": "Glow (The Plated Prisoner, #4)",
+          "book_title": "Glow",
+          "author": "Raven Kennedy",
+          "goodreads_id": "58159316",
+          "user_rating": 5,
+          "user_read_at": "2025-03-28T05:00:00.000Z",
+          "index": 452,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Gleam (The Plated Prisoner, #3)",
+        "book_title": "Gleam",
+        "author": "Raven Kennedy",
+        "goodreads_id": "7431594569",
+        "user_rating": null,
+        "user_read_at": "2025-03-25T00:00:00.000Z",
+        "index": 64
+      },
+      "duplicates": [
+        {
+          "title": "Gleam (The Plated Prisoner, #3)",
+          "book_title": "Gleam",
+          "author": "Raven Kennedy",
+          "goodreads_id": "57214537",
+          "user_rating": 5,
+          "user_read_at": "2025-03-25T05:00:00.000Z",
+          "index": 451,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Glint (The Plated Prisoner, #2)",
+        "book_title": "Glint",
+        "author": "Raven Kennedy",
+        "goodreads_id": "7431587769",
+        "user_rating": null,
+        "user_read_at": "2025-03-24T00:00:00.000Z",
+        "index": 65
+      },
+      "duplicates": [
+        {
+          "title": "Glint (The Plated Prisoner, #2)",
+          "book_title": "Glint",
+          "author": "Raven Kennedy",
+          "goodreads_id": "56530123",
+          "user_rating": 4,
+          "user_read_at": "2025-03-24T05:00:00.000Z",
+          "index": 450,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Heartbreaker (The Goode Brothers, #3)",
+        "book_title": "The Heartbreaker",
+        "author": "Sara Cate",
+        "goodreads_id": "7426942535",
+        "user_rating": null,
+        "user_read_at": "2025-03-23T00:00:00.000Z",
+        "index": 67
+      },
+      "duplicates": [
+        {
+          "title": "The Heartbreaker (The Goode Brothers, #3)",
+          "book_title": "The Heartbreaker",
+          "author": "Sara Cate",
+          "goodreads_id": "210196819",
+          "user_rating": 3,
+          "user_read_at": "2025-03-23T05:00:00.000Z",
+          "index": 449,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Home Wrecker (The Goode Brothers, #2)",
+        "book_title": "The Home Wrecker",
+        "author": "Sara Cate",
+        "goodreads_id": "7422676154",
+        "user_rating": null,
+        "user_read_at": "2025-03-22T00:00:00.000Z",
+        "index": 68
+      },
+      "duplicates": [
+        {
+          "title": "The Home Wrecker (The Goode Brothers, #2)",
+          "book_title": "The Home Wrecker",
+          "author": "Sara Cate",
+          "goodreads_id": "181515980",
+          "user_rating": 4,
+          "user_read_at": "2025-03-22T05:00:00.000Z",
+          "index": 447,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Shoot Your Shot",
+        "book_title": "Shoot Your Shot",
+        "author": "Lexi LaFleur Brown",
+        "goodreads_id": "7420307715",
+        "user_rating": null,
+        "user_read_at": "2025-03-21T00:00:00.000Z",
+        "index": 69
+      },
+      "duplicates": [
+        {
+          "title": "Shoot Your Shot",
+          "book_title": "Shoot Your Shot",
+          "author": "Lexi LaFleur Brown",
+          "goodreads_id": "213435549",
+          "user_rating": 2,
+          "user_read_at": "2025-03-21T05:00:00.000Z",
+          "index": 446,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Ice Mechanic",
+        "book_title": "Ice Mechanic",
+        "author": "Lia Bevans",
+        "goodreads_id": "7411312951",
+        "user_rating": null,
+        "user_read_at": "2025-03-20T00:00:00.000Z",
+        "index": 70
+      },
+      "duplicates": [
+        {
+          "title": "Ice Mechanic",
+          "book_title": "Ice Mechanic",
+          "author": "Lia Bevans",
+          "goodreads_id": "222260445",
+          "user_rating": 1,
+          "user_read_at": "2025-03-20T05:00:00.000Z",
+          "index": 444,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Fall Risk",
+        "book_title": "The Fall Risk",
+        "author": "Abby Jimenez",
+        "goodreads_id": "7417755236",
+        "user_rating": null,
+        "user_read_at": "2025-03-20T00:00:00.000Z",
+        "index": 71
+      },
+      "duplicates": [
+        {
+          "title": "The Fall Risk",
+          "book_title": "The Fall Risk",
+          "author": "Abby Jimenez",
+          "goodreads_id": "223199392",
+          "user_rating": 5,
+          "user_read_at": "2025-03-20T05:00:00.000Z",
+          "index": 445,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Quicksilver (Fae & Alchemy, #1)",
+        "book_title": "Quicksilver",
+        "author": "Callie Hart",
+        "goodreads_id": "7312638295",
+        "user_rating": null,
+        "user_read_at": "2025-03-19T00:00:00.000Z",
+        "index": 72
+      },
+      "duplicates": [
+        {
+          "title": "Quicksilver (Fae & Alchemy, #1)",
+          "book_title": "Quicksilver",
+          "author": "Callie Hart",
+          "goodreads_id": "218014044",
+          "user_rating": 4,
+          "user_read_at": "2025-03-19T05:00:00.000Z",
+          "index": 443,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Unite Me (Shatter Me, #1.5-2.5)",
+        "book_title": "Unite Me",
+        "author": "Tahereh Mafi",
+        "goodreads_id": "7414741580",
+        "user_rating": null,
+        "user_read_at": "2025-02-26T00:00:00.000Z",
+        "index": 73
+      },
+      "duplicates": [
+        {
+          "title": "Unite Me (Shatter Me, #1.5-2.5)",
+          "book_title": "Unite Me",
+          "author": "Tahereh Mafi",
+          "goodreads_id": "18481271",
+          "user_rating": 0,
+          "user_read_at": "2025-02-26T06:00:00.000Z",
+          "index": 424,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Ignite Me (Shatter Me, #3)",
+        "book_title": "Ignite Me",
+        "author": "Tahereh Mafi",
+        "goodreads_id": "7363085260",
+        "user_rating": null,
+        "user_read_at": "2025-03-01T00:00:00.000Z",
+        "index": 74
+      },
+      "duplicates": [
+        {
+          "title": "Ignite Me (Shatter Me, #3)",
+          "book_title": "Ignite Me",
+          "author": "Tahereh Mafi",
+          "goodreads_id": "13188676",
+          "user_rating": 3,
+          "user_read_at": "2025-03-01T06:00:00.000Z",
+          "index": 426,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Unravel Me (Shatter Me, #2)",
+        "book_title": "Unravel Me",
+        "author": "Tahereh Mafi",
+        "goodreads_id": "7357979627",
+        "user_rating": null,
+        "user_read_at": "2025-02-28T00:00:00.000Z",
+        "index": 75
+      },
+      "duplicates": [
+        {
+          "title": "Unravel Me (Shatter Me, #2)",
+          "book_title": "Unravel Me",
+          "author": "Tahereh Mafi",
+          "goodreads_id": "16126252",
+          "user_rating": 3,
+          "user_read_at": "2025-02-28T06:00:00.000Z",
+          "index": 425,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Anger Banger (Happy Haven #2)",
+        "book_title": "Anger Banger",
+        "author": "S.M. Shade",
+        "goodreads_id": "7410580492",
+        "user_rating": null,
+        "user_read_at": "2025-03-17T00:00:00.000Z",
+        "index": 76
+      },
+      "duplicates": [
+        {
+          "title": "Anger Banger (Happy Haven #2)",
+          "book_title": "Anger Banger",
+          "author": "S.M. Shade",
+          "goodreads_id": "195600527",
+          "user_rating": 3,
+          "user_read_at": "2025-03-17T05:00:00.000Z",
+          "index": 441,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Fake Around and Find Out (Happy Haven, #1)",
+        "book_title": "Fake Around and Find Out",
+        "author": "S.M. Shade",
+        "goodreads_id": "7409914011",
+        "user_rating": null,
+        "user_read_at": "2025-03-17T00:00:00.000Z",
+        "index": 77
+      },
+      "duplicates": [
+        {
+          "title": "Fake Around and Find Out (Happy Haven, #1)",
+          "book_title": "Fake Around and Find Out",
+          "author": "S.M. Shade",
+          "goodreads_id": "203120955",
+          "user_rating": 4,
+          "user_read_at": "2025-03-17T05:00:00.000Z",
+          "index": 442,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Love on the Brain",
+        "book_title": "Love on the Brain",
+        "author": "Ali Hazelwood",
+        "goodreads_id": "6453828711",
+        "user_rating": null,
+        "user_read_at": "2025-03-16T00:00:00.000Z",
+        "index": 78
+      },
+      "duplicates": [
+        {
+          "title": "Love on the Brain",
+          "book_title": "Love on the Brain",
+          "author": "Ali Hazelwood",
+          "goodreads_id": "60066655",
+          "user_rating": 4,
+          "user_read_at": "2025-03-16T05:00:00.000Z",
+          "index": 440,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Beach Read",
+        "book_title": "Beach Read",
+        "author": "Emily Henry",
+        "goodreads_id": "6475576595",
+        "user_rating": null,
+        "user_read_at": "2025-03-15T00:00:00.000Z",
+        "index": 79
+      },
+      "duplicates": [
+        {
+          "title": "Beach Read",
+          "book_title": "Beach Read",
+          "author": "Emily Henry",
+          "goodreads_id": "52195137",
+          "user_rating": 4,
+          "user_read_at": "2025-03-15T05:00:00.000Z",
+          "index": 438,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Consider Me (Playing For Keeps, #1)",
+        "book_title": "Consider Me",
+        "author": "Becka Mack",
+        "goodreads_id": "7402894047",
+        "user_rating": null,
+        "user_read_at": "2025-03-15T00:00:00.000Z",
+        "index": 80
+      },
+      "duplicates": [
+        {
+          "title": "Consider Me (Playing For Keeps, #1)",
+          "book_title": "Consider Me",
+          "author": "Becka Mack",
+          "goodreads_id": "60234419",
+          "user_rating": 4,
+          "user_read_at": "2025-03-15T05:00:00.000Z",
+          "index": 439,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Au Pair Affair (Big Shots, #2)",
+        "book_title": "The Au Pair Affair",
+        "author": "Tessa Bailey",
+        "goodreads_id": "7400541926",
+        "user_rating": null,
+        "user_read_at": "2025-03-14T00:00:00.000Z",
+        "index": 81
+      },
+      "duplicates": [
+        {
+          "title": "The Au Pair Affair (Big Shots, #2)",
+          "book_title": "The Au Pair Affair",
+          "author": "Tessa Bailey",
+          "goodreads_id": "200436856",
+          "user_rating": 4,
+          "user_read_at": "2025-03-14T05:00:00.000Z",
+          "index": 437,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Paradise Problem",
+        "book_title": "The Paradise Problem",
+        "author": "Christina Lauren",
+        "goodreads_id": "7398561110",
+        "user_rating": null,
+        "user_read_at": "2025-03-13T00:00:00.000Z",
+        "index": 82
+      },
+      "duplicates": [
+        {
+          "title": "The Paradise Problem",
+          "book_title": "The Paradise Problem",
+          "author": "Christina Lauren",
+          "goodreads_id": "199897857",
+          "user_rating": 4,
+          "user_read_at": "2025-03-13T05:00:00.000Z",
+          "index": 436,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Love Hypothesis",
+        "book_title": "The Love Hypothesis",
+        "author": "Ali Hazelwood",
+        "goodreads_id": "6453828297",
+        "user_rating": null,
+        "user_read_at": "2025-03-12T00:00:00.000Z",
+        "index": 83
+      },
+      "duplicates": [
+        {
+          "title": "The Love Hypothesis",
+          "book_title": "The Love Hypothesis",
+          "author": "Ali Hazelwood",
+          "goodreads_id": "59336483",
+          "user_rating": 5,
+          "user_read_at": "2025-03-12T05:00:00.000Z",
+          "index": 435,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Pucking Wrong Date (Pucking Wrong, #3)",
+        "book_title": "The Pucking Wrong Date",
+        "author": "C.R. Jane",
+        "goodreads_id": "7394857728",
+        "user_rating": null,
+        "user_read_at": "2025-03-11T00:00:00.000Z",
+        "index": 84
+      },
+      "duplicates": [
+        {
+          "title": "The Pucking Wrong Date (Pucking Wrong, #3)",
+          "book_title": "The Pucking Wrong Date",
+          "author": "C.R. Jane",
+          "goodreads_id": "199135679",
+          "user_rating": 2,
+          "user_read_at": "2025-03-11T05:00:00.000Z",
+          "index": 434,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Pucking Wrong Guy (Pucking Wrong, #2)",
+        "book_title": "The Pucking Wrong Guy",
+        "author": "C.R. Jane",
+        "goodreads_id": "7388513946",
+        "user_rating": null,
+        "user_read_at": "2025-03-09T00:00:00.000Z",
+        "index": 85
+      },
+      "duplicates": [
+        {
+          "title": "The Pucking Wrong Guy (Pucking Wrong, #2)",
+          "book_title": "The Pucking Wrong Guy",
+          "author": "C.R. Jane",
+          "goodreads_id": "157006962",
+          "user_rating": 2,
+          "user_read_at": "2025-03-09T06:00:00.000Z",
+          "index": 433,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Pucking Wrong Number (Pucking Wrong, #1)",
+        "book_title": "The Pucking Wrong Number",
+        "author": "C.R. Jane",
+        "goodreads_id": "7382972935",
+        "user_rating": null,
+        "user_read_at": "2025-03-08T00:00:00.000Z",
+        "index": 86
+      },
+      "duplicates": [
+        {
+          "title": "The Pucking Wrong Number (Pucking Wrong, #1)",
+          "book_title": "The Pucking Wrong Number",
+          "author": "C.R. Jane",
+          "goodreads_id": "123414004",
+          "user_rating": 3,
+          "user_read_at": "2025-03-08T06:00:00.000Z",
+          "index": 432,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Not in Love",
+        "book_title": "Not in Love",
+        "author": "Ali Hazelwood",
+        "goodreads_id": "7312637014",
+        "user_rating": null,
+        "user_read_at": "2025-03-06T00:00:00.000Z",
+        "index": 87
+      },
+      "duplicates": [
+        {
+          "title": "Not in Love",
+          "book_title": "Not in Love",
+          "author": "Ali Hazelwood",
+          "goodreads_id": "198972842",
+          "user_rating": 4,
+          "user_read_at": "2025-03-06T06:00:00.000Z",
+          "index": 431,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Wild Side (Rose Hill, #3)",
+        "book_title": "Wild Side",
+        "author": "Elsie Silver",
+        "goodreads_id": "7299610288",
+        "user_rating": null,
+        "user_read_at": "2025-03-05T00:00:00.000Z",
+        "index": 88
+      },
+      "duplicates": [
+        {
+          "title": "Wild Side (Rose Hill, #3)",
+          "book_title": "Wild Side",
+          "author": "Elsie Silver",
+          "goodreads_id": "217465190",
+          "user_rating": 5,
+          "user_read_at": "2025-03-05T06:00:00.000Z",
+          "index": 430,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Charlie Method (Campus Diaries, #3)",
+        "book_title": "The Charlie Method",
+        "author": "Elle Kennedy",
+        "goodreads_id": "7299609925",
+        "user_rating": null,
+        "user_read_at": null,
+        "index": 89
+      },
+      "duplicates": [
+        {
+          "title": "The Charlie Method (Campus Diaries, #3)",
+          "book_title": "The Charlie Method",
+          "author": "Elle Kennedy",
+          "goodreads_id": "212705721",
+          "user_rating": 4,
+          "user_read_at": "2025-03-04T06:00:00.000Z",
+          "index": 429,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Dixon Rule (Campus Diaries, #2)",
+        "book_title": "The Dixon Rule",
+        "author": "Elle Kennedy",
+        "goodreads_id": "7299607998",
+        "user_rating": null,
+        "user_read_at": "2025-03-03T00:00:00.000Z",
+        "index": 90
+      },
+      "duplicates": [
+        {
+          "title": "The Dixon Rule (Campus Diaries, #2)",
+          "book_title": "The Dixon Rule",
+          "author": "Elle Kennedy",
+          "goodreads_id": "200338241",
+          "user_rating": 4,
+          "user_read_at": "2025-03-03T06:00:00.000Z",
+          "index": 428,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Graham Effect (Campus Diaries, #1)",
+        "book_title": "The Graham Effect",
+        "author": "Elle Kennedy",
+        "goodreads_id": "7299606257",
+        "user_rating": null,
+        "user_read_at": "2025-03-02T00:00:00.000Z",
+        "index": 91
+      },
+      "duplicates": [
+        {
+          "title": "The Graham Effect (Campus Diaries, #1)",
+          "book_title": "The Graham Effect",
+          "author": "Elle Kennedy",
+          "goodreads_id": "123255391",
+          "user_rating": 4,
+          "user_read_at": "2025-03-02T06:00:00.000Z",
+          "index": 427,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Part of Your World (Part of Your World, #1)",
+        "book_title": "Part of Your World",
+        "author": "Abby Jimenez",
+        "goodreads_id": "7299603360",
+        "user_rating": null,
+        "user_read_at": "2025-02-24T00:00:00.000Z",
+        "index": 92
+      },
+      "duplicates": [
+        {
+          "title": "Part of Your World (Part of Your World, #1)",
+          "book_title": "Part of Your World",
+          "author": "Abby Jimenez",
+          "goodreads_id": "58706519",
+          "user_rating": 5,
+          "user_read_at": "2025-02-24T06:00:00.000Z",
+          "index": 422,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Fangirl Down (Big Shots, #1)",
+        "book_title": "Fangirl Down",
+        "author": "Tessa Bailey",
+        "goodreads_id": "6401880473",
+        "user_rating": null,
+        "user_read_at": "2025-02-23T00:00:00.000Z",
+        "index": 93
+      },
+      "duplicates": [
+        {
+          "title": "Fangirl Down (Big Shots, #1)",
+          "book_title": "Fangirl Down",
+          "author": "Tessa Bailey",
+          "goodreads_id": "150343880",
+          "user_rating": 5,
+          "user_read_at": "2025-02-23T06:00:00.000Z",
+          "index": 421,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Wild Eyes (Rose Hill, #2)",
+        "book_title": "Wild Eyes",
+        "author": "Elsie Silver",
+        "goodreads_id": "7299606515",
+        "user_rating": null,
+        "user_read_at": null,
+        "index": 94
+      },
+      "duplicates": [
+        {
+          "title": "Wild Eyes (Rose Hill, #2)",
+          "book_title": "Wild Eyes",
+          "author": "Elsie Silver",
+          "goodreads_id": "210364592",
+          "user_rating": 4,
+          "user_read_at": "2025-02-22T06:00:00.000Z",
+          "index": 420,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Wild Love (Rose Hill, #1)",
+        "book_title": "Wild Love",
+        "author": "Elsie Silver",
+        "goodreads_id": "6475580568",
+        "user_rating": null,
+        "user_read_at": "2025-02-21T00:00:00.000Z",
+        "index": 95
+      },
+      "duplicates": [
+        {
+          "title": "Wild Love (Rose Hill, #1)",
+          "book_title": "Wild Love",
+          "author": "Elsie Silver",
+          "goodreads_id": "199821855",
+          "user_rating": 4,
+          "user_read_at": "2025-02-21T06:00:00.000Z",
+          "index": 419,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Wingman (Vancouver Storm, #3)",
+        "book_title": "The Wingman",
+        "author": "Stephanie  Archer",
+        "goodreads_id": "7336393291",
+        "user_rating": null,
+        "user_read_at": "2025-02-19T00:00:00.000Z",
+        "index": 96
+      },
+      "duplicates": [
+        {
+          "title": "The Wingman (Vancouver Storm, #3)",
+          "book_title": "The Wingman",
+          "author": "Stephanie  Archer",
+          "goodreads_id": "218358049",
+          "user_rating": 3,
+          "user_read_at": "2025-02-19T06:00:00.000Z",
+          "index": 418,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "The Fake Out (Vancouver Storm, #2)",
+        "book_title": "The Fake Out",
+        "author": "Stephanie  Archer",
+        "goodreads_id": "7299607635",
+        "user_rating": null,
+        "user_read_at": "2025-02-18T00:00:00.000Z",
+        "index": 97
+      },
+      "duplicates": [
+        {
+          "title": "The Fake Out (Vancouver Storm, #2)",
+          "book_title": "The Fake Out",
+          "author": "Stephanie  Archer",
+          "goodreads_id": "202601495",
+          "user_rating": 3,
+          "user_read_at": "2025-02-18T06:00:00.000Z",
+          "index": 417,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Behind the Net (Vancouver Storm, #1)",
+        "book_title": "Behind the Net",
+        "author": "Stephanie  Archer",
+        "goodreads_id": "7329814414",
+        "user_rating": null,
+        "user_read_at": "2025-02-17T00:00:00.000Z",
+        "index": 98
+      },
+      "duplicates": [
+        {
+          "title": "Behind the Net (Vancouver Storm, #1)",
+          "book_title": "Behind the Net",
+          "author": "Stephanie  Archer",
+          "goodreads_id": "178359156",
+          "user_rating": 3,
+          "user_read_at": "2025-02-17T06:00:00.000Z",
+          "index": 415,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Vengeful Gods (Port Macabre #1)",
+        "book_title": "Vengeful Gods",
+        "author": "Elliott Rose",
+        "goodreads_id": "7324076381",
+        "user_rating": null,
+        "user_read_at": "2025-02-17T00:00:00.000Z",
+        "index": 99
+      },
+      "duplicates": [
+        {
+          "title": "Vengeful Gods (Port Macabre #1)",
+          "book_title": "Vengeful Gods",
+          "author": "Elliott Rose",
+          "goodreads_id": "203505382",
+          "user_rating": 3,
+          "user_read_at": "2025-02-17T06:00:00.000Z",
+          "index": 416,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 1,
+            "reason": "Title: 100.0%, Author: 100.0%",
+            "titleSimilarity": 1,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    },
+    {
+      "primary": {
+        "title": "Pucking Ever After: Volume 1 (Jacksonville Rays, #1.5)",
+        "book_title": "Pucking Ever After: Volume 1",
+        "author": "Emily Rath",
+        "goodreads_id": "131906306",
+        "user_rating": 4,
+        "user_read_at": "2024-05-08T05:00:00.000Z",
+        "index": 226
+      },
+      "duplicates": [
+        {
+          "title": "Pucking Ever After: Volume 2 (Jacksonville Rays)",
+          "book_title": "Pucking Ever After: Volume 2",
+          "author": "Emily Rath",
+          "goodreads_id": "202594184",
+          "user_rating": 5,
+          "user_read_at": "2024-05-09T05:00:00.000Z",
+          "index": 227,
+          "match": {
+            "type": "high_similarity",
+            "confidence": 0.9814814814814814,
+            "reason": "Title: 96.3%, Author: 100.0%",
+            "titleSimilarity": 0.9629629629629629,
+            "authorSimilarity": 1
+          }
+        }
+      ]
+    }
+  ]
+}
