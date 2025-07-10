@@ -5,6 +5,7 @@ const path = require('path');
 const admin = require('firebase-admin');
 const yaml = require('yaml');
 const { firebaseConfig, isFirebaseConfigured, hasFirebaseCredentials } = require('./firebase-config');
+const FuzzyClassificationMatcher = require('./fuzzy-classifier');
 require('dotenv').config();
 
 const app = express();
@@ -50,6 +51,20 @@ const REFLECTIONS_DIR = path.join(__dirname, '../reflections');
 const REFLECTION_TEMPLATE = path.join(__dirname, '../reflections/template.md');
 const REPORTS_DIR = path.join(__dirname, '../reports');
 
+// Initialize fuzzy matcher
+const fuzzyMatcher = new FuzzyClassificationMatcher();
+let fuzzyMatcherReady = false;
+
+// Initialize fuzzy matcher on startup
+fuzzyMatcher.initialize(CLASSIFICATIONS_FILE)
+  .then(() => {
+    fuzzyMatcherReady = true;
+    console.log('✅ Fuzzy classification matcher ready');
+  })
+  .catch(error => {
+    console.error('❌ Failed to initialize fuzzy matcher:', error.message);
+  });
+
 // Helper functions
 async function readBooksFile() {
   try {
@@ -75,60 +90,97 @@ async function readClassificationsFile() {
   }
 }
 
-// Validation functions
-function validateBookFields(bookData, classifications) {
+// Enhanced validation with fuzzy matching
+function validateBookFields(bookData, classifications, options = {}) {
   const errors = [];
+  const warnings = [];
+  const matched = {};
   
-  // Validate status
+  // Validate status (keep strict validation)
   const validStatuses = ['TBR', 'Reading', 'Finished', 'DNF', 'Archived'];
   if (bookData.status && !validStatuses.includes(bookData.status)) {
     errors.push(`Invalid status: ${bookData.status}. Must be one of: ${validStatuses.join(', ')}`);
   }
   
-  // Validate genre
-  if (bookData.genre && classifications.Genres) {
-    const validGenres = classifications.Genres.map(g => g.Genre);
-    if (!validGenres.includes(bookData.genre)) {
-      errors.push(`Invalid genre: ${bookData.genre}. Must be one of the genres in classifications.yaml`);
+  // Use fuzzy matcher if available, otherwise fall back to strict validation
+  if (fuzzyMatcherReady) {
+    const validation = fuzzyMatcher.validateBookData(bookData, {
+      genreThreshold: options.genreThreshold || 0.7,
+      subgenreThreshold: options.subgenreThreshold || 0.6,
+      tropeThreshold: options.tropeThreshold || 0.6,
+      allowSuggestions: true
+    });
+    
+    if (!validation.isValid) {
+      errors.push(...validation.errors);
     }
-  }
-  
-  // Validate subgenre
-  if (bookData.subgenre && classifications.Genres) {
-    const validSubgenres = classifications.Genres.flatMap(g => g.Subgenre || []);
-    if (!validSubgenres.includes(bookData.subgenre)) {
-      errors.push(`Invalid subgenre: ${bookData.subgenre}. Must be one of the subgenres in classifications.yaml`);
+    warnings.push(...validation.warnings);
+    Object.assign(matched, validation.matched);
+    
+    // Add suggestions to help AI agents
+    if (Object.keys(validation.suggestions).length > 0) {
+      matched._suggestions = validation.suggestions;
     }
-  }
-  
-  // Validate tropes
-  if (bookData.tropes && Array.isArray(bookData.tropes) && classifications.Tropes) {
-    // Get all valid tropes from all genre groups (case-insensitive)
-    const validTropes = [];
-    classifications.Tropes.forEach(genreGroup => {
-      if (genreGroup.Tropes && Array.isArray(genreGroup.Tropes)) {
-        genreGroup.Tropes.forEach(trope => {
-          validTropes.push(trope.toLowerCase());
-        });
+  } else {
+    // Fallback to strict validation
+    console.warn('⚠️ Fuzzy matcher not ready, using strict validation');
+    
+    // Validate genre (strict)
+    if (bookData.genre && classifications.Genres) {
+      const validGenres = classifications.Genres.map(g => g.Genre);
+      if (!validGenres.includes(bookData.genre)) {
+        errors.push(`Invalid genre: ${bookData.genre}. Must be one of the genres in classifications.yaml`);
       }
-    });
+    }
     
-    // Check each provided trope against valid tropes (case-insensitive)
-    const invalidTropes = bookData.tropes.filter(trope => {
-      const lowerTrope = trope.toLowerCase();
-      return !validTropes.includes(lowerTrope);
-    });
+    // Validate subgenre (strict)
+    if (bookData.subgenre && classifications.Genres) {
+      const validSubgenres = classifications.Genres.flatMap(g => g.Subgenre || []);
+      if (!validSubgenres.includes(bookData.subgenre)) {
+        errors.push(`Invalid subgenre: ${bookData.subgenre}. Must be one of the subgenres in classifications.yaml`);
+      }
+    }
     
-    if (invalidTropes.length > 0) {
-      errors.push(`Invalid tropes: ${invalidTropes.join(', ')}. Must be from classifications.yaml`);
+    // Validate tropes (strict)
+    if (bookData.tropes && Array.isArray(bookData.tropes) && classifications.Tropes) {
+      const validTropes = [];
+      classifications.Tropes.forEach(genreGroup => {
+        if (genreGroup.Tropes && Array.isArray(genreGroup.Tropes)) {
+          genreGroup.Tropes.forEach(trope => {
+            validTropes.push(trope.toLowerCase());
+          });
+        }
+      });
+      
+      const invalidTropes = bookData.tropes.filter(trope => {
+        const lowerTrope = trope.toLowerCase();
+        return !validTropes.includes(lowerTrope);
+      });
+      
+      if (invalidTropes.length > 0) {
+        errors.push(`Invalid tropes: ${invalidTropes.join(', ')}. Must be from classifications.yaml`);
+      }
     }
   }
   
-  // Validate spice level
+  // Validate spice level (enhanced with fuzzy matching)
   if (bookData.spice !== undefined && bookData.spice !== null) {
-    const spiceLevel = parseInt(bookData.spice);
-    if (isNaN(spiceLevel) || spiceLevel < 1 || spiceLevel > 5) {
-      errors.push('Invalid spice level. Must be an integer between 1 and 5');
+    if (fuzzyMatcherReady) {
+      const spiceMatch = fuzzyMatcher.matchSpiceLevel(bookData.spice);
+      if (spiceMatch) {
+        matched.spice = spiceMatch.value;
+        if (spiceMatch.confidence < 0.8) {
+          warnings.push(`Spice level "${bookData.spice}" matched with ${(spiceMatch.confidence * 100).toFixed(0)}% confidence`);
+        }
+      } else {
+        errors.push(`Could not interpret spice level: "${bookData.spice}". Use 1-5 or descriptive terms.`);
+      }
+    } else {
+      // Strict validation for spice
+      const spiceLevel = parseInt(bookData.spice);
+      if (isNaN(spiceLevel) || spiceLevel < 1 || spiceLevel > 5) {
+        errors.push('Invalid spice level. Must be an integer between 1 and 5');
+      }
     }
   }
   
@@ -140,7 +192,12 @@ function validateBookFields(bookData, classifications) {
     }
   }
   
-  return errors;
+  return { 
+    errors, 
+    warnings, 
+    matched,
+    fuzzyMatchingEnabled: fuzzyMatcherReady 
+  };
 }
 
 async function writeBooksFile(books) {
@@ -800,16 +857,23 @@ app.patch('/api/books/:id', async (req, res) => {
     
     // Validate fields against classifications
     const classifications = await readClassificationsFile();
-    const validationErrors = validateBookFields(updates, classifications);
-    if (validationErrors.length > 0) {
+    const validation = validateBookFields(updates, classifications);
+    if (validation.errors.length > 0) {
       return res.status(400).json({ 
         error: 'Validation failed', 
-        details: validationErrors 
+        details: validation.errors,
+        warnings: validation.warnings,
+        suggestions: validation.matched._suggestions || {},
+        fuzzyMatchingEnabled: validation.fuzzyMatchingEnabled
       });
     }
     
     const books = await readBooksFile();
-    const bookIndex = books.findIndex(book => book.goodreads_id === id);
+    // Try to find book by goodreads_id first, then by guid for RSS books
+    let bookIndex = books.findIndex(book => book.goodreads_id === id);
+    if (bookIndex === -1) {
+      bookIndex = books.findIndex(book => book.guid === id);
+    }
     
     if (bookIndex === -1) {
       return res.status(404).json({ error: 'Book not found' });
@@ -817,10 +881,17 @@ app.patch('/api/books/:id', async (req, res) => {
     
     const originalBook = { ...books[bookIndex] };
     
+    // Apply fuzzy-matched values if available
+    const finalUpdates = { ...updates };
+    if (validation.matched && Object.keys(validation.matched).length > 0) {
+      const { _suggestions, ...matchedData } = validation.matched;
+      Object.assign(finalUpdates, matchedData);
+    }
+    
     // Apply updates
     books[bookIndex] = {
       ...books[bookIndex],
-      ...updates,
+      ...finalUpdates,
       updated_at: new Date().toISOString()
     };
     
@@ -856,12 +927,17 @@ app.patch('/api/books/:id', async (req, res) => {
     res.json({ 
       message: 'Book updated successfully',
       book: books[bookIndex],
-      changes: Object.keys(updates),
-      previous: Object.keys(updates).reduce((prev, key) => {
+      changes: Object.keys(finalUpdates),
+      previous: Object.keys(finalUpdates).reduce((prev, key) => {
         prev[key] = originalBook[key];
         return prev;
       }, {}),
-      firebase_sync: syncResult
+      firebase_sync: syncResult,
+      validation: {
+        warnings: validation.warnings,
+        fuzzyMatched: validation.matched || {},
+        fuzzyMatchingEnabled: validation.fuzzyMatchingEnabled
+      }
     });
   } catch (error) {
     console.error('Error updating book:', error);
@@ -874,7 +950,11 @@ app.get('/api/books/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const books = await readBooksFile();
-    const book = books.find(book => book.goodreads_id === id);
+    // Try to find book by goodreads_id first, then by guid for RSS books
+    let book = books.find(book => book.goodreads_id === id);
+    if (!book) {
+      book = books.find(book => book.guid === id);
+    }
     
     if (!book) {
       return res.status(404).json({ error: 'Book not found' });
@@ -1111,10 +1191,122 @@ ${books.filter(b => b.status === 'TBR')
 app.get('/api/classifications', async (req, res) => {
   try {
     const classifications = await readClassificationsFile();
-    res.json(classifications);
+    
+    // Add fuzzy matcher capabilities if available
+    if (fuzzyMatcherReady) {
+      const available = fuzzyMatcher.getAvailableClassifications();
+      res.json({
+        ...classifications,
+        fuzzyMatching: {
+          enabled: true,
+          available: available,
+          endpoints: {
+            classify: '/api/classify-book',
+            match: '/api/match-classification'
+          }
+        }
+      });
+    } else {
+      res.json({
+        ...classifications,
+        fuzzyMatching: {
+          enabled: false,
+          message: 'Fuzzy matching not available'
+        }
+      });
+    }
   } catch (error) {
     console.error('Error reading classifications:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/classify-book - AI agent endpoint for intelligent book classification
+app.post('/api/classify-book', async (req, res) => {
+  try {
+    if (!fuzzyMatcherReady) {
+      return res.status(503).json({ 
+        error: 'Fuzzy classification not available',
+        message: 'Please try again in a moment'
+      });
+    }
+    
+    const bookData = req.body;
+    if (!bookData || Object.keys(bookData).length === 0) {
+      return res.status(400).json({ error: 'Book data is required' });
+    }
+    
+    const result = fuzzyMatcher.classifyBook(bookData);
+    
+    res.json({
+      success: true,
+      classification: result,
+      usage: {
+        tip: 'Use the matched values in your book creation/update requests',
+        example: {
+          original: bookData,
+          recommended: result.matched
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error in book classification:', error);
+    res.status(500).json({ error: 'Classification failed' });
+  }
+});
+
+// POST /api/match-classification - Match specific classification fields
+app.post('/api/match-classification', async (req, res) => {
+  try {
+    if (!fuzzyMatcherReady) {
+      return res.status(503).json({ 
+        error: 'Fuzzy matching not available',
+        message: 'Please try again in a moment'
+      });
+    }
+    
+    const { type, value, threshold } = req.body;
+    
+    if (!type || !value) {
+      return res.status(400).json({ 
+        error: 'Type and value are required',
+        supportedTypes: ['genre', 'subgenre', 'tropes', 'spice']
+      });
+    }
+    
+    let result = null;
+    
+    switch (type.toLowerCase()) {
+      case 'genre':
+        result = fuzzyMatcher.matchGenre(value, threshold);
+        break;
+      case 'subgenre':
+        result = fuzzyMatcher.matchSubgenre(value, threshold);
+        break;
+      case 'tropes':
+        const tropes = Array.isArray(value) ? value : [value];
+        result = fuzzyMatcher.matchTropes(tropes, threshold);
+        break;
+      case 'spice':
+        result = fuzzyMatcher.matchSpiceLevel(value);
+        break;
+      default:
+        return res.status(400).json({ 
+          error: `Unsupported type: ${type}`,
+          supportedTypes: ['genre', 'subgenre', 'tropes', 'spice']
+        });
+    }
+    
+    res.json({
+      success: true,
+      type,
+      input: value,
+      match: result,
+      confidence: result ? (Array.isArray(result) ? result.map(r => r.confidence) : result.confidence) : null
+    });
+  } catch (error) {
+    console.error('Error in classification matching:', error);
+    res.status(500).json({ error: 'Matching failed' });
   }
 });
 

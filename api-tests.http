@@ -72,8 +72,8 @@ GET {{baseUrl}}/api/books?sort=title&order=asc
 GET {{baseUrl}}/api/books?status=TBR&genre=Fantasy&sort=queue_position&order=asc&limit=5
 
 ###
-# GET /api/books/:id - Get specific book
-GET {{baseUrl}}/api/books/123456
+# GET /api/books/:id - Get specific book (using RSS guid)
+GET {{baseUrl}}/api/books/https://www.goodreads.com/review/show/7714008089?utm_medium=api&utm_source=rss
 
 ###
 # GET /api/queue - Get TBR queue
@@ -185,8 +185,8 @@ Content-Type: {{contentType}}
 }
 
 ###
-# PATCH /api/books/:id - Update book status
-PATCH {{baseUrl}}/api/books/123456
+# PATCH /api/books/:id - Update book status (using RSS guid)
+PATCH {{baseUrl}}/api/books/https://www.goodreads.com/review/show/7714008089?utm_medium=api&utm_source=rss
 Content-Type: {{contentType}}
 
 {
@@ -194,19 +194,22 @@ Content-Type: {{contentType}}
 }
 
 ###
-# PATCH /api/books/:id - Update book rating and notes
-PATCH {{baseUrl}}/api/books/123456
+# PATCH /api/books/:id - Update book with metadata
+PATCH {{baseUrl}}/api/books/https://www.goodreads.com/review/show/7714008089?utm_medium=api&utm_source=rss
 Content-Type: {{contentType}}
 
 {
+  "genre": "Romance",
+  "subgenre": "Contemporary Romance",
+  "tropes": ["Sports Romance", "Fake Relationship", "Friends to Lovers"],
+  "spice": 4,
   "liked": true,
-  "notes": "Incredible world-building and character development. Slow start but worth it.",
-  "rating_scale_tag": "5-star"
+  "notes": "Great sports romance with excellent banter!"
 }
 
 ###
-# PATCH /api/books/:id - Update queue position
-PATCH {{baseUrl}}/api/books/789012
+# PATCH /api/books/:id - Update queue position (second book)
+PATCH {{baseUrl}}/api/books/https://www.goodreads.com/review/show/7481583853?utm_medium=api&utm_source=rss
 Content-Type: {{contentType}}
 
 {
@@ -234,7 +237,7 @@ Content-Type: {{contentType}}
 
 ###
 # PATCH /api/books/:id - Update spice level
-PATCH {{baseUrl}}/api/books/789012
+PATCH {{baseUrl}}/api/books/123456
 Content-Type: {{contentType}}
 
 {
@@ -262,8 +265,8 @@ Content-Type: {{contentType}}
 }
 
 ###
-# PATCH /api/books/:id - Mark as finished
-PATCH {{baseUrl}}/api/books/123456
+# PATCH /api/books/:id - Mark as finished (triggers reflection)
+PATCH {{baseUrl}}/api/books/https://www.goodreads.com/review/show/7714008089?utm_medium=api&utm_source=rss
 Content-Type: {{contentType}}
 
 {

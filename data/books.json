@@ -1,12 +1,12 @@
 [
   {
     "guid": "https://www.goodreads.com/review/show/7714008089?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7714008089",
     "title": "Power Play",
     "author_name": "Chelsea Curto",
     "series_name": "D.C. Stars",
     "series_number": 2,
-    "status": "TBR",
+    "status": "Finished",
     "book_description": "Piper Mitchell needs one thing to go her way.<br /><br />Divorced, feeling stuck in her professional life and terrified of reentering the world of dating, she's decided she's going to work on something she can control: learning how to be good in the bedroom.<br /><br />Enter Liam Sullivan.<br /><br />The star NHL goalie might not be a people person, but he's the perfect teacher. He knows what he's doing behind closed doors, and with a little convincing, he agrees to be Piper's guide.<br /><br />Things between them are casual and easy. Something they can both benefit from. And when a road trip to Vegas as Piper and Liam waking up from a night they can't remember with matching wedding rings, they decide to figure out how much more fun they can have as husband and wife.<br /><br />It's just for the hockey season. It doesn't mean anything.<br /><br />But as the clock ticks down on their fake-marriage-with-benefits, can Piper and Liam make it work in the real world? Or will their relationship be a power play straight to disaster?<br /><br />Power Play is a spicy friends-to-lovers sports romance with the teach me trope, a sprinkle of fake dating and accidental marriage and a guaranteed happily ever after.",
     "isbn": "",
     "average_rating": 4.2,
@@ -16,19 +16,24 @@
     "image_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1729979695l/203691229._SY75_.jpg",
     "genre": null,
     "subgenre": null,
-    "tropes": [],
+    "tropes": [
+      "Sports Romance (Baseball, Fighters, Football, Hockey, Soccer, F1, etc.)",
+      "Fake Relationship"
+    ],
     "spice": null,
-    "queue_position": 1,
+    "queue_position": null,
     "queue_priority": null,
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
-    "added_at": "2025-07-08T19:48:18.605Z"
+    "updated_at": "2025-07-10T03:56:28.321Z",
+    "added_at": "2025-07-08T19:48:18.605Z",
+    "reflection_pending": true,
+    "completed_at": "2025-07-10T03:53:54.273Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7481583853?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7481583853",
     "title": "Face Off",
     "author_name": "Chelsea Curto",
     "series_name": "D.C. Stars,",
@@ -50,12 +55,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7632021277?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7632021277",
     "title": "All Superheroes Need PR",
     "author_name": "Elizabeth  Stephens",
     "series_name": "Supers in the City,",
@@ -77,12 +82,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411331231?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411331231",
     "title": "Gloves Off",
     "author_name": "Stephanie  Archer",
     "series_name": "Vancouver Storm,",
@@ -104,12 +109,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299605122?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299605122",
     "title": "Heartless",
     "author_name": "Elsie Silver",
     "series_name": "Chestnut Springs,",
@@ -131,12 +136,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6432658252?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6432658252",
     "title": "The Seven Year Slip",
     "author_name": "Ashley Poston",
     "series_name": null,
@@ -158,12 +163,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7628664224?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7628664224",
     "title": "Severed Heart",
     "author_name": "Kate  Stewart",
     "series_name": "Ravenhood Legacy",
@@ -185,12 +190,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7628676669?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7628676669",
     "title": "It's a Love Story",
     "author_name": "Annabel Monaghan",
     "series_name": null,
@@ -212,12 +217,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7668021234?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7668021234",
     "title": "Till Summer Do Us Part",
     "author_name": "Meghan Quinn",
     "series_name": null,
@@ -239,12 +244,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7312636222?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7312636222",
     "title": "Daydream",
     "author_name": "Hannah  Grace",
     "series_name": "Maple Hills,",
@@ -266,12 +271,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7668652235?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7668652235",
     "title": "Trust Me Always",
     "author_name": "Meagan Brandy",
     "series_name": "Boys of Avix,",
@@ -293,12 +298,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7669830746?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7669830746",
     "title": "Great Big Beautiful Life",
     "author_name": "Emily Henry",
     "series_name": null,
@@ -320,12 +325,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7657379307?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7657379307",
     "title": "Wildfire",
     "author_name": "Hannah  Grace",
     "series_name": "Maple Hills,",
@@ -347,12 +352,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411311838?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411311838",
     "title": "Not Another Love Song",
     "author_name": "Julie  Soto",
     "series_name": null,
@@ -374,12 +379,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7631222575?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7631222575",
     "title": "Tomorrow, and Tomorrow, and Tomorrow",
     "author_name": "Gabrielle Zevin",
     "series_name": null,
@@ -401,12 +406,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299611578?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299611578",
     "title": "Caught Up: Into Darkness Trilogy (Into Darkness Series)",
     "author_name": "Navessa Allen",
     "series_name": null,
@@ -428,12 +433,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7638817305?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7638817305",
     "title": "Remember Me This Way",
     "author_name": "C.R. Jane",
     "series_name": "The Sound of Us",
@@ -455,12 +460,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7638132777?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7638132777",
     "title": "Remember You This Way",
     "author_name": "C.R. Jane",
     "series_name": "The Sound of Us",
@@ -482,12 +487,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7636577200?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7636577200",
     "title": "Remember Us This Way",
     "author_name": "C.R. Jane",
     "series_name": "The Sound of Us,",
@@ -509,12 +514,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7634736283?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7634736283",
     "title": "The Perfect Fit",
     "author_name": "Sadie Kincaid",
     "series_name": null,
@@ -536,12 +541,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7632016670?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7632016670",
     "title": "Duplicity (Seraph)",
     "author_name": "Elodie Hart",
     "series_name": null,
@@ -563,12 +568,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7628728799?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7628728799",
     "title": "The Kings of Kearny",
     "author_name": "Navessa Allen",
     "series_name": null,
@@ -590,12 +595,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7583836727?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7583836727",
     "title": "Mr. Heartbreaker",
     "author_name": "Piper Rayne",
     "series_name": "The Nest,",
@@ -617,12 +622,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411311176?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411311176",
     "title": "Done and Dusted",
     "author_name": "Lyla Sage",
     "series_name": "Rebel Blue Ranch,",
@@ -644,12 +649,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7617740946?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7617740946",
     "title": "A Love Letter to Whiskey",
     "author_name": "Kandi Steiner",
     "series_name": null,
@@ -671,12 +676,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411331017?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411331017",
     "title": "Problematic Summer Romance",
     "author_name": "Ali Hazelwood",
     "series_name": "Not in Love,",
@@ -698,12 +703,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7601829835?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7601829835",
     "title": "Releasing 10",
     "author_name": "Chloe Walsh",
     "series_name": "Boys of Tommen,",
@@ -725,12 +730,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411313619?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411313619",
     "title": "First-Time Caller",
     "author_name": "B.K. Borison",
     "series_name": "Heartstrings,",
@@ -752,12 +757,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299610720?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299610720",
     "title": "King of Envy",
     "author_name": "Ana Huang",
     "series_name": "Kings of Sin,",
@@ -779,12 +784,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411330521?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411330521",
     "title": "Rewind It Back",
     "author_name": "Liz Tomforde",
     "series_name": "Windy City,",
@@ -806,12 +811,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411326718?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411326718",
     "title": "Dream Girl Drama",
     "author_name": "Tessa Bailey",
     "series_name": "Big Shots,",
@@ -833,12 +838,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299610673?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299610673",
     "title": "Great Big Beautiful Life",
     "author_name": "Emily Henry",
     "series_name": null,
@@ -860,12 +865,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7578850266?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7578850266",
     "title": "Some Kind of Perfect",
     "author_name": "Krista Ritchie",
     "series_name": "Calloway Sisters",
@@ -887,12 +892,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7569311581?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7569311581",
     "title": "Long Way Down",
     "author_name": "Krista Ritchie",
     "series_name": "Calloway Sisters,",
@@ -914,12 +919,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7558335262?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7558335262",
     "title": "Fuel the Fire",
     "author_name": "Krista Ritchie",
     "series_name": "Calloway Sisters",
@@ -941,12 +946,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7558331561?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7558331561",
     "title": "Addicted After All",
     "author_name": "Krista Ritchie",
     "series_name": "Addicted,",
@@ -968,12 +973,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7554468287?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7554468287",
     "title": "Thrive",
     "author_name": "Krista Ritchie",
     "series_name": "Addicted",
@@ -995,12 +1000,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7543530443?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7543530443",
     "title": "Hothouse Flower",
     "author_name": "Krista Ritchie",
     "series_name": "Calloway Sisters",
@@ -1022,12 +1027,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7543529171?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7543529171",
     "title": "Kiss the Sky",
     "author_name": "Krista Ritchie",
     "series_name": "Calloway Sisters,",
@@ -1049,12 +1054,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7540349403?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7540349403",
     "title": "Addicted for Now",
     "author_name": "Krista Ritchie",
     "series_name": "Addicted",
@@ -1076,12 +1081,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7537372169?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7537372169",
     "title": "Ricochet",
     "author_name": "Krista Ritchie",
     "series_name": "Addicted,",
@@ -1103,12 +1108,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7532606298?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7532606298",
     "title": "Addicted to You",
     "author_name": "Krista Ritchie",
     "series_name": "Addicted,",
@@ -1130,12 +1135,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.717Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7524893977?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7524893977",
     "title": "Bittersweet Melody (The Bittersweet Symphony Duet, #2.5)",
     "author_name": "Kate  Stewart",
     "series_name": null,
@@ -1157,12 +1162,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7524518861?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7524518861",
     "title": "Reverse",
     "author_name": "Kate  Stewart",
     "series_name": "The Bittersweet Symphony Duet,",
@@ -1184,12 +1189,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6443668305?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6443668305",
     "title": "Drive",
     "author_name": "Kate  Stewart",
     "series_name": "The Bittersweet Symphony Duet",
@@ -1211,12 +1216,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7511772868?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7511772868",
     "title": "Bridesmaid by Chance",
     "author_name": "Meghan Quinn",
     "series_name": "Bridesmaid for Hire,",
@@ -1238,12 +1243,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7506960621?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7506960621",
     "title": "Fragile Sanctuary",
     "author_name": "Catherine Cowles",
     "series_name": "Sparrow Falls",
@@ -1265,12 +1270,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7500749077?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7500749077",
     "title": "One Last Rainy Day",
     "author_name": "Kate  Stewart",
     "series_name": "Ravenhood Legacy",
@@ -1292,12 +1297,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7500659420?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7500659420",
     "title": "The Finish Line",
     "author_name": "Kate  Stewart",
     "series_name": "The Ravenhood,",
@@ -1319,12 +1324,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7491950623?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7491950623",
     "title": "Exodus",
     "author_name": "Kate  Stewart",
     "series_name": "The Ravenhood",
@@ -1346,12 +1351,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7491902541?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7491902541",
     "title": "Flock (The Ravenhood Book 1)",
     "author_name": "Kate  Stewart",
     "series_name": null,
@@ -1373,12 +1378,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411315556?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411315556",
     "title": "Five Brothers",
     "author_name": "Penelope Douglas",
     "series_name": null,
@@ -1400,12 +1405,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6432658881?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6432658881",
     "title": "Book Lovers",
     "author_name": "Emily Henry",
     "series_name": null,
@@ -1427,12 +1432,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7349922268?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7349922268",
     "title": "Audacity (Seraph)",
     "author_name": "Elodie Hart",
     "series_name": null,
@@ -1454,12 +1459,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7473042453?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7473042453",
     "title": "Fall with Me",
     "author_name": "Becka Mack",
     "series_name": "Playing for Keeps,",
@@ -1481,12 +1486,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7469831561?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7469831561",
     "title": "Unravel Me",
     "author_name": "Becka Mack",
     "series_name": "Playing For Keeps,",
@@ -1508,12 +1513,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7463604325?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7463604325",
     "title": "Play With Me",
     "author_name": "Becka Mack",
     "series_name": "Playing for Keeps,",
@@ -1535,12 +1540,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7320108905?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7320108905",
     "title": "Kiss the Villain",
     "author_name": "Rina Kent",
     "series_name": "Villain",
@@ -1562,12 +1567,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6475580960?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6475580960",
     "title": "People We Meet on Vacation",
     "author_name": "Emily Henry",
     "series_name": null,
@@ -1589,12 +1594,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7448986488?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7448986488",
     "title": "Goldfinch",
     "author_name": "Raven Kennedy",
     "series_name": "The Plated Prisoner,",
@@ -1616,12 +1621,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7414732990?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7414732990",
     "title": "Shatter Me",
     "author_name": "Tahereh Mafi",
     "series_name": "Shatter Me,",
@@ -1643,12 +1648,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411320147?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411320147",
     "title": "Gold",
     "author_name": "Raven Kennedy",
     "series_name": "The Plated Prisoner,",
@@ -1670,12 +1675,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7443130715?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7443130715",
     "title": "Glow",
     "author_name": "Raven Kennedy",
     "series_name": "The Plated Prisoner,",
@@ -1697,12 +1702,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7431594569?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7431594569",
     "title": "Gleam",
     "author_name": "Raven Kennedy",
     "series_name": "The Plated Prisoner,",
@@ -1724,12 +1729,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7431587769?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7431587769",
     "title": "Glint",
     "author_name": "Raven Kennedy",
     "series_name": "The Plated Prisoner,",
@@ -1751,12 +1756,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7423177373?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7423177373",
     "title": "Gild",
     "author_name": "Raven Kennedy",
     "series_name": "The Plated Prisoner,",
@@ -1778,12 +1783,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7426942535?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7426942535",
     "title": "The Heartbreaker",
     "author_name": "Sara Cate",
     "series_name": "The Goode Brothers,",
@@ -1805,12 +1810,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7422676154?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7422676154",
     "title": "The Home Wrecker",
     "author_name": "Sara Cate",
     "series_name": "The Goode Brothers,",
@@ -1832,12 +1837,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7420307715?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7420307715",
     "title": "Shoot Your Shot",
     "author_name": "Lexi LaFleur Brown",
     "series_name": null,
@@ -1859,12 +1864,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7411312951?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7411312951",
     "title": "Ice Mechanic",
     "author_name": "Lia Bevans",
     "series_name": null,
@@ -1886,12 +1891,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7417755236?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7417755236",
     "title": "The Fall Risk",
     "author_name": "Abby Jimenez",
     "series_name": null,
@@ -1913,12 +1918,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7312638295?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7312638295",
     "title": "Quicksilver",
     "author_name": "Callie Hart",
     "series_name": "Fae & Alchemy,",
@@ -1940,12 +1945,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7414741580?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7414741580",
     "title": "Unite Me (Shatter Me, #1.5-2.5)",
     "author_name": "Tahereh Mafi",
     "series_name": null,
@@ -1967,12 +1972,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7363085260?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7363085260",
     "title": "Ignite Me",
     "author_name": "Tahereh Mafi",
     "series_name": "Shatter Me,",
@@ -1994,12 +1999,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7357979627?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7357979627",
     "title": "Unravel Me",
     "author_name": "Tahereh Mafi",
     "series_name": "Shatter Me,",
@@ -2021,12 +2026,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7410580492?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7410580492",
     "title": "Anger Banger",
     "author_name": "S.M. Shade",
     "series_name": "Happy Haven",
@@ -2048,12 +2053,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7409914011?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7409914011",
     "title": "Fake Around and Find Out",
     "author_name": "S.M. Shade",
     "series_name": "Happy Haven,",
@@ -2075,12 +2080,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6453828711?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6453828711",
     "title": "Love on the Brain",
     "author_name": "Ali Hazelwood",
     "series_name": null,
@@ -2102,12 +2107,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6475576595?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6475576595",
     "title": "Beach Read",
     "author_name": "Emily Henry",
     "series_name": null,
@@ -2129,12 +2134,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7402894047?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7402894047",
     "title": "Consider Me",
     "author_name": "Becka Mack",
     "series_name": "Playing For Keeps,",
@@ -2156,12 +2161,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7400541926?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7400541926",
     "title": "The Au Pair Affair",
     "author_name": "Tessa Bailey",
     "series_name": "Big Shots,",
@@ -2183,12 +2188,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7398561110?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7398561110",
     "title": "The Paradise Problem",
     "author_name": "Christina Lauren",
     "series_name": null,
@@ -2210,12 +2215,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6453828297?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6453828297",
     "title": "The Love Hypothesis",
     "author_name": "Ali Hazelwood",
     "series_name": null,
@@ -2237,12 +2242,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7394857728?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7394857728",
     "title": "The Pucking Wrong Date",
     "author_name": "C.R. Jane",
     "series_name": "Pucking Wrong,",
@@ -2264,12 +2269,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7388513946?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7388513946",
     "title": "The Pucking Wrong Guy",
     "author_name": "C.R. Jane",
     "series_name": "Pucking Wrong,",
@@ -2291,12 +2296,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7382972935?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7382972935",
     "title": "The Pucking Wrong Number",
     "author_name": "C.R. Jane",
     "series_name": "Pucking Wrong,",
@@ -2318,12 +2323,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7312637014?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7312637014",
     "title": "Not in Love",
     "author_name": "Ali Hazelwood",
     "series_name": null,
@@ -2345,12 +2350,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299610288?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299610288",
     "title": "Wild Side",
     "author_name": "Elsie Silver",
     "series_name": "Rose Hill,",
@@ -2372,12 +2377,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299609925?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299609925",
     "title": "The Charlie Method",
     "author_name": "Elle Kennedy",
     "series_name": "Campus Diaries,",
@@ -2399,12 +2404,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299607998?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299607998",
     "title": "The Dixon Rule",
     "author_name": "Elle Kennedy",
     "series_name": "Campus Diaries,",
@@ -2426,12 +2431,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299606257?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299606257",
     "title": "The Graham Effect",
     "author_name": "Elle Kennedy",
     "series_name": "Campus Diaries,",
@@ -2453,12 +2458,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299603360?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299603360",
     "title": "Part of Your World",
     "author_name": "Abby Jimenez",
     "series_name": "Part of Your World,",
@@ -2480,12 +2485,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6401880473?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6401880473",
     "title": "Fangirl Down",
     "author_name": "Tessa Bailey",
     "series_name": "Big Shots,",
@@ -2507,12 +2512,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299606515?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299606515",
     "title": "Wild Eyes",
     "author_name": "Elsie Silver",
     "series_name": "Rose Hill,",
@@ -2534,12 +2539,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/6475580568?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "6475580568",
     "title": "Wild Love",
     "author_name": "Elsie Silver",
     "series_name": "Rose Hill,",
@@ -2561,12 +2566,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7336393291?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7336393291",
     "title": "The Wingman",
     "author_name": "Stephanie  Archer",
     "series_name": "Vancouver Storm,",
@@ -2588,12 +2593,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299607635?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299607635",
     "title": "The Fake Out",
     "author_name": "Stephanie  Archer",
     "series_name": "Vancouver Storm,",
@@ -2615,12 +2620,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7329814414?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7329814414",
     "title": "Behind the Net",
     "author_name": "Stephanie  Archer",
     "series_name": "Vancouver Storm,",
@@ -2642,12 +2647,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7324076381?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7324076381",
     "title": "Vengeful Gods",
     "author_name": "Elliott Rose",
     "series_name": "Port Macabre",
@@ -2669,12 +2674,12 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
     "guid": "https://www.goodreads.com/review/show/7299609595?utm_medium=api&utm_source=rss",
-    "goodreads_id": null,
+    "goodreads_id": "7299609595",
     "title": "Deep End",
     "author_name": "Ali Hazelwood",
     "series_name": null,
@@ -2696,7 +2701,7 @@
     "liked": null,
     "disliked": null,
     "notes": null,
-    "updated_at": "2025-07-08T19:48:18.605Z",
+    "updated_at": "2025-07-10T03:43:11.718Z",
     "added_at": "2025-07-08T19:48:18.605Z"
   },
   {
@@ -2705,7 +2710,7 @@
     "author_name": "Brandon Sanderson",
     "status": "Finished",
     "queue_position": null,
-    "updated_at": "2025-07-09T15:22:22.153Z",
+    "updated_at": "2025-07-10T03:49:50.169Z",
     "added_at": "2025-07-08T21:08:42.739Z",
     "series_name": "The Stormlight Archive",
     "series_number": 1,
@@ -2716,7 +2721,7 @@
       "Epic Quest",
       "Magic in the Mundane"
     ],
-    "spice": 1,
+    "spice": 3,
     "book_description": "Epic fantasy about a world torn apart by storms and war.",
     "isbn": "9780765326355",
     "average_rating": 4.65,
