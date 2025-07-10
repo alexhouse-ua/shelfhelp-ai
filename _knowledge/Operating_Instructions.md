@@ -6,7 +6,7 @@
 - Claude Code installed and integrated
 - VS Code with REST Client extension for API testing
 - GitHub repository with automated workflows
-- Add in code snippet to commit to GitHub after every step.
+- Generate git commit commands after completing development tasks.
 - Local development server: `npm run dev`
 - Test endpoints via api-tests.http file
 
@@ -120,12 +120,21 @@
 2. Archive via `DELETE /api/archive_book`; record is moved to `books_archive.json` (retained for stats).
 3. Any associated reflections remain intact but are marked `archived:true`.
 
-### 3.4 Back‑Fill Session
+### 3.4 AI-Driven Back‑Fill Session
 
-1. User issues `/backfill missing`.
-2. Assistant returns list of records with missing critical fields.
-3. For each book, attempt automated enrichment (web scrape) first; if still incomplete, prompt user.
-4. Results persisted and RAG index rebuilt.
+1. **User issues** `/backfill missing` or AI assistant autonomously detects 0% classification completion.
+2. **AI Research Phase**: Assistant systematically processes unclassified books using web search:
+   - Searches Goodreads, Amazon, publisher sites, book databases
+   - Uses multiple query patterns: `"[title]" by [author] genre classification`, `"[title]" book review tropes`
+   - Cross-validates findings across multiple authoritative sources
+   - Applies fuzzy matching against `classifications.yaml` taxonomy
+3. **Confidence-Based Decision Tree**:
+   - **High confidence (>90%)**: Auto-classify with detailed source attribution
+   - **Medium confidence (70-90%)**: Suggest classification with reasoning for user review  
+   - **Low confidence (<70%)**: Generate enhanced user prompt with AI research findings
+4. **Validation & Persistence**: All classifications validated through `/api/match-classification` endpoint
+5. **Audit Trail**: Complete source documentation and reasoning logged in `history/*.jsonl`
+6. **Results**: Target 95%+ field completion from current 0% (411/411 books missing classification data)
 
 ---
 
