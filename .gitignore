@@ -34,4 +34,13 @@ build/
 .Trashes
 ehthumbs.db
 Thumbs.dbfirebase-service-account.json
-firebase-service-account.json
+
+# Working files and temporary data
+data/books_backup_*.json
+goodreads_library_export*.csv
+reports/*analysis*.json
+reports/*migration*.json
+reports/*summary*.json
+scripts/*analysis*.js
+scripts/*migration*.js
+scripts/*strategy*.js
