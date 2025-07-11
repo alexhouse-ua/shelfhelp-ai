@@ -7,6 +7,7 @@ const yaml = require('yaml');
 const { firebaseConfig, isFirebaseConfigured, hasFirebaseCredentials } = require('./firebase-config');
 const FuzzyClassificationMatcher = require('./fuzzy-classifier');
 const { SimpleVectorStore, SimpleEmbedder } = require('./rag-ingest');
+const { RecommendationSourcesManager } = require('./recommendation-sources');
 require('dotenv').config();
 
 const app = express();
@@ -63,6 +64,10 @@ let vectorStore = null;
 let embedder = null;
 let ragReady = false;
 
+// Initialize recommendation sources manager
+const recommendationSources = new RecommendationSourcesManager();
+let sourcesReady = false;
+
 // Initialize fuzzy matcher on startup
 fuzzyMatcher.initialize(CLASSIFICATIONS_FILE)
   .then(() => {
@@ -103,6 +108,21 @@ async function initializeRAG() {
 }
 
 initializeRAG();
+
+// Initialize recommendation sources on startup
+async function initializeSources() {
+  try {
+    await recommendationSources.loadSources();
+    sourcesReady = true;
+    const info = await recommendationSources.getSourcesInfo();
+    console.log(`✅ Recommendation sources ready (${info.totalSources} sources loaded)`);
+  } catch (error) {
+    console.error('❌ Failed to initialize recommendation sources:', error.message);
+    sourcesReady = false;
+  }
+}
+
+initializeSources();
 
 // Helper functions
 async function readBooksFile() {
@@ -2893,7 +2913,15 @@ app.get('/api/recommendations/similar/:bookId', async (req, res) => {
 // POST /api/recommendations/discover - External book discovery via web search
 app.post('/api/recommendations/discover', async (req, res) => {
   try {
-    const { query, preferences, limit = 5, add_to_tbr = false } = req.body;
+    if (!sourcesReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'Recommendation sources not ready',
+        message: 'Source manager is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { query, preferences = {}, limit = 5, add_to_tbr = false, include_strategy = true } = req.body;
     
     if (!query) {
       return res.status(400).json({
@@ -2902,48 +2930,72 @@ app.post('/api/recommendations/discover', async (req, res) => {
         message: 'Please provide a search query for book discovery'
       });
     }
+
+    // Get books for duplicate checking
+    const books = await readBooksFile();
     
-    // This endpoint is designed to work with AI assistants that can perform web searches
-    // The AI should search for books and provide structured results
+    // Generate intelligent recommendation strategy
+    const strategy = await recommendationSources.getRecommendationStrategy(query, preferences);
     
     const discoveryResponse = {
       success: true,
       query: query,
-      search_suggestions: [
-        `"${query}" book recommendations 2024`,
-        `"${query}" goodreads best books`,
-        `"${query}" amazon bestsellers`,
-        `"${query}" book reviews`,
-        `"${query}" similar to books`
-      ],
-      discovery_strategy: {
-        step1: 'AI performs web search for book recommendations',
-        step2: 'AI extracts book titles, authors, descriptions, genres',
-        step3: 'AI validates against existing library to avoid duplicates',
-        step4: 'AI optionally adds books to TBR via /api/books endpoint',
-        step5: 'Return discovered books with metadata'
+      detected_intent: {
+        scope: strategy.strategy.detectedScope,
+        category: strategy.strategy.detectedCategory,
+        is_romance: strategy.strategy.isRomanceQuery,
+        is_trending: strategy.strategy.isTrendingQuery
       },
-      user_preferences: preferences || 'Not specified',
+      search_queries: strategy.searchQueries.map(q => ({
+        query: q.query,
+        source: q.source,
+        source_url: q.url,
+        priority: q.priority.toFixed(2),
+        search_pattern: q.pattern
+      })),
+      prioritized_sources: {
+        tier1_primary: strategy.recommendations.primary_sources.map(s => ({
+          name: s.name,
+          url: s.url,
+          scope: s.scope,
+          categories: s.categories,
+          weight: s.weight.toFixed(2)
+        })),
+        tier2_backup: strategy.recommendations.backup_sources.map(s => ({
+          name: s.name,
+          url: s.url,
+          scope: s.scope,
+          categories: s.categories,
+          weight: s.weight.toFixed(2)
+        }))
+      },
+      user_preferences: preferences,
       add_to_tbr: add_to_tbr,
+      total_books_in_library: books.length,
       instructions: {
-        for_ai: 'Use web search to find books matching the query. Extract: title, author, description, genre, publication year, rating. Check against existing library using /api/books?search=<title> to avoid duplicates.',
-        expected_format: {
-          discovered_books: [
-            {
-              title: 'Book Title',
-              author: 'Author Name', 
-              description: 'Book description...',
-              genre: 'Genre',
-              subgenre: 'Subgenre if available',
-              publication_year: 2024,
-              average_rating: 4.2,
-              source: 'goodreads/amazon/etc',
-              reason: 'Why this matches the query'
-            }
-          ]
-        }
+        for_ai: `Execute the provided search queries in priority order. For each discovered book, validate against existing library (${books.length} books) to avoid duplicates. Focus on ${strategy.strategy.detectedScope} scope with ${strategy.strategy.detectedCategory} category emphasis.`,
+        search_execution: 'Use the search_queries array in order of priority. Each query includes the source URL for context.',
+        validation_endpoint: '/api/books?search=<title> - Check for existing books',
+        add_book_endpoint: add_to_tbr ? '/api/books - POST to add discovered books to TBR' : null,
+        expected_fields: [
+          'title', 'author', 'description', 'genre', 'subgenre', 
+          'publication_year', 'average_rating', 'source', 'discovery_reason'
+        ]
       }
     };
+
+    // Include full strategy details if requested
+    if (include_strategy) {
+      discoveryResponse.strategy_details = {
+        total_sources_available: strategy.sources.length,
+        source_distribution: {
+          tier1: strategy.sources.filter(s => s.tier === 'tier1_primary').length,
+          tier2: strategy.sources.filter(s => s.tier === 'tier2_secondary').length,
+          tier3: strategy.sources.filter(s => s.tier === 'tier3_extended').length
+        },
+        next_steps: strategy.recommendations.next_steps
+      };
+    }
     
     res.json(discoveryResponse);
     
@@ -2953,6 +3005,158 @@ app.post('/api/recommendations/discover', async (req, res) => {
       success: false,
       error: error.message,
       message: 'Failed to process book discovery request'
+    });
+  }
+});
+
+// POST /api/recommendations/validate - Validate discovered books
+app.post('/api/recommendations/validate', async (req, res) => {
+  try {
+    if (!sourcesReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'Recommendation sources not ready',
+        message: 'Source manager is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { books: discoveredBooks = [], user_preferences = {} } = req.body;
+    
+    if (!Array.isArray(discoveredBooks) || discoveredBooks.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Books array is required',
+        message: 'Please provide an array of discovered books to validate'
+      });
+    }
+
+    // Get existing books for duplicate checking
+    const existingBooks = await readBooksFile();
+    
+    const validationResults = [];
+    
+    for (const bookData of discoveredBooks) {
+      // Validate book data quality
+      const validation = await recommendationSources.validateDiscoveredBook(bookData, existingBooks);
+      
+      // Score the recommendation (requires source info)
+      const sourceInfo = { 
+        tier: 'tier1_primary', // Default if not provided
+        weight: 1.0,
+        ...bookData.source_info 
+      };
+      const scoring = await recommendationSources.scoreRecommendation(bookData, sourceInfo, user_preferences);
+      
+      validationResults.push({
+        book: bookData,
+        validation: validation,
+        scoring: scoring,
+        recommendation: {
+          should_add: validation.isValid && !validation.isDuplicate && scoring.totalScore > 0.5,
+          confidence: validation.confidence,
+          total_score: scoring.totalScore.toFixed(2),
+          issues: validation.issues,
+          suggestions: validation.suggestions
+        }
+      });
+    }
+
+    // Sort by total score (best recommendations first)
+    validationResults.sort((a, b) => b.scoring.totalScore - a.scoring.totalScore);
+    
+    const summary = {
+      total_books: discoveredBooks.length,
+      valid_books: validationResults.filter(r => r.validation.isValid).length,
+      recommended_books: validationResults.filter(r => r.recommendation.should_add).length,
+      duplicate_books: validationResults.filter(r => r.validation.isDuplicate).length,
+      average_score: validationResults.reduce((sum, r) => sum + r.scoring.totalScore, 0) / validationResults.length
+    };
+
+    res.json({
+      success: true,
+      summary: summary,
+      validated_books: validationResults,
+      recommendations: {
+        top_picks: validationResults
+          .filter(r => r.recommendation.should_add)
+          .slice(0, 5)
+          .map(r => ({
+            title: r.book.title,
+            author: r.book.author,
+            score: r.scoring.totalScore.toFixed(2),
+            source: r.book.source,
+            reasoning: r.scoring.reasoning
+          })),
+        needs_review: validationResults
+          .filter(r => r.validation.issues.length > 0 && !r.validation.isDuplicate)
+          .map(r => ({
+            title: r.book.title,
+            author: r.book.author,
+            issues: r.validation.issues,
+            suggestions: r.validation.suggestions
+          }))
+      }
+    });
+    
+  } catch (error) {
+    console.error('Book validation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to validate discovered books'
+    });
+  }
+});
+
+// GET /api/recommendations/sources - Get recommendation sources info
+app.get('/api/recommendations/sources', async (req, res) => {
+  try {
+    if (!sourcesReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'Recommendation sources not ready',
+        message: 'Source manager is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { category, scope, tier } = req.query;
+    
+    if (category) {
+      // Get sources by category
+      const sources = await recommendationSources.getSourcesByCategory(category, scope);
+      res.json({
+        success: true,
+        category: category,
+        scope: scope || 'overall',
+        sources: sources.map(s => ({
+          name: s.name,
+          url: s.url,
+          scope: s.scope,
+          tier: s.tier,
+          priority: s.priority,
+          categories: s.categories
+        }))
+      });
+    } else {
+      // Get general sources info
+      const info = await recommendationSources.getSourcesInfo();
+      res.json({
+        success: true,
+        sources_info: info,
+        available_filters: {
+          categories: Object.keys(info.categoryBreakdown),
+          scopes: Object.keys(info.scopeBreakdown),
+          tiers: Object.keys(info.tierBreakdown)
+        }
+      });
+    }
+    
+  } catch (error) {
+    console.error('Sources info error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to retrieve sources information'
     });
   }
 });
