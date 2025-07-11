@@ -33,7 +33,10 @@ build/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.dbfirebase-service-account.json
+Thumbs.db
+
+# Firebase credentials (sensitive)
+firebase-service-account.json
 
 # Working files and temporary data
 data/books_backup_*.json
