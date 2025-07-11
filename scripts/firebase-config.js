@@ -1,11 +1,11 @@
 require('dotenv').config();
 
-// Firebase configuration with graceful fallback
+// Firebase configuration - requires environment variables
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyB4TakMQWbIxBw7rHz6zaw0tN5f7vc9nVE",
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || "shelfhelp-ai.firebaseapp.com",
-  databaseURL: process.env.FIREBASE_DATABASE_URL || "https://shelfhelp-ai-default-rtdb.firebaseio.com",
-  projectId: process.env.FIREBASE_PROJECT_ID || "shelfhelp-ai"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  projectId: process.env.FIREBASE_PROJECT_ID
 };
 
 // Check if Firebase is properly configured

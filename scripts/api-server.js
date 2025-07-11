@@ -17,9 +17,41 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Security middleware
+const helmet = require('helmet');
+app.use(helmet());
+
+// API key authentication middleware
+const requireApiKey = (req, res, next) => {
+  // Skip authentication for health check and status endpoints
+  if (req.path === '/health' || req.path === '/status') {
+    return next();
+  }
+  
+  const apiKey = req.headers['x-api-key'];
+  const expectedKey = process.env.API_KEY;
+  
+  if (!expectedKey) {
+    console.warn('⚠️ API_KEY environment variable not set - running without authentication');
+    return next();
+  }
+  
+  if (!apiKey || apiKey !== expectedKey) {
+    return res.status(401).json({ 
+      error: 'Unauthorized',
+      message: 'Valid API key required in x-api-key header'
+    });
+  }
+  
+  next();
+};
+
+// Basic middleware
 app.use(cors());
 app.use(express.json());
+
+// Apply authentication to all API routes
+app.use('/api', requireApiKey);
 
 // Firebase configuration - disabled by default to prevent socket hangs
 let db = null;
