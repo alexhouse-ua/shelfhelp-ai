@@ -6,6 +6,7 @@ const admin = require('firebase-admin');
 const yaml = require('yaml');
 const { firebaseConfig, isFirebaseConfigured, hasFirebaseCredentials } = require('./firebase-config');
 const FuzzyClassificationMatcher = require('./fuzzy-classifier');
+const { SimpleVectorStore, SimpleEmbedder } = require('./rag-ingest');
 require('dotenv').config();
 
 const app = express();
@@ -46,6 +47,8 @@ if (process.env.ENABLE_FIREBASE === 'true') {
 // Paths
 const BOOKS_FILE = path.join(__dirname, '../data/books.json');
 const CLASSIFICATIONS_FILE = path.join(__dirname, '../data/classifications.yaml');
+const PREFERENCES_FILE = path.join(__dirname, '../data/preferences.json');
+const VECTORSTORE_DIR = path.join(__dirname, '../vectorstore');
 const HISTORY_DIR = path.join(__dirname, '../history');
 const REFLECTIONS_DIR = path.join(__dirname, '../reflections');
 const REFLECTION_TEMPLATE = path.join(__dirname, '../reflections/template.md');
@@ -54,6 +57,11 @@ const REPORTS_DIR = path.join(__dirname, '../reports');
 // Initialize fuzzy matcher
 const fuzzyMatcher = new FuzzyClassificationMatcher();
 let fuzzyMatcherReady = false;
+
+// Initialize RAG system
+let vectorStore = null;
+let embedder = null;
+let ragReady = false;
 
 // Initialize fuzzy matcher on startup
 fuzzyMatcher.initialize(CLASSIFICATIONS_FILE)
@@ -64,6 +72,37 @@ fuzzyMatcher.initialize(CLASSIFICATIONS_FILE)
   .catch(error => {
     console.error('❌ Failed to initialize fuzzy matcher:', error.message);
   });
+
+// Initialize RAG system on startup
+async function initializeRAG() {
+  try {
+    vectorStore = new SimpleVectorStore();
+    embedder = new SimpleEmbedder();
+    
+    // Load existing vector store
+    const indexPath = path.join(VECTORSTORE_DIR, 'index.json');
+    const vocabPath = path.join(VECTORSTORE_DIR, 'vocabulary.json');
+    
+    const indexLoaded = await vectorStore.load(indexPath);
+    
+    if (indexLoaded) {
+      // Load embedder vocabulary
+      const vocabData = JSON.parse(await fs.readFile(vocabPath, 'utf-8'));
+      embedder.vocabulary = new Map(vocabData.vocabulary);
+      embedder.idf = new Map(vocabData.idf);
+      
+      ragReady = true;
+      console.log('✅ RAG system ready for recommendations');
+    } else {
+      console.log('⚠️ No existing vector store found - run RAG ingestion first');
+    }
+  } catch (error) {
+    console.error('❌ Failed to initialize RAG system:', error.message);
+    ragReady = false;
+  }
+}
+
+initializeRAG();
 
 // Helper functions
 async function readBooksFile() {
@@ -2583,6 +2622,339 @@ app.get('/health', (req, res) => {
       has_credentials: hasFirebaseCredentials()
     }
   });
+});
+
+// Recommendation Engine Endpoints
+
+// GET /api/recommendations - Get personalized book recommendations
+app.get('/api/recommendations', async (req, res) => {
+  try {
+    if (!ragReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'RAG system not ready',
+        message: 'Recommendation engine is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { limit = 5, context, source = 'tbr', genres, authors } = req.query;
+    const books = await readBooksFile();
+    
+    // Build query context from user preferences and reading history
+    let queryContext = context || '';
+    
+    // Analyze reading patterns if no context provided
+    if (!queryContext) {
+      const recentBooks = books
+        .filter(book => book.status === 'finished' && book.liked === true)
+        .slice(-10);
+        
+      if (recentBooks.length > 0) {
+        const likedGenres = [...new Set(recentBooks.map(b => b.genre).filter(Boolean))];
+        const likedAuthors = [...new Set(recentBooks.map(b => b.author_name).filter(Boolean))];
+        const likedTropes = [...new Set(recentBooks.flatMap(b => b.tropes || []))];
+        
+        queryContext = `Recently enjoyed books in ${likedGenres.join(', ')} by authors like ${likedAuthors.slice(0, 3).join(', ')}. Interested in tropes: ${likedTropes.slice(0, 5).join(', ')}.`;
+      } else {
+        queryContext = 'Looking for book recommendations based on reading preferences';
+      }
+    }
+    
+    // Get similar books from vector store
+    const queryEmbedding = embedder.embed(queryContext);
+    const similarChunks = await vectorStore.search(queryEmbedding, parseInt(limit) * 2);
+    
+    // Extract book recommendations from chunks
+    const recommendations = [];
+    const seenBooks = new Set();
+    
+    for (const chunk of similarChunks) {
+      if (chunk.metadata && chunk.metadata.source === 'books.json') {
+        // Find book by matching title and author from chunk content
+        const book = books.find(b => {
+          const titleMatch = chunk.chunk && chunk.chunk.includes(`Title: ${b.title}`);
+          const authorMatch = chunk.chunk && chunk.chunk.includes(`Author: ${b.author_name}`);
+          return titleMatch && authorMatch;
+        });
+        
+        if (book) {
+          const bookId = book.goodreads_id || book.guid;
+          
+          if (!seenBooks.has(bookId) &&
+              (source === 'all' || book.status === 'TBR') &&
+              (!genres || genres.split(',').some(g => book.genre?.toLowerCase().includes(g.toLowerCase()))) &&
+              (!authors || authors.split(',').some(a => book.author_name?.toLowerCase().includes(a.toLowerCase())))) {
+            
+            recommendations.push({
+              ...book,
+              similarity_score: chunk.similarity,
+              recommendation_reason: `Similar to your reading preferences (${(chunk.similarity * 100).toFixed(1)}% match)`
+            });
+            seenBooks.add(bookId);
+          }
+        }
+      }
+      
+      if (recommendations.length >= parseInt(limit)) break;
+    }
+    
+    res.json({
+      success: true,
+      query_context: queryContext,
+      recommendations: recommendations.slice(0, parseInt(limit)),
+      total_candidates: similarChunks.length,
+      rag_status: ragReady ? 'active' : 'inactive'
+    });
+    
+  } catch (error) {
+    console.error('Recommendation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to generate recommendations'
+    });
+  }
+});
+
+// POST /api/recommendations/query - Query-based recommendations
+app.post('/api/recommendations/query', async (req, res) => {
+  try {
+    if (!ragReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'RAG system not ready',
+        message: 'Recommendation engine is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { query, limit = 5, include_books = true, include_insights = true } = req.body;
+    
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query is required',
+        message: 'Please provide a query for recommendations'
+      });
+    }
+    
+    // Search vector store with query
+    const queryEmbedding = embedder.embed(query);
+    const results = await vectorStore.search(queryEmbedding, parseInt(limit) * 3);
+    
+    const response = {
+      success: true,
+      query: query,
+      results: [],
+      insights: []
+    };
+    
+    if (include_books) {
+      const books = await readBooksFile();
+      const bookRecommendations = [];
+      
+      for (const result of results) {
+        if (result.metadata && result.metadata.source === 'books.json') {
+          const book = books.find(b => {
+            const titleMatch = result.chunk && result.chunk.includes(`Title: ${b.title}`);
+            const authorMatch = result.chunk && result.chunk.includes(`Author: ${b.author_name}`);
+            return titleMatch && authorMatch;
+          });
+          
+          if (book) {
+            bookRecommendations.push({
+              ...book,
+              similarity_score: result.similarity,
+              matching_content: result.chunk ? result.chunk.substring(0, 200) + '...' : 'No content available'
+            });
+          }
+        }
+        
+        if (bookRecommendations.length >= parseInt(limit)) break;
+      }
+      
+      response.results = bookRecommendations;
+    }
+    
+    if (include_insights) {
+      const insights = results
+        .filter(r => r.metadata.source !== 'books.json')
+        .slice(0, 3)
+        .map(r => ({
+          source: r.metadata.source,
+          similarity: r.similarity,
+          content: r.content.substring(0, 300) + '...',
+          type: r.metadata.source.includes('knowledge') ? 'knowledge' : 
+                r.metadata.source.includes('classification') ? 'taxonomy' : 'reflection'
+        }));
+        
+      response.insights = insights;
+    }
+    
+    res.json(response);
+    
+  } catch (error) {
+    console.error('Query recommendation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to process recommendation query'
+    });
+  }
+});
+
+// GET /api/recommendations/similar/:bookId - Find similar books
+app.get('/api/recommendations/similar/:bookId', async (req, res) => {
+  try {
+    if (!ragReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'RAG system not ready',
+        message: 'Recommendation engine is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { bookId } = req.params;
+    const { limit = 5 } = req.query;
+    const books = await readBooksFile();
+    
+    // Find the target book
+    const targetBook = books.find(b => b.goodreads_id === bookId || b.guid === bookId);
+    
+    if (!targetBook) {
+      return res.status(404).json({
+        success: false,
+        error: 'Book not found',
+        message: 'The specified book was not found in the library'
+      });
+    }
+    
+    // Create query from target book
+    const bookQuery = `${targetBook.title} by ${targetBook.author_name}. Genre: ${targetBook.genre || 'Unknown'}. ${targetBook.tropes?.join(', ') || ''}`;
+    const queryEmbedding = embedder.embed(bookQuery);
+    const similarChunks = await vectorStore.search(queryEmbedding, parseInt(limit) * 2);
+    
+    // Extract similar books (excluding the target book)
+    const similarBooks = [];
+    const seenBooks = new Set([bookId]);
+    
+    for (const chunk of similarChunks) {
+      if (chunk.metadata && chunk.metadata.source === 'books.json') {
+        const book = books.find(b => {
+          const titleMatch = chunk.chunk && chunk.chunk.includes(`Title: ${b.title}`);
+          const authorMatch = chunk.chunk && chunk.chunk.includes(`Author: ${b.author_name}`);
+          return titleMatch && authorMatch;
+        });
+        
+        if (book && !seenBooks.has(book.goodreads_id) && !seenBooks.has(book.guid)) {
+          similarBooks.push({
+            ...book,
+            similarity_score: chunk.similarity,
+            similarity_reasons: []
+          });
+          seenBooks.add(book.goodreads_id || book.guid);
+        }
+      }
+      
+      if (similarBooks.length >= parseInt(limit)) break;
+    }
+    
+    // Add similarity reasons
+    similarBooks.forEach(book => {
+      const reasons = [];
+      if (book.genre === targetBook.genre) reasons.push('Same genre');
+      if (book.author_name === targetBook.author_name) reasons.push('Same author');
+      if (book.series_name === targetBook.series_name) reasons.push('Same series');
+      if (book.tropes?.some(t => targetBook.tropes?.includes(t))) reasons.push('Shared tropes');
+      book.similarity_reasons = reasons;
+    });
+    
+    res.json({
+      success: true,
+      target_book: {
+        id: targetBook.goodreads_id || targetBook.guid,
+        title: targetBook.title,
+        author: targetBook.author_name,
+        genre: targetBook.genre
+      },
+      similar_books: similarBooks,
+      total_found: similarBooks.length
+    });
+    
+  } catch (error) {
+    console.error('Similar books error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to find similar books'
+    });
+  }
+});
+
+// POST /api/recommendations/discover - External book discovery via web search
+app.post('/api/recommendations/discover', async (req, res) => {
+  try {
+    const { query, preferences, limit = 5, add_to_tbr = false } = req.body;
+    
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query is required',
+        message: 'Please provide a search query for book discovery'
+      });
+    }
+    
+    // This endpoint is designed to work with AI assistants that can perform web searches
+    // The AI should search for books and provide structured results
+    
+    const discoveryResponse = {
+      success: true,
+      query: query,
+      search_suggestions: [
+        `"${query}" book recommendations 2024`,
+        `"${query}" goodreads best books`,
+        `"${query}" amazon bestsellers`,
+        `"${query}" book reviews`,
+        `"${query}" similar to books`
+      ],
+      discovery_strategy: {
+        step1: 'AI performs web search for book recommendations',
+        step2: 'AI extracts book titles, authors, descriptions, genres',
+        step3: 'AI validates against existing library to avoid duplicates',
+        step4: 'AI optionally adds books to TBR via /api/books endpoint',
+        step5: 'Return discovered books with metadata'
+      },
+      user_preferences: preferences || 'Not specified',
+      add_to_tbr: add_to_tbr,
+      instructions: {
+        for_ai: 'Use web search to find books matching the query. Extract: title, author, description, genre, publication year, rating. Check against existing library using /api/books?search=<title> to avoid duplicates.',
+        expected_format: {
+          discovered_books: [
+            {
+              title: 'Book Title',
+              author: 'Author Name', 
+              description: 'Book description...',
+              genre: 'Genre',
+              subgenre: 'Subgenre if available',
+              publication_year: 2024,
+              average_rating: 4.2,
+              source: 'goodreads/amazon/etc',
+              reason: 'Why this matches the query'
+            }
+          ]
+        }
+      }
+    };
+    
+    res.json(discoveryResponse);
+    
+  } catch (error) {
+    console.error('Book discovery error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to process book discovery request'
+    });
+  }
 });
 
 // Error handling middleware
