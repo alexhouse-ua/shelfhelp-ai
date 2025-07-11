@@ -1,23 +1,41 @@
 {
   "name": "shelfhelp-ai",
   "version": "1.0.0",
-  "description": "AI-powered reading assistant with real-time queue management",
-  "main": "index.js",
+  "description": "AI-powered reading assistant with real-time queue management and intelligent book classification",
+  "main": "scripts/api-server.js",
   "scripts": {
     "dev": "nodemon scripts/api-server.js",
     "start": "node scripts/api-server.js",
     "test": "node scripts/test-endpoints.js",
     "lint": "eslint scripts/ --fix",
     "format": "prettier --write scripts/ data/ _knowledge/",
-    "validate-schema": "node scripts/validate-schema.js"
+    "validate-schema": "node scripts/validate-schema.js",
+    "rss-ingest": "node scripts/rss_ingest.js",
+    "rag-ingest": "node scripts/rag_ingest.js",
+    "generate-weekly": "node scripts/generate_weekly.js",
+    "reflection-automation": "node scripts/reflection-automation.js",
+    "library-check": "node scripts/library-checker.js",
+    "merge-export": "node scripts/merge-export.js",
+    "build": "echo 'Build completed'",
+    "postinstall": "echo 'ShelfHelp AI dependencies installed successfully'"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexhouse-ua/shelfhelp-ai.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "ai",
+    "reading",
+    "assistant",
+    "books",
+    "goodreads",
+    "recommendation",
+    "automation",
+    "rag",
+    "classification"
+  ],
+  "author": "ShelfHelp AI",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/alexhouse-ua/shelfhelp-ai/issues"
@@ -25,6 +43,7 @@
   "homepage": "https://github.com/alexhouse-ua/shelfhelp-ai#readme",
   "dependencies": {
     "@xenova/transformers": "^2.17.2",
+    "axios": "^1.10.0",
     "chromadb": "^3.0.6",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",

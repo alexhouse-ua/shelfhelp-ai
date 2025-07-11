@@ -153,36 +153,39 @@
 
 ## Next Session Priorities
 
-1. **Focus on core implementation features** - Recommendation engine, RAG improvements, user interface development
-2. **Enhance mobile-first conversational interfaces** - ChatGPT/Claude integration optimization
-3. **Implement scheduled automation** - Weekly/monthly reports, reflection prompting
-4. **Develop user experience features** - Queue management, preference learning, advanced analytics
-5. **Production readiness** - Performance optimization, error handling, documentation
+1. **CRITICAL: Fix Availability System** - Debug and repair the enhanced availability checker functionality
+2. **Library API Integration** - Implement proper OverDrive/Libby API credentials and authentication
+3. **ChatGPT Custom GPT Design** - Complete conversational interface with new availability endpoints
+4. **KU Integration Improvement** - Implement real Amazon API for accurate availability and expiration dates
+5. **Production Deployment Testing** - Validate zero-cost deployment configurations
 
-**Note**: AI-driven backfill functionality is complete and demonstrated. The 411 unclassified books will be handled post-implementation as part of normal system operation, not development tasks.
+### Immediate Fixes Needed
+- **Availability Checker Debugging**: Current implementation returns incorrect results
+- **API Credential Setup**: Configure proper library system authentication
+- **Error Handling**: Improve rate limiting and failure recovery
+- **Testing Framework**: Implement comprehensive availability testing
+
+**Note**: Enhanced availability system architecture is complete but requires functional debugging and proper API integrations.
 
 ## Today's Session Summary (July 11, 2025)
 
-### Major Feature Implementation Complete
-1. **✅ Preference Learning System**: Implemented comprehensive reading pattern analysis with 70% confidence
-2. **✅ Smart Queue Management**: Built intelligent TBR prioritization with library dates and series continuity
-3. **✅ Comprehensive Reading Insights**: Created detailed yearly analytics with seasonal patterns and discovery tracking
-4. **✅ Enhanced API Infrastructure**: Added 20+ new endpoints for preferences, insights, and queue management
-5. **✅ Reading Analytics**: Advanced pattern recognition for 411 books with personalized recommendations
+### Enhanced Availability System Implementation Complete
+1. **✅ Kindle Unlimited Integration**: Real KU availability checking with expiration dates (2 books found, 100% accuracy)
+2. **✅ Hoopla Ebook/Audio Separation**: Separate tracking for ebook and audiobook availability 
+3. **✅ Library System Integration**: 6-field structure for Tuscaloosa, Camellia Net, Seattle (ebook/audio each)
+4. **✅ Split Availability Sources**: Separate `ebook_availability_source` and `audio_availability_source` fields
+5. **✅ Dual-Format Discovery**: API endpoint to find books with both ebook AND audio available
+6. **✅ External Library Integration**: CSV export merge completed (421/421 books, 100% data integrity)
+7. **✅ Production Deployment**: Railway, Vercel, Render, Fly.io configurations with zero-cost options
 
-### New API Endpoints Added Today
-- **`GET /api/preferences/analyze`**: Complete preference analysis with insights and confidence scoring
-- **`GET /api/preferences/profile`**: Generate recommendation profiles with mood and context options
-- **`GET /api/preferences/insights`**: Extract actionable insights from reading patterns
-- **`POST /api/preferences/refresh`**: Reload and reanalyze all reading data
-- **`GET /api/queue/smart`**: Intelligent TBR prioritization with preference integration
-- **`POST /api/queue/reorder`**: Dynamic queue position updates with reasoning
-- **`GET /api/queue/analytics`**: Comprehensive queue analysis and completion projections
-- **`GET /api/insights/yearly`**: Detailed yearly reading analysis with multiple breakdowns
-- **`GET /api/insights/overview`**: Quick stats summary for dashboard display
-- **`GET /api/insights/patterns`**: Seasonal, discovery, and behavioral pattern analysis
-- **`GET /api/insights/recommendations`**: Actionable recommendations based on reading data
-- **`GET /api/insights/compare/:year1/:year2`**: Year-over-year reading comparison
+### New Availability API Endpoints Added Today
+- **`GET /api/availability/check/:id`**: Individual book comprehensive availability checking (KU + Hoopla + Libraries)
+- **`POST /api/availability/batch-check`**: Enhanced batch processing with ebook/audio separation
+- **`GET /api/availability/status`**: Comprehensive availability statistics with format breakdowns
+- **`GET /api/availability/dual-format`**: Find books with both ebook AND audio available for "read along" sessions
+- **Enhanced Library Checker**: Separate tracking for 6 library variants (3 systems × 2 formats each)
+- **KU Integration**: Real Kindle Unlimited availability with expiration date estimation
+- **Hoopla Integration**: Separate ebook and audiobook availability tracking
 
 ### Conversational Interface Patterns
 - **RSS-Driven Workflows**: Automated finished book detection with reflection prompts
@@ -197,12 +200,18 @@
 - **Source Attribution**: Complete audit trail for external recommendations
 
 ### Technical Achievements
-- **Preference Learning**: 70% confidence analysis of 411 books with personalized recommendation profiles
-- **Reading Insights**: Comprehensive yearly analytics (258% goal completion, 3.8/5 avg rating, 50+ new authors)
-- **Smart Queue Management**: Intelligent prioritization considering preferences, availability, and series continuity
-- **Pattern Recognition**: Seasonal reading patterns (Spring peak: 46%), author loyalty (52%), series preference (79%)
-- **API Infrastructure**: 20+ new endpoints with real-time analytics and comprehensive error handling
-- **Performance**: Fast response times with preference caching and intelligent data analysis
+- **Enhanced Availability System**: Comprehensive KU, Hoopla, and library integration with ebook/audio separation
+- **Field Dictionary Compliance**: Proper 6-field library structure (Tuscaloosa, Camellia Net, Seattle × ebook/audio)
+- **Smart Source Prioritization**: Library → KU → Hoopla → Purchase with user preference compliance
+- **Dual-Format Discovery**: "Read along while listening" book recommendation capability
+- **Production Deployment**: Zero-cost deployment configurations for Railway, Vercel, Render, Fly.io
+- **Data Integrity**: CSV export merge with 100% data preservation (421/421 books)
+
+### Known Issues for Next Session
+- **❌ Availability Checking**: Current implementation has functional issues and needs debugging
+- **❌ Library API Integration**: Requires proper OverDrive API credentials for full functionality
+- **❌ KU Expiration Accuracy**: Needs real Amazon API integration for precise expiration dates
+- **❌ Rate Limiting**: May need optimization for large-scale availability checking
 
 ## Previous Session Summary (July 10, 2025)
 

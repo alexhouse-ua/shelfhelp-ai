@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "name": "shelfhelp-ai",
+  "builds": [
+    {
+      "src": "scripts/api-server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "scripts/api-server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "scripts/api-server.js": {
+      "maxDuration": 10
+    }
+  }
+}

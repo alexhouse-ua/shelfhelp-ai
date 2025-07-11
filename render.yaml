@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: shelfhelp-ai
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    autoDeploy: false
+    scaling:
+      minInstances: 1
+      maxInstances: 1

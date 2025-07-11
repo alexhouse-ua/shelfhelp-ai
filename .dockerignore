@@ -1,0 +1,75 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Build outputs
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Testing
+test/
+tests/
+*.test.js
+
+# Documentation
+*.md
+docs/
+
+# Firebase credentials (sensitive)
+firebase-service-account.json
+
+# Working files and temporary data
+data/books_backup_*.json
+goodreads_library_export*.csv
+reports/*analysis*.json
+reports/*migration*.json
+reports/*summary*.json
+scripts/*analysis*.js
+scripts/*migration*.js
+scripts/*strategy*.js
+scripts/analyze-*.js
+scripts/execute-*.js
+
+# Development files
+.temp/
+.cache/

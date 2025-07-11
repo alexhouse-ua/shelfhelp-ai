@@ -558,7 +558,173 @@ class PreferenceLearningSystem {
       });
     }
     
-    return insights;
+    return {
+      insights: insights,
+      total_preferences: Object.keys(this.preferences).length,
+      confidence_level: this.calculateLearningConfidence(this.books),
+      strongest_preference: topGenres.length > 0 ? 
+        { category: 'genre', value: topGenres[0].name, score: topGenres[0].score } : null,
+      reading_personality: this.generateReadingPersonality()
+    };
+  }
+
+  // Analyze seasonal reading patterns
+  analyzeSeasonalPatterns() {
+    const finishedBooks = this.books.filter(book => 
+      book.status === 'finished' && book.user_read_at
+    );
+    
+    const seasons = {
+      'Winter': { months: [12, 1, 2], count: 0, genres: {} },
+      'Spring': { months: [3, 4, 5], count: 0, genres: {} },
+      'Summer': { months: [6, 7, 8], count: 0, genres: {} },
+      'Fall': { months: [9, 10, 11], count: 0, genres: {} }
+    };
+    
+    finishedBooks.forEach(book => {
+      const readDate = new Date(book.user_read_at);
+      const month = readDate.getMonth() + 1;
+      
+      Object.entries(seasons).forEach(([season, data]) => {
+        if (data.months.includes(month)) {
+          data.count++;
+          if (book.genre) {
+            data.genres[book.genre] = (data.genres[book.genre] || 0) + 1;
+          }
+        }
+      });
+    });
+    
+    const sortedSeasons = Object.entries(seasons)
+      .map(([season, data]) => ({ season, ...data }))
+      .sort((a, b) => b.count - a.count);
+    
+    return {
+      seasons: seasons,
+      strongest_season: sortedSeasons[0],
+      weakest_season: sortedSeasons[sortedSeasons.length - 1],
+      seasonal_variation: sortedSeasons[0].count - sortedSeasons[sortedSeasons.length - 1].count
+    };
+  }
+
+  // Analyze how genre preferences evolve over time
+  analyzeGenreEvolution() {
+    const finishedBooks = this.books.filter(book => 
+      book.status === 'finished' && book.user_read_at && book.genre
+    ).sort((a, b) => new Date(a.user_read_at) - new Date(b.user_read_at));
+    
+    if (finishedBooks.length < 10) return { insufficient_data: true };
+    
+    const midpoint = Math.floor(finishedBooks.length / 2);
+    const earlierBooks = finishedBooks.slice(0, midpoint);
+    const recentBooks = finishedBooks.slice(midpoint);
+    
+    // Calculate genre frequencies for each period
+    const earlierGenres = {};
+    const recentGenres = {};
+    
+    earlierBooks.forEach(book => {
+      earlierGenres[book.genre] = (earlierGenres[book.genre] || 0) + 1;
+    });
+    
+    recentBooks.forEach(book => {
+      recentGenres[book.genre] = (recentGenres[book.genre] || 0) + 1;
+    });
+    
+    // Find genre with biggest positive change
+    let maxGrowth = 0;
+    let trendingGenre = null;
+    
+    Object.keys(recentGenres).forEach(genre => {
+      const earlierCount = earlierGenres[genre] || 0;
+      const recentCount = recentGenres[genre];
+      const earlierPct = earlierCount / earlierBooks.length;
+      const recentPct = recentCount / recentBooks.length;
+      const growth = ((recentPct - earlierPct) / Math.max(earlierPct, 0.01)) * 100;
+      
+      if (growth > maxGrowth && recentCount >= 2) {
+        maxGrowth = growth;
+        trendingGenre = genre;
+      }
+    });
+    
+    return {
+      trending_genre: trendingGenre,
+      trend_strength: maxGrowth,
+      earlier_period_books: earlierBooks.length,
+      recent_period_books: recentBooks.length,
+      analysis_confidence: finishedBooks.length >= 20 ? 'high' : 'medium'
+    };
+  }
+
+  // Generate a reading personality profile
+  generateReadingPersonality() {
+    const profile = this.generateRecommendationProfile();
+    
+    const personality = {
+      type: 'balanced_reader', // default
+      traits: [],
+      description: ''
+    };
+    
+    // Determine reader type based on velocity
+    const velocity = this.preferences.reading_patterns.reading_velocity;
+    if (velocity > 3) {
+      personality.type = 'voracious_reader';
+      personality.traits.push('high_volume', 'quick_consumption');
+    } else if (velocity < 0.5) {
+      personality.type = 'contemplative_reader';
+      personality.traits.push('thoughtful', 'quality_over_quantity');
+    }
+    
+    // Add genre loyalty trait
+    const topGenre = profile.preferred_genres[0];
+    if (topGenre && topGenre.score > 0.6) {
+      personality.traits.push('genre_loyal');
+    } else if (profile.preferred_genres.length > 3) {
+      personality.traits.push('genre_explorer');
+    }
+    
+    // Add series preference trait
+    if (profile.series_preference) {
+      personality.traits.push('series_lover');
+    } else {
+      personality.traits.push('standalone_seeker');
+    }
+    
+    // Add spice preference trait
+    if (profile.spice_range.preferred >= 4) {
+      personality.traits.push('spice_seeker');
+    } else if (profile.spice_range.preferred <= 2) {
+      personality.traits.push('sweet_reader');
+    }
+    
+    // Generate description
+    personality.description = this.generatePersonalityDescription(personality);
+    
+    return personality;
+  }
+
+  generatePersonalityDescription(personality) {
+    const descriptions = {
+      voracious_reader: "You're a voracious reader who devours books at an impressive pace.",
+      contemplative_reader: "You're a thoughtful reader who takes time to savor each story.",
+      balanced_reader: "You maintain a steady reading rhythm, balancing variety and consistency."
+    };
+    
+    let base = descriptions[personality.type] || descriptions.balanced_reader;
+    
+    if (personality.traits.includes('genre_loyal')) {
+      base += " You tend to stick with favorite genres that consistently deliver satisfaction.";
+    } else if (personality.traits.includes('genre_explorer')) {
+      base += " You love exploring different genres and discovering new types of stories.";
+    }
+    
+    if (personality.traits.includes('series_lover')) {
+      base += " You prefer the deep dive of series over standalone novels.";
+    }
+    
+    return base;
   }
 }
 

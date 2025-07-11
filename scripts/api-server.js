@@ -10,6 +10,8 @@ const { SimpleVectorStore, SimpleEmbedder } = require('./rag-ingest');
 const { RecommendationSourcesManager } = require('./recommendation-sources');
 const { PreferenceLearningSystem } = require('./preference-learning');
 const { ReadingInsightsSystem } = require('./reading-insights');
+const { LibraryChecker } = require('./library-checker');
+const { EnhancedAvailabilityChecker } = require('./enhanced-availability-checker');
 require('dotenv').config();
 
 const app = express();
@@ -3146,6 +3148,447 @@ app.post('/api/recommendations/validate', async (req, res) => {
   }
 });
 
+// Enhanced availability checking endpoints
+app.get('/api/availability/check/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const books = await readBooksFile();
+    
+    let book = books.find(b => b.goodreads_id === id);
+    if (!book) {
+      book = books.find(b => b.guid === id);
+    }
+    
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+    
+    const checker = new EnhancedAvailabilityChecker();
+    const result = await checker.checkBookAvailability(book);
+    
+    // Update the book with new availability data
+    const updated = checker.updateBookWithAvailability(book, result);
+    
+    if (updated) {
+      await writeBooksFile(books);
+      await syncToFirebase(books);
+    }
+    
+    res.json({
+      success: true,
+      book: {
+        id: book.goodreads_id,
+        title: book.book_title || book.title,
+        author: book.author_name
+      },
+      availability: {
+        kindle_unlimited: result.ku,
+        hoopla: result.hoopla,
+        libraries: result.libraries
+      },
+      updated: updated,
+      last_checked: result.last_checked
+    });
+    
+  } catch (error) {
+    console.error('Error checking enhanced availability:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Legacy library check endpoint (for backward compatibility)
+app.get('/api/library/check/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const books = await readBooksFile();
+    
+    let book = books.find(b => b.goodreads_id === id);
+    if (!book) {
+      book = books.find(b => b.guid === id);
+    }
+    
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+    
+    const checker = new LibraryChecker();
+    const result = await checker.checkBookAvailability(book);
+    
+    // Update the book with new availability data
+    const updated = checker.updateBookWithAvailability(book, result);
+    
+    if (updated) {
+      await writeBooksFile(books);
+      await syncToFirebase(books);
+    }
+    
+    res.json({
+      success: true,
+      book: {
+        id: book.goodreads_id,
+        title: book.book_title || book.title,
+        author: book.author_name
+      },
+      availability: result.availability,
+      updated: updated,
+      last_checked: result.last_checked
+    });
+    
+  } catch (error) {
+    console.error('Error checking library availability:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/availability/batch-check', async (req, res) => {
+  try {
+    const { status = ['TBR'], limit = 10, unprocessed = true } = req.body;
+    
+    const books = await readBooksFile();
+    let booksToCheck = books;
+    
+    // Apply filters
+    if (status && status.length > 0) {
+      booksToCheck = booksToCheck.filter(book => status.includes(book.status));
+    }
+    
+    if (unprocessed) {
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      booksToCheck = booksToCheck.filter(book => 
+        !book.availability_last_checked || 
+        new Date(book.availability_last_checked) < oneWeekAgo
+      );
+    }
+    
+    if (limit) {
+      booksToCheck = booksToCheck.slice(0, limit);
+    }
+    
+    if (booksToCheck.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No books need availability checking',
+        processed: 0
+      });
+    }
+    
+    // Start enhanced batch check (async)
+    const checker = new EnhancedAvailabilityChecker();
+    
+    // Return immediately with job started status
+    res.status(202).json({
+      success: true,
+      message: `Starting enhanced availability check for ${booksToCheck.length} books`,
+      books_to_check: booksToCheck.length,
+      filters: { status, limit, unprocessed },
+      note: 'This checks KU, Hoopla, and all library systems with ebook/audio separation'
+    });
+    
+    // Process in background
+    checker.checkBooksInBatch(booksToCheck, 3).then(async (results) => {
+      // Update books with results
+      for (const result of results) {
+        if (result && !result.error) {
+          const book = books.find(b => b.goodreads_id === result.book_id);
+          if (book) {
+            checker.updateBookWithAvailability(book, result);
+          }
+        }
+      }
+      
+      await writeBooksFile(books);
+      await syncToFirebase(books);
+      console.log(`✅ Enhanced batch availability check completed: ${results.length} books processed`);
+    }).catch(error => {
+      console.error('❌ Enhanced batch availability check failed:', error.message);
+    });
+    
+  } catch (error) {
+    console.error('Error starting enhanced batch availability check:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Legacy batch check endpoint (for backward compatibility)
+app.post('/api/library/batch-check', async (req, res) => {
+  try {
+    const { status = ['TBR'], limit = 50, unprocessed = true } = req.body;
+    
+    const books = await readBooksFile();
+    let booksToCheck = books;
+    
+    // Apply filters
+    if (status && status.length > 0) {
+      booksToCheck = booksToCheck.filter(book => status.includes(book.status));
+    }
+    
+    if (unprocessed) {
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      booksToCheck = booksToCheck.filter(book => 
+        !book.availability_last_checked || 
+        new Date(book.availability_last_checked) < oneWeekAgo
+      );
+    }
+    
+    if (limit) {
+      booksToCheck = booksToCheck.slice(0, limit);
+    }
+    
+    if (booksToCheck.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No books need availability checking',
+        processed: 0
+      });
+    }
+    
+    // Start batch check (async)
+    const checker = new LibraryChecker();
+    
+    // Return immediately with job started status
+    res.status(202).json({
+      success: true,
+      message: `Starting basic availability check for ${booksToCheck.length} books`,
+      books_to_check: booksToCheck.length,
+      filters: { status, limit, unprocessed },
+      note: 'Consider using /api/availability/batch-check for enhanced KU/Hoopla/Library checking'
+    });
+    
+    // Process in background
+    checker.checkBooksInBatch(booksToCheck, 5).then(async (results) => {
+      // Update books with results
+      for (const result of results) {
+        if (result) {
+          const book = books.find(b => b.goodreads_id === result.book_id);
+          if (book) {
+            checker.updateBookWithAvailability(book, result);
+          }
+        }
+      }
+      
+      await writeBooksFile(books);
+      await syncToFirebase(books);
+      console.log(`✅ Batch library check completed: ${results.length} books processed`);
+    }).catch(error => {
+      console.error('❌ Batch library check failed:', error.message);
+    });
+    
+  } catch (error) {
+    console.error('Error starting batch library check:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/availability/status', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    
+    const stats = {
+      total_books: books.length,
+      checked_recently: books.filter(b => {
+        if (!b.availability_last_checked) return false;
+        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        return new Date(b.availability_last_checked) > oneWeekAgo;
+      }).length,
+      by_status: {
+        tbr: books.filter(b => b.status === 'TBR').length,
+        reading: books.filter(b => b.status === 'Reading').length,
+        read: books.filter(b => b.status === 'Read').length
+      },
+      kindle_unlimited: {
+        available: books.filter(b => b.ku_availability === true).length,
+        with_expiration: books.filter(b => b.ku_expires_on).length
+      },
+      hoopla: {
+        ebook_available: books.filter(b => b.hoopla_ebook_available === true).length,
+        audio_available: books.filter(b => b.hoopla_audio_available === true).length,
+        both_available: books.filter(b => b.hoopla_ebook_available === true && b.hoopla_audio_available === true).length
+      },
+      libraries: {
+        tuscaloosa: {
+          ebook_available: books.filter(b => b.library_hold_status_tuscaloosa_ebook === 'Available').length,
+          audio_available: books.filter(b => b.library_hold_status_tuscaloosa_audio === 'Available').length,
+          both_available: books.filter(b => 
+            b.library_hold_status_tuscaloosa_ebook === 'Available' && 
+            b.library_hold_status_tuscaloosa_audio === 'Available'
+          ).length
+        },
+        camellia: {
+          ebook_available: books.filter(b => b.library_hold_status_camellia_ebook === 'Available').length,
+          audio_available: books.filter(b => b.library_hold_status_camellia_audio === 'Available').length,
+          both_available: books.filter(b => 
+            b.library_hold_status_camellia_ebook === 'Available' && 
+            b.library_hold_status_camellia_audio === 'Available'
+          ).length
+        },
+        seattle: {
+          ebook_available: books.filter(b => b.library_hold_status_seattle_ebook === 'Available').length,
+          audio_available: books.filter(b => b.library_hold_status_seattle_audio === 'Available').length,
+          both_available: books.filter(b => 
+            b.library_hold_status_seattle_ebook === 'Available' && 
+            b.library_hold_status_seattle_audio === 'Available'
+          ).length
+        }
+      },
+      availability_sources: {
+        ebook: {},
+        audio: {}
+      },
+      dual_format_available: books.filter(b => {
+        // Books where both ebook and audio are available from any source
+        const hasEbook = b.ku_availability || 
+                         b.hoopla_ebook_available || 
+                         b.library_hold_status_tuscaloosa_ebook === 'Available' ||
+                         b.library_hold_status_camellia_ebook === 'Available' ||
+                         b.library_hold_status_seattle_ebook === 'Available';
+        const hasAudio = b.hoopla_audio_available || 
+                        b.library_hold_status_tuscaloosa_audio === 'Available' ||
+                        b.library_hold_status_camellia_audio === 'Available' ||
+                        b.library_hold_status_seattle_audio === 'Available';
+        return hasEbook && hasAudio;
+      }).length
+    };
+    
+    // Count ebook and audio sources separately
+    books.forEach(book => {
+      if (book.ebook_availability_source) {
+        stats.availability_sources.ebook[book.ebook_availability_source] = 
+          (stats.availability_sources.ebook[book.ebook_availability_source] || 0) + 1;
+      }
+      if (book.audio_availability_source) {
+        stats.availability_sources.audio[book.audio_availability_source] = 
+          (stats.availability_sources.audio[book.audio_availability_source] || 0) + 1;
+      }
+    });
+    
+    res.json({
+      success: true,
+      availability_stats: stats,
+      last_updated: new Date().toISOString(),
+      note: 'Enhanced availability tracking with KU, Hoopla, and library ebook/audio separation'
+    });
+    
+  } catch (error) {
+    console.error('Error getting availability status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Legacy library status endpoint (for backward compatibility)
+app.get('/api/library/status', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    
+    const stats = {
+      total_books: books.length,
+      with_availability: books.filter(b => b.library_availability).length,
+      checked_recently: books.filter(b => {
+        if (!b.availability_last_checked) return false;
+        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        return new Date(b.availability_last_checked) > oneWeekAgo;
+      }).length,
+      by_status: {
+        tbr: books.filter(b => b.status === 'TBR').length,
+        reading: books.filter(b => b.status === 'Reading').length,
+        read: books.filter(b => b.status === 'Read').length
+      },
+      availability_sources: {}
+    };
+    
+    // Count availability by source
+    books.forEach(book => {
+      if (book.library_availability) {
+        const sources = book.library_availability.split(', ');
+        sources.forEach(source => {
+          stats.availability_sources[source] = (stats.availability_sources[source] || 0) + 1;
+        });
+      }
+    });
+    
+    res.json({
+      success: true,
+      library_stats: stats,
+      last_updated: new Date().toISOString(),
+      note: 'Consider using /api/availability/status for enhanced availability tracking'
+    });
+    
+  } catch (error) {
+    console.error('Error getting library status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/availability/dual-format - Find books with both ebook and audio available
+app.get('/api/availability/dual-format', async (req, res) => {
+  try {
+    const { status = 'TBR', limit = 50 } = req.query;
+    const books = await readBooksFile();
+    
+    // Filter books with both ebook and audio availability
+    const dualFormatBooks = books.filter(book => {
+      // Check status filter
+      if (status && book.status !== status) return false;
+      
+      // Check ebook availability
+      const hasEbook = book.ku_availability || 
+                      book.hoopla_ebook_available || 
+                      book.library_hold_status_tuscaloosa_ebook === 'Available' ||
+                      book.library_hold_status_camellia_ebook === 'Available' ||
+                      book.library_hold_status_seattle_ebook === 'Available';
+      
+      // Check audio availability  
+      const hasAudio = book.hoopla_audio_available || 
+                      book.library_hold_status_tuscaloosa_audio === 'Available' ||
+                      book.library_hold_status_camellia_audio === 'Available' ||
+                      book.library_hold_status_seattle_audio === 'Available';
+      
+      return hasEbook && hasAudio;
+    });
+    
+    // Limit results
+    const limitedBooks = limit ? dualFormatBooks.slice(0, parseInt(limit)) : dualFormatBooks;
+    
+    // Enhance with availability details
+    const enhancedBooks = limitedBooks.map(book => ({
+      goodreads_id: book.goodreads_id,
+      title: book.book_title || book.title,
+      author: book.author_name,
+      status: book.status,
+      queue_position: book.queue_position,
+      ebook_sources: [
+        book.ku_availability && 'Kindle Unlimited',
+        book.hoopla_ebook_available && 'Hoopla',
+        book.library_hold_status_tuscaloosa_ebook === 'Available' && 'Tuscaloosa Library',
+        book.library_hold_status_camellia_ebook === 'Available' && 'Camellia Net',
+        book.library_hold_status_seattle_ebook === 'Available' && 'Seattle Library'
+      ].filter(Boolean),
+      audio_sources: [
+        book.hoopla_audio_available && 'Hoopla',
+        book.library_hold_status_tuscaloosa_audio === 'Available' && 'Tuscaloosa Library',
+        book.library_hold_status_camellia_audio === 'Available' && 'Camellia Net',
+        book.library_hold_status_seattle_audio === 'Available' && 'Seattle Library'
+      ].filter(Boolean),
+      preferred_ebook_source: book.ebook_availability_source,
+      preferred_audio_source: book.audio_availability_source,
+      last_checked: book.availability_last_checked
+    }));
+    
+    res.json({
+      success: true,
+      message: `Found ${enhancedBooks.length} books with both ebook and audio availability`,
+      total_found: dualFormatBooks.length,
+      showing: enhancedBooks.length,
+      filters: { status, limit },
+      books: enhancedBooks,
+      usage_tip: 'Perfect for "read along while listening" sessions!'
+    });
+    
+  } catch (error) {
+    console.error('Error finding dual-format books:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // GET /api/recommendations/sources - Get recommendation sources info
 app.get('/api/recommendations/sources', async (req, res) => {
   try {
@@ -3944,6 +4387,454 @@ async function generateQueueAnalytics(books) {
   }
 
   return analytics;
+}
+
+// ===================================================================
+// QUEUE MANAGEMENT ENDPOINTS
+// ===================================================================
+
+// GET /api/queue/tbr - Get prioritized TBR queue with intelligent sorting
+app.get('/api/queue/tbr', async (req, res) => {
+  try {
+    if (!preferencesReady) {
+      return res.status(503).json({
+        success: false,
+        error: 'Preference system not ready',
+        message: 'Preference learning system is initializing. Please try again in a moment.'
+      });
+    }
+
+    const { limit = 50, sort_by = 'smart', include_metadata = true } = req.query;
+    
+    // Get books and filter for TBR
+    const books = await readBooksFile();
+    const tbrBooks = books.filter(book => book.status === 'tbr' || book.status === 'to-read');
+    
+    if (tbrBooks.length === 0) {
+      return res.json({
+        success: true,
+        data: {
+          queue: [],
+          total_tbr_count: 0,
+          message: 'No books in TBR queue'
+        }
+      });
+    }
+
+    // Generate user preferences for scoring
+    await preferences.analyzeReadingPatterns();
+    const userProfile = preferences.generateRecommendationProfile();
+    
+    // Score and sort TBR books
+    const scoredBooks = tbrBooks.map(book => {
+      const score = calculateTBRPriority(book, userProfile);
+      return {
+        ...book,
+        _priority_score: score.total,
+        _score_breakdown: include_metadata === 'true' ? score.breakdown : undefined
+      };
+    });
+
+    // Sort based on request
+    let sortedBooks;
+    switch (sort_by) {
+      case 'smart':
+        sortedBooks = scoredBooks.sort((a, b) => b._priority_score - a._priority_score);
+        break;
+      case 'recent':
+        sortedBooks = scoredBooks.sort((a, b) => new Date(b.user_date_added) - new Date(a.user_date_added));
+        break;
+      case 'rating':
+        sortedBooks = scoredBooks.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+        break;
+      case 'series':
+        sortedBooks = scoredBooks.sort((a, b) => {
+          if (a.series_name && !b.series_name) return -1;
+          if (!a.series_name && b.series_name) return 1;
+          return b._priority_score - a._priority_score;
+        });
+        break;
+      default:
+        sortedBooks = scoredBooks.sort((a, b) => b._priority_score - a._priority_score);
+    }
+
+    // Limit results
+    const limitedBooks = sortedBooks.slice(0, parseInt(limit));
+    
+    // Calculate queue insights
+    const queueInsights = {
+      total_tbr_count: tbrBooks.length,
+      avg_priority_score: scoredBooks.reduce((sum, book) => sum + book._priority_score, 0) / scoredBooks.length,
+      top_genres: getTopGenresInQueue(tbrBooks),
+      oldest_book: tbrBooks.reduce((oldest, book) => 
+        new Date(book.user_date_added) < new Date(oldest.user_date_added) ? book : oldest
+      ),
+      series_count: tbrBooks.filter(book => book.series_name).length,
+      sort_method: sort_by
+    };
+
+    res.json({
+      success: true,
+      data: {
+        queue: limitedBooks,
+        insights: queueInsights,
+        user_preferences: include_metadata === 'true' ? {
+          top_genres: userProfile.preferred_genres.slice(0, 3),
+          top_authors: userProfile.preferred_authors.slice(0, 3),
+          reading_velocity: userProfile.reading_velocity || 0
+        } : undefined
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in /api/queue/tbr:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get TBR queue',
+      message: error.message
+    });
+  }
+});
+
+// POST /api/queue/reorder - Manually reorder TBR queue
+app.post('/api/queue/reorder', async (req, res) => {
+  try {
+    const { book_ids, operation = 'manual' } = req.body;
+    
+    if (!book_ids || !Array.isArray(book_ids)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid request',
+        message: 'book_ids must be an array of book IDs'
+      });
+    }
+
+    const books = await readBooksFile();
+    const tbrBooks = books.filter(book => book.status === 'tbr' || book.status === 'to-read');
+    const otherBooks = books.filter(book => book.status !== 'tbr' && book.status !== 'to-read');
+    
+    // Validate all book IDs exist in TBR
+    const tbrIds = new Set(tbrBooks.map(book => book.id));
+    const invalidIds = book_ids.filter(id => !tbrIds.has(id));
+    
+    if (invalidIds.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid book IDs',
+        message: `Books not found in TBR: ${invalidIds.join(', ')}`
+      });
+    }
+
+    // Create reordered TBR queue
+    const reorderedTBR = book_ids.map(id => 
+      tbrBooks.find(book => book.id === id)
+    );
+
+    // Add any TBR books not included in the reorder to the end
+    const unorderedBooks = tbrBooks.filter(book => !book_ids.includes(book.id));
+    reorderedTBR.push(...unorderedBooks);
+
+    // Update queue_position field for tracking
+    reorderedTBR.forEach((book, index) => {
+      book.queue_position = index + 1;
+      book.queue_updated_at = new Date().toISOString();
+      book.queue_operation = operation;
+    });
+
+    // Combine with other books and save
+    const updatedBooks = [...otherBooks, ...reorderedTBR];
+    await writeBooksFile(updatedBooks);
+
+    res.json({
+      success: true,
+      data: {
+        reordered_count: reorderedTBR.length,
+        total_tbr_count: reorderedTBR.length,
+        operation: operation,
+        updated_at: new Date().toISOString()
+      },
+      message: `Successfully reordered ${reorderedTBR.length} books in TBR queue`
+    });
+
+  } catch (error) {
+    console.error('Error in /api/queue/reorder:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to reorder queue',
+      message: error.message
+    });
+  }
+});
+
+// POST /api/queue/promote - Move book to top of TBR queue
+app.post('/api/queue/promote', async (req, res) => {
+  try {
+    const { book_id, reason = 'manual_promotion' } = req.body;
+    
+    if (!book_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'book_id is required'
+      });
+    }
+
+    const books = await readBooksFile();
+    const bookIndex = books.findIndex(book => book.id === book_id);
+    
+    if (bookIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Book not found'
+      });
+    }
+
+    const book = books[bookIndex];
+    
+    if (book.status !== 'tbr' && book.status !== 'to-read') {
+      return res.status(400).json({
+        success: false,
+        error: 'Book is not in TBR status'
+      });
+    }
+
+    // Update book with promotion metadata
+    book.queue_position = 1;
+    book.promoted_at = new Date().toISOString();
+    book.promotion_reason = reason;
+    book.queue_updated_at = new Date().toISOString();
+
+    // Update other TBR books' positions
+    books.forEach(otherBook => {
+      if (otherBook.id !== book_id && 
+          (otherBook.status === 'tbr' || otherBook.status === 'to-read') &&
+          otherBook.queue_position) {
+        otherBook.queue_position += 1;
+      }
+    });
+
+    await writeBooksFile(books);
+    
+    res.json({
+      success: true,
+      data: {
+        book: {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          queue_position: book.queue_position,
+          promoted_at: book.promoted_at,
+          promotion_reason: reason
+        }
+      },
+      message: `"${book.title}" promoted to top of TBR queue`
+    });
+
+  } catch (error) {
+    console.error('Error in /api/queue/promote:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to promote book',
+      message: error.message
+    });
+  }
+});
+
+// GET /api/queue/insights - Get detailed queue analytics
+app.get('/api/queue/insights', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    const tbrBooks = books.filter(book => book.status === 'tbr' || book.status === 'to-read');
+    
+    if (tbrBooks.length === 0) {
+      return res.json({
+        success: true,
+        data: {
+          total_count: 0,
+          message: 'No books in TBR queue'
+        }
+      });
+    }
+
+    // Calculate various insights
+    const insights = {
+      queue_size: {
+        total_books: tbrBooks.length,
+        series_books: tbrBooks.filter(book => book.series_name).length,
+        standalone_books: tbrBooks.filter(book => !book.series_name).length
+      },
+      
+      age_analysis: {
+        oldest_book: tbrBooks.reduce((oldest, book) => 
+          new Date(book.user_date_added) < new Date(oldest.user_date_added) ? book : oldest
+        ),
+        newest_book: tbrBooks.reduce((newest, book) => 
+          new Date(book.user_date_added) > new Date(newest.user_date_added) ? book : newest
+        ),
+        avg_days_in_queue: calculateAverageQueueTime(tbrBooks)
+      },
+      
+      genre_distribution: getGenreDistribution(tbrBooks),
+      
+      rating_analysis: {
+        avg_rating: tbrBooks.reduce((sum, book) => sum + (book.average_rating || 0), 0) / tbrBooks.length,
+        unrated_count: tbrBooks.filter(book => !book.average_rating).length,
+        high_rated_count: tbrBooks.filter(book => (book.average_rating || 0) >= 4.5).length
+      },
+      
+      author_concentration: getAuthorConcentration(tbrBooks),
+      
+      publication_year_spread: getPublicationYearSpread(tbrBooks),
+      
+      queue_health: {
+        stale_books_count: tbrBooks.filter(book => {
+          const daysInQueue = (Date.now() - new Date(book.user_date_added)) / (1000 * 60 * 60 * 24);
+          return daysInQueue > 180; // 6 months
+        }).length,
+        recently_added_count: tbrBooks.filter(book => {
+          const daysInQueue = (Date.now() - new Date(book.user_date_added)) / (1000 * 60 * 60 * 24);
+          return daysInQueue <= 30; // last month
+        }).length
+      }
+    };
+
+    res.json({
+      success: true,
+      data: insights
+    });
+
+  } catch (error) {
+    console.error('Error in /api/queue/insights:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get queue insights',
+      message: error.message
+    });
+  }
+});
+
+// Helper functions for queue management
+function calculateTBRPriority(book, userProfile) {
+  let score = 0;
+  const breakdown = {};
+
+  // Genre preference scoring (30%)
+  const genrePref = userProfile.preferred_genres.find(g => g.name === book.genre);
+  if (genrePref) {
+    const genreScore = genrePref.score * 30;
+    score += genreScore;
+    breakdown.genre_match = genreScore;
+  }
+
+  // Author preference scoring (25%)
+  const authorPref = userProfile.preferred_authors.find(a => a.name === book.author);
+  if (authorPref) {
+    const authorScore = (authorPref.score / 10) * 25; // normalize author score
+    score += authorScore;
+    breakdown.author_match = authorScore;
+  }
+
+  // Rating boost (20%)
+  if (book.average_rating) {
+    const ratingScore = (book.average_rating / 5) * 20;
+    score += ratingScore;
+    breakdown.rating_boost = ratingScore;
+  }
+
+  // Series continuity bonus (15%)
+  if (book.series_name && userProfile.series_preference) {
+    const seriesScore = 15;
+    score += seriesScore;
+    breakdown.series_bonus = seriesScore;
+  }
+
+  // Recency penalty for old books (10%)
+  const daysInQueue = (Date.now() - new Date(book.user_date_added)) / (1000 * 60 * 60 * 24);
+  const recencyScore = Math.max(0, 10 - (daysInQueue / 30)); // decrease over months
+  score += recencyScore;
+  breakdown.recency_factor = recencyScore;
+
+  return {
+    total: Math.round(score * 100) / 100,
+    breakdown: breakdown
+  };
+}
+
+function getTopGenresInQueue(books) {
+  const genreCounts = {};
+  books.forEach(book => {
+    if (book.genre) {
+      genreCounts[book.genre] = (genreCounts[book.genre] || 0) + 1;
+    }
+  });
+  
+  return Object.entries(genreCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([genre, count]) => ({ genre, count }));
+}
+
+function calculateAverageQueueTime(books) {
+  const totalDays = books.reduce((sum, book) => {
+    const daysInQueue = (Date.now() - new Date(book.user_date_added)) / (1000 * 60 * 60 * 24);
+    return sum + daysInQueue;
+  }, 0);
+  
+  return Math.round(totalDays / books.length);
+}
+
+function getGenreDistribution(books) {
+  const genreCounts = {};
+  books.forEach(book => {
+    if (book.genre) {
+      genreCounts[book.genre] = (genreCounts[book.genre] || 0) + 1;
+    }
+  });
+  
+  return Object.entries(genreCounts)
+    .map(([genre, count]) => ({
+      genre,
+      count,
+      percentage: Math.round((count / books.length) * 100)
+    }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function getAuthorConcentration(books) {
+  const authorCounts = {};
+  books.forEach(book => {
+    if (book.author) {
+      authorCounts[book.author] = (authorCounts[book.author] || 0) + 1;
+    }
+  });
+  
+  const duplicateAuthors = Object.entries(authorCounts)
+    .filter(([author, count]) => count > 1)
+    .sort((a, b) => b[1] - a[1]);
+  
+  return {
+    unique_authors: Object.keys(authorCounts).length,
+    duplicate_author_books: duplicateAuthors.reduce((sum, [author, count]) => sum + count, 0),
+    top_authors: duplicateAuthors.slice(0, 5).map(([author, count]) => ({ author, count }))
+  };
+}
+
+function getPublicationYearSpread(books) {
+  const years = books
+    .filter(book => book.publication_year)
+    .map(book => book.publication_year);
+  
+  if (years.length === 0) return { no_data: true };
+  
+  const sortedYears = years.sort((a, b) => a - b);
+  const currentYear = new Date().getFullYear();
+  
+  return {
+    oldest_book_year: sortedYears[0],
+    newest_book_year: sortedYears[sortedYears.length - 1],
+    avg_publication_year: Math.round(years.reduce((sum, year) => sum + year, 0) / years.length),
+    recent_books_count: years.filter(year => year >= currentYear - 2).length, // last 2 years
+    classic_books_count: years.filter(year => year < currentYear - 20).length // 20+ years old
+  };
 }
 
 // Error handling middleware
