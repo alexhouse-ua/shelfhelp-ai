@@ -8,6 +8,8 @@ const { firebaseConfig, isFirebaseConfigured, hasFirebaseCredentials } = require
 const FuzzyClassificationMatcher = require('./fuzzy-classifier');
 const { SimpleVectorStore, SimpleEmbedder } = require('./rag-ingest');
 const { RecommendationSourcesManager } = require('./recommendation-sources');
+const { PreferenceLearningSystem } = require('./preference-learning');
+const { ReadingInsightsSystem } = require('./reading-insights');
 require('dotenv').config();
 
 const app = express();
@@ -68,6 +70,14 @@ let ragReady = false;
 const recommendationSources = new RecommendationSourcesManager();
 let sourcesReady = false;
 
+// Initialize preference learning system
+const preferenceLearner = new PreferenceLearningSystem();
+let preferencesReady = false;
+
+// Initialize reading insights system
+const readingInsights = new ReadingInsightsSystem();
+let insightsReady = false;
+
 // Initialize fuzzy matcher on startup
 fuzzyMatcher.initialize(CLASSIFICATIONS_FILE)
   .then(() => {
@@ -123,6 +133,34 @@ async function initializeSources() {
 }
 
 initializeSources();
+
+// Initialize preference learning system on startup
+async function initializePreferences() {
+  try {
+    await preferenceLearner.loadData();
+    preferencesReady = true;
+    console.log('✅ Preference learning system ready');
+  } catch (error) {
+    console.error('❌ Failed to initialize preference learning:', error.message);
+    preferencesReady = false;
+  }
+}
+
+initializePreferences();
+
+// Initialize reading insights system on startup
+async function initializeInsights() {
+  try {
+    await readingInsights.loadData();
+    insightsReady = true;
+    console.log('✅ Reading insights system ready');
+  } catch (error) {
+    console.error('❌ Failed to initialize reading insights:', error.message);
+    insightsReady = false;
+  }
+}
+
+initializeInsights();
 
 // Helper functions
 async function readBooksFile() {
@@ -3160,6 +3198,753 @@ app.get('/api/recommendations/sources', async (req, res) => {
     });
   }
 });
+
+// Preference Learning Endpoints
+app.get('/api/preferences/analyze', async (req, res) => {
+  try {
+    if (!preferencesReady) {
+      return res.status(503).json({ 
+        error: 'Preference learning system not ready',
+        suggestion: 'Try again in a few seconds'
+      });
+    }
+
+    const preferences = await preferenceLearner.analyzeReadingPatterns();
+    const insights = preferenceLearner.getPreferenceInsights();
+    const profile = preferenceLearner.generateRecommendationProfile();
+
+    res.json({
+      success: true,
+      preferences,
+      insights,
+      recommendation_profile: profile,
+      confidence: preferences.learning_confidence,
+      last_updated: preferences.last_updated
+    });
+
+  } catch (error) {
+    console.error('Error analyzing preferences:', error);
+    res.status(500).json({ 
+      error: 'Failed to analyze preferences',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/preferences/profile', async (req, res) => {
+  try {
+    if (!preferencesReady) {
+      return res.status(503).json({ 
+        error: 'Preference learning system not ready' 
+      });
+    }
+
+    const { mood, time_constraint, novelty } = req.query;
+    
+    const profile = preferenceLearner.generateRecommendationProfile({
+      includeNovelty: novelty === 'true',
+      moodContext: mood,
+      timeConstraints: time_constraint
+    });
+
+    res.json({
+      success: true,
+      profile,
+      confidence: preferenceLearner.preferences.learning_confidence,
+      query_context: { mood, time_constraint, novelty }
+    });
+
+  } catch (error) {
+    console.error('Error generating preference profile:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate preference profile',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/preferences/insights', async (req, res) => {
+  try {
+    if (!preferencesReady) {
+      return res.status(503).json({ 
+        error: 'Preference learning system not ready' 
+      });
+    }
+
+    const insights = preferenceLearner.getPreferenceInsights();
+
+    res.json({
+      success: true,
+      insights,
+      total_insights: insights.length,
+      confidence: preferenceLearner.preferences.learning_confidence
+    });
+
+  } catch (error) {
+    console.error('Error getting preference insights:', error);
+    res.status(500).json({ 
+      error: 'Failed to get preference insights',
+      details: error.message 
+    });
+  }
+});
+
+app.post('/api/preferences/refresh', async (req, res) => {
+  try {
+    if (!preferencesReady) {
+      return res.status(503).json({ 
+        error: 'Preference learning system not ready' 
+      });
+    }
+
+    // Reload data and reanalyze
+    await preferenceLearner.loadData();
+    const preferences = await preferenceLearner.analyzeReadingPatterns();
+    await preferenceLearner.savePreferences();
+
+    res.json({
+      success: true,
+      message: 'Preferences refreshed successfully',
+      confidence: preferences.learning_confidence,
+      books_analyzed: preferenceLearner.books.length,
+      last_updated: preferences.last_updated
+    });
+
+  } catch (error) {
+    console.error('Error refreshing preferences:', error);
+    res.status(500).json({ 
+      error: 'Failed to refresh preferences',
+      details: error.message 
+    });
+  }
+});
+
+// Reading Insights Endpoints
+app.get('/api/insights/yearly', async (req, res) => {
+  try {
+    if (!insightsReady) {
+      return res.status(503).json({ 
+        error: 'Reading insights system not ready',
+        suggestion: 'Try again in a few seconds'
+      });
+    }
+
+    const year = new Date().getFullYear();
+    const insights = await readingInsights.generateYearlyInsights(year);
+
+    res.json({
+      success: true,
+      year,
+      insights,
+      generated_at: new Date().toISOString(),
+      data_quality: {
+        total_books_analyzed: insights.overview?.total_books || 0,
+        has_ratings: insights.overview?.books_rated > 0,
+        confidence: insights.overview?.rating_percentage || 0
+      }
+    });
+
+  } catch (error) {
+    console.error('Error generating yearly insights:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate yearly insights',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/insights/yearly/:year', async (req, res) => {
+  try {
+    if (!insightsReady) {
+      return res.status(503).json({ 
+        error: 'Reading insights system not ready',
+        suggestion: 'Try again in a few seconds'
+      });
+    }
+
+    const year = req.params.year ? parseInt(req.params.year) : new Date().getFullYear();
+    
+    if (isNaN(year) || year < 2000 || year > 2030) {
+      return res.status(400).json({ 
+        error: 'Invalid year. Must be between 2000 and 2030' 
+      });
+    }
+
+    const insights = await readingInsights.generateYearlyInsights(year);
+
+    res.json({
+      success: true,
+      year,
+      insights,
+      generated_at: new Date().toISOString(),
+      data_quality: {
+        total_books_analyzed: insights.overview?.total_books || 0,
+        has_ratings: insights.overview?.books_rated > 0,
+        confidence: insights.overview?.rating_percentage || 0
+      }
+    });
+
+  } catch (error) {
+    console.error('Error generating yearly insights:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate yearly insights',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/insights/overview', async (req, res) => {
+  try {
+    if (!insightsReady) {
+      return res.status(503).json({ 
+        error: 'Reading insights system not ready' 
+      });
+    }
+
+    const currentYear = new Date().getFullYear();
+    const insights = await readingInsights.generateYearlyInsights(currentYear);
+
+    // Generate quick overview stats
+    const overview = {
+      current_year: currentYear,
+      quick_stats: insights.overview,
+      reading_pace: insights.reading_pace.pace_metrics,
+      top_genre: insights.genre_analysis.dominant_genre,
+      favorite_author: insights.author_insights.top_authors[0],
+      goal_progress: insights.goals_tracking,
+      quality_summary: {
+        avg_rating: insights.quality_metrics.avg_rating,
+        five_star_rate: insights.quality_metrics.five_star_rate,
+        reading_standards: insights.quality_metrics.reading_standards
+      }
+    };
+
+    res.json({
+      success: true,
+      overview,
+      generated_at: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error generating overview insights:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate overview insights',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/insights/patterns', async (req, res) => {
+  try {
+    if (!insightsReady) {
+      return res.status(503).json({ 
+        error: 'Reading insights system not ready' 
+      });
+    }
+
+    const { timeframe = 'yearly' } = req.query;
+    const year = new Date().getFullYear();
+    const insights = await readingInsights.generateYearlyInsights(year);
+
+    const patterns = {
+      seasonal: insights.seasonal_patterns,
+      discovery: insights.discovery_insights,
+      author_patterns: {
+        loyalty_score: insights.author_insights.author_loyalty_score,
+        discovery_rate: insights.author_insights.discovery_rate,
+        favorite_count: insights.author_insights.favorite_authors.length
+      },
+      series_patterns: {
+        completion_rate: insights.series_tracking.series_completion_rate,
+        series_preference: insights.series_tracking.series_vs_standalone_ratio,
+        avg_books_per_series: insights.series_tracking.avg_books_per_series
+      },
+      reading_velocity: insights.reading_pace
+    };
+
+    res.json({
+      success: true,
+      timeframe,
+      patterns,
+      insights_count: Object.keys(patterns).length,
+      generated_at: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error analyzing reading patterns:', error);
+    res.status(500).json({ 
+      error: 'Failed to analyze reading patterns',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/insights/recommendations', async (req, res) => {
+  try {
+    if (!insightsReady) {
+      return res.status(503).json({ 
+        error: 'Reading insights system not ready' 
+      });
+    }
+
+    const year = new Date().getFullYear();
+    const insights = await readingInsights.generateYearlyInsights(year);
+
+    const recommendations = {
+      actionable_insights: insights.recommendations,
+      improvement_areas: [],
+      strengths: [],
+      next_steps: []
+    };
+
+    // Add specific recommendations based on data
+    if (insights.quality_metrics.avg_rating >= 4.5) {
+      recommendations.strengths.push('Excellent book curation - you consistently pick high-quality reads');
+    }
+
+    if (insights.genre_analysis.diversity_score >= 5) {
+      recommendations.strengths.push(`Great genre diversity - you explore ${insights.genre_analysis.diversity_score} different genres`);
+    }
+
+    if (insights.author_insights.discovery_rate < 50) {
+      recommendations.improvement_areas.push('Consider discovering more new authors to expand your reading horizons');
+      recommendations.next_steps.push('Set a goal to try one new author per month');
+    }
+
+    if (insights.series_tracking.completion_rate < 70) {
+      recommendations.improvement_areas.push('Many incomplete series - consider focusing on completing started series');
+      recommendations.next_steps.push('Prioritize finishing 2-3 series before starting new ones');
+    }
+
+    res.json({
+      success: true,
+      recommendations,
+      analysis_confidence: insights.overview.rating_percentage || 0,
+      generated_at: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error generating recommendations:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate recommendations',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/insights/compare/:year1/:year2', async (req, res) => {
+  try {
+    if (!insightsReady) {
+      return res.status(503).json({ 
+        error: 'Reading insights system not ready' 
+      });
+    }
+
+    const year1 = parseInt(req.params.year1);
+    const year2 = parseInt(req.params.year2);
+
+    if (isNaN(year1) || isNaN(year2) || year1 < 2000 || year2 < 2000) {
+      return res.status(400).json({ 
+        error: 'Invalid years. Must be valid years after 2000' 
+      });
+    }
+
+    const insights1 = await readingInsights.generateYearlyInsights(year1);
+    const insights2 = await readingInsights.generateYearlyInsights(year2);
+
+    const comparison = {
+      years: { year1, year2 },
+      books_comparison: {
+        [year1]: insights1.overview.total_books,
+        [year2]: insights2.overview.total_books,
+        difference: insights2.overview.total_books - insights1.overview.total_books,
+        percentage_change: Math.round(((insights2.overview.total_books - insights1.overview.total_books) / insights1.overview.total_books) * 100)
+      },
+      rating_comparison: {
+        [year1]: insights1.overview.avg_rating,
+        [year2]: insights2.overview.avg_rating,
+        difference: Math.round((insights2.overview.avg_rating - insights1.overview.avg_rating) * 10) / 10
+      },
+      pace_comparison: {
+        [year1]: insights1.reading_pace.pace_metrics.avg_books_per_month,
+        [year2]: insights2.reading_pace.pace_metrics.avg_books_per_month,
+        difference: Math.round((insights2.reading_pace.pace_metrics.avg_books_per_month - insights1.reading_pace.pace_metrics.avg_books_per_month) * 10) / 10
+      },
+      genre_evolution: {
+        [year1]: insights1.genre_analysis.dominant_genre,
+        [year2]: insights2.genre_analysis.dominant_genre,
+        changed: insights1.genre_analysis.dominant_genre?.genre !== insights2.genre_analysis.dominant_genre?.genre
+      }
+    };
+
+    res.json({
+      success: true,
+      comparison,
+      generated_at: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error comparing years:', error);
+    res.status(500).json({ 
+      error: 'Failed to compare years',
+      details: error.message 
+    });
+  }
+});
+
+// Queue Management Endpoints
+app.get('/api/queue/smart', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    const tbrBooks = books.filter(book => book.status === 'TBR');
+    
+    if (tbrBooks.length === 0) {
+      return res.json({
+        success: true,
+        queue: [],
+        message: 'No books in TBR queue',
+        queue_length: 0
+      });
+    }
+
+    // Get user preferences if available
+    let preferences = null;
+    if (preferencesReady && preferenceLearner.preferences) {
+      preferences = preferenceLearner.generateRecommendationProfile();
+    }
+
+    // Smart queue prioritization
+    const prioritizedQueue = await generateSmartQueue(tbrBooks, preferences);
+
+    res.json({
+      success: true,
+      queue: prioritizedQueue,
+      queue_length: prioritizedQueue.length,
+      preferences_used: !!preferences,
+      confidence: preferences?.confidence || 0,
+      next_recommendations: prioritizedQueue.slice(0, 5).map(book => ({
+        title: book.title,
+        author: book.author_name,
+        priority_score: book.priority_score,
+        priority_reasons: book.priority_reasons
+      }))
+    });
+
+  } catch (error) {
+    console.error('Error generating smart queue:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate smart queue',
+      details: error.message 
+    });
+  }
+});
+
+app.post('/api/queue/reorder', async (req, res) => {
+  try {
+    const { bookId, newPosition, reason } = req.body;
+
+    if (!bookId || !newPosition) {
+      return res.status(400).json({ 
+        error: 'bookId and newPosition are required' 
+      });
+    }
+
+    const books = await readBooksFile();
+    const bookIndex = books.findIndex(book => 
+      book.goodreads_id === bookId || book.guid === bookId
+    );
+
+    if (bookIndex === -1) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    // Update queue position
+    books[bookIndex].queue_position = parseInt(newPosition);
+    books[bookIndex].updated_at = new Date().toISOString();
+    
+    if (reason) {
+      books[bookIndex].queue_priority = reason;
+    }
+
+    await writeBooksFile(books);
+    const syncResult = await syncToFirebase(books);
+
+    res.json({
+      success: true,
+      message: 'Queue position updated',
+      book: {
+        title: books[bookIndex].title,
+        old_position: books[bookIndex].queue_position,
+        new_position: newPosition,
+        reason: reason
+      },
+      sync: syncResult
+    });
+
+  } catch (error) {
+    console.error('Error reordering queue:', error);
+    res.status(500).json({ 
+      error: 'Failed to reorder queue',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/queue/analytics', async (req, res) => {
+  try {
+    const books = await readBooksFile();
+    const analytics = await generateQueueAnalytics(books);
+
+    res.json({
+      success: true,
+      analytics,
+      generated_at: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error generating queue analytics:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate queue analytics',
+      details: error.message 
+    });
+  }
+});
+
+// Helper functions for queue management
+async function generateSmartQueue(tbrBooks, preferences = null) {
+  const prioritizedBooks = tbrBooks.map(book => {
+    let priority_score = 0;
+    const priority_reasons = [];
+
+    // Base score from existing queue position (if any)
+    if (book.queue_position) {
+      priority_score += (1000 - book.queue_position) / 1000; // Higher position = higher score
+      priority_reasons.push(`Queue position: ${book.queue_position}`);
+    }
+
+    // Priority modifiers
+    if (book.queue_priority === 'Book Club') {
+      priority_score += 0.8;
+      priority_reasons.push('Book club selection');
+    } else if (book.queue_priority === 'Library Due') {
+      priority_score += 0.7;
+      priority_reasons.push('Library due date');
+    } else if (book.queue_priority === 'Series Continuation') {
+      priority_score += 0.6;
+      priority_reasons.push('Series continuation');
+    }
+
+    // Library availability boost
+    if (book.availability_source === 'Library' && book.library_hold_status === 'Available') {
+      priority_score += 0.5;
+      priority_reasons.push('Available at library');
+    }
+
+    // KU availability boost
+    if (book.ku_availability) {
+      priority_score += 0.3;
+      priority_reasons.push('Available on Kindle Unlimited');
+    }
+
+    // Series continuation boost
+    if (book.series_name && book.series_number) {
+      priority_score += 0.2;
+      priority_reasons.push('Part of series');
+    }
+
+    // Hype flag boost
+    if (book.hype_flag === 'High') {
+      priority_score += 0.4;
+      priority_reasons.push('Highly anticipated');
+    } else if (book.hype_flag === 'Moderate') {
+      priority_score += 0.2;
+      priority_reasons.push('Moderately anticipated');
+    }
+
+    // Preference-based scoring
+    if (preferences) {
+      // Genre preference
+      const genrePref = preferences.preferred_genres.find(g => g.name === book.genre);
+      if (genrePref) {
+        priority_score += genrePref.score * 0.3;
+        priority_reasons.push(`Preferred genre: ${book.genre}`);
+      }
+
+      // Trope preferences
+      if (book.tropes && Array.isArray(book.tropes)) {
+        let tropeBoost = 0;
+        book.tropes.forEach(trope => {
+          const tropePref = preferences.preferred_tropes.find(t => t.name === trope);
+          if (tropePref) {
+            tropeBoost += tropePref.score * 0.1;
+          }
+        });
+        if (tropeBoost > 0) {
+          priority_score += tropeBoost;
+          priority_reasons.push('Contains preferred tropes');
+        }
+      }
+
+      // Author preference
+      const authorPref = preferences.preferred_authors.find(a => a.name === book.author_name);
+      if (authorPref) {
+        priority_score += authorPref.score * 0.2;
+        priority_reasons.push(`Preferred author: ${book.author_name}`);
+      }
+
+      // Spice level preference
+      if (book.spice && preferences.spice_range) {
+        if (book.spice >= preferences.spice_range.min && book.spice <= preferences.spice_range.max) {
+          priority_score += 0.15;
+          priority_reasons.push('Preferred spice level');
+        }
+      }
+
+      // Series preference
+      if (preferences.series_preference && book.series_name) {
+        priority_score += 0.1;
+        priority_reasons.push('Series (you prefer series)');
+      } else if (!preferences.series_preference && !book.series_name) {
+        priority_score += 0.1;
+        priority_reasons.push('Standalone (you prefer standalones)');
+      }
+    }
+
+    // Recency penalty (older additions get slight boost)
+    if (book.user_date_added) {
+      const daysOld = (Date.now() - new Date(book.user_date_added)) / (1000 * 60 * 60 * 24);
+      if (daysOld > 30) {
+        priority_score += Math.min(daysOld / 365, 0.2); // Max 0.2 boost for very old books
+        priority_reasons.push('Long time in queue');
+      }
+    }
+
+    return {
+      ...book,
+      priority_score: Math.round(priority_score * 100) / 100,
+      priority_reasons
+    };
+  });
+
+  // Sort by priority score (highest first)
+  return prioritizedBooks.sort((a, b) => b.priority_score - a.priority_score);
+}
+
+async function generateQueueAnalytics(books) {
+  const tbrBooks = books.filter(book => book.status === 'TBR');
+  const readBooks = books.filter(book => book.status === 'Read' || book.status === 'Finished');
+
+  const analytics = {
+    queue_overview: {
+      total_tbr: tbrBooks.length,
+      total_read: readBooks.length,
+      completion_rate: readBooks.length / (books.length || 1),
+      avg_queue_position: tbrBooks.reduce((sum, book) => sum + (book.queue_position || 0), 0) / (tbrBooks.length || 1)
+    },
+    genre_distribution: {},
+    author_distribution: {},
+    series_analysis: {
+      series_books: 0,
+      standalone_books: 0,
+      incomplete_series: []
+    },
+    availability_analysis: {
+      library_available: 0,
+      ku_available: 0,
+      need_purchase: 0,
+      unknown_availability: 0
+    },
+    priority_analysis: {
+      high_priority: 0,
+      medium_priority: 0,
+      low_priority: 0,
+      book_club: 0,
+      library_due: 0
+    },
+    reading_patterns: {
+      books_per_month: 0,
+      estimated_queue_completion: null,
+      recommended_queue_size: null
+    }
+  };
+
+  // Genre distribution
+  tbrBooks.forEach(book => {
+    if (book.genre) {
+      analytics.genre_distribution[book.genre] = (analytics.genre_distribution[book.genre] || 0) + 1;
+    }
+  });
+
+  // Author distribution
+  tbrBooks.forEach(book => {
+    if (book.author_name) {
+      analytics.author_distribution[book.author_name] = (analytics.author_distribution[book.author_name] || 0) + 1;
+    }
+  });
+
+  // Series analysis
+  tbrBooks.forEach(book => {
+    if (book.series_name) {
+      analytics.series_analysis.series_books++;
+    } else {
+      analytics.series_analysis.standalone_books++;
+    }
+  });
+
+  // Availability analysis
+  tbrBooks.forEach(book => {
+    if (book.library_hold_status === 'Available') {
+      analytics.availability_analysis.library_available++;
+    } else if (book.ku_availability) {
+      analytics.availability_analysis.ku_available++;
+    } else if (book.availability_source === 'Purchase') {
+      analytics.availability_analysis.need_purchase++;
+    } else {
+      analytics.availability_analysis.unknown_availability++;
+    }
+  });
+
+  // Priority analysis
+  tbrBooks.forEach(book => {
+    if (book.queue_priority === 'Book Club') {
+      analytics.priority_analysis.book_club++;
+    } else if (book.queue_priority === 'Library Due') {
+      analytics.priority_analysis.library_due++;
+    }
+
+    // Calculate priority levels based on position
+    if (book.queue_position) {
+      if (book.queue_position <= 10) {
+        analytics.priority_analysis.high_priority++;
+      } else if (book.queue_position <= 50) {
+        analytics.priority_analysis.medium_priority++;
+      } else {
+        analytics.priority_analysis.low_priority++;
+      }
+    }
+  });
+
+  // Reading patterns (if we have read dates)
+  const booksWithDates = readBooks.filter(book => book.user_read_at);
+  if (booksWithDates.length > 5) {
+    // Calculate reading velocity
+    booksWithDates.sort((a, b) => new Date(a.user_read_at) - new Date(b.user_read_at));
+    const timeSpan = new Date(booksWithDates[booksWithDates.length - 1].user_read_at) - new Date(booksWithDates[0].user_read_at);
+    const monthsSpan = timeSpan / (1000 * 60 * 60 * 24 * 30);
+    analytics.reading_patterns.books_per_month = booksWithDates.length / monthsSpan;
+
+    // Estimate queue completion time
+    if (analytics.reading_patterns.books_per_month > 0) {
+      const monthsToComplete = tbrBooks.length / analytics.reading_patterns.books_per_month;
+      analytics.reading_patterns.estimated_queue_completion = Math.ceil(monthsToComplete);
+      
+      // Recommend queue size (3-6 months worth)
+      analytics.reading_patterns.recommended_queue_size = Math.round(analytics.reading_patterns.books_per_month * 4);
+    }
+  }
+
+  return analytics;
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

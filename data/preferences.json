@@ -1,1 +1,579 @@
-{}
+{
+  "genre_preferences": {
+    "Romance": {
+      "count": 1,
+      "frequency": 0.0024330900243309003,
+      "avg_rating": 0,
+      "preference_score": 0.0017031630170316302,
+      "last_read": "2025-07-09T00:00:00.000Z"
+    }
+  },
+  "subgenre_preferences": {
+    "Sports": {
+      "count": 1,
+      "frequency": 0.0024330900243309003,
+      "avg_rating": 0,
+      "preference_score": 0.0017031630170316302,
+      "last_read": "2025-07-09T00:00:00.000Z"
+    }
+  },
+  "trope_preferences": {
+    "Friends to Lovers": {
+      "count": 1,
+      "frequency": 0.0024330900243309003,
+      "avg_rating": 0,
+      "preference_score": 0.00145985401459854,
+      "last_read": "2025-07-09T00:00:00.000Z"
+    },
+    "Forced Proximity": {
+      "count": 1,
+      "frequency": 0.0024330900243309003,
+      "avg_rating": 0,
+      "preference_score": 0.00145985401459854,
+      "last_read": "2025-07-09T00:00:00.000Z"
+    },
+    "Single Parent/Guardian": {
+      "count": 1,
+      "frequency": 0.0024330900243309003,
+      "avg_rating": 0,
+      "preference_score": 0.00145985401459854,
+      "last_read": "2025-07-09T00:00:00.000Z"
+    }
+  },
+  "author_preferences": {
+    "Chelsea Curto": {
+      "count": 3,
+      "avg_rating": 0,
+      "preference_score": 1.2000000000000002,
+      "last_read": "2025-07-09T00:00:00.000Z"
+    },
+    "Stephanie  Archer": {
+      "count": 4,
+      "avg_rating": 3,
+      "preference_score": 1.96,
+      "last_read": "2025-07-03T00:00:00.000Z"
+    },
+    "Elsie Silver": {
+      "count": 8,
+      "avg_rating": 4.125,
+      "preference_score": 3.6950000000000003,
+      "last_read": "2025-03-05T00:00:00.000Z"
+    },
+    "Kate  Stewart": {
+      "count": 8,
+      "avg_rating": 4.857142857142857,
+      "preference_score": 3.782857142857143,
+      "last_read": "2025-06-29T00:00:00.000Z"
+    },
+    "Meghan Quinn": {
+      "count": 11,
+      "avg_rating": 4,
+      "preference_score": 4.880000000000001,
+      "last_read": "2025-06-21T00:00:00.000Z"
+    },
+    "Hannah  Grace": {
+      "count": 3,
+      "avg_rating": 3,
+      "preference_score": 1.56,
+      "last_read": "2025-06-19T00:00:00.000Z"
+    },
+    "Meagan Brandy": {
+      "count": 9,
+      "avg_rating": 4,
+      "preference_score": 4.08,
+      "last_read": "2025-06-20T00:00:00.000Z"
+    },
+    "Emily Henry": {
+      "count": 6,
+      "avg_rating": 4.833333333333333,
+      "preference_score": 2.9800000000000004,
+      "last_read": "2025-05-19T00:00:00.000Z"
+    },
+    "Julie  Soto": {
+      "count": 2,
+      "avg_rating": 4.5,
+      "preference_score": 1.34,
+      "last_read": "2025-06-15T00:00:00.000Z"
+    },
+    "Gabrielle Zevin": {
+      "count": 1,
+      "avg_rating": 5,
+      "preference_score": 1,
+      "last_read": "2025-06-13T00:00:00.000Z"
+    },
+    "Navessa Allen": {
+      "count": 3,
+      "avg_rating": 4,
+      "preference_score": 1.6800000000000002,
+      "last_read": "2025-06-11T00:00:00.000Z"
+    },
+    "C.R. Jane": {
+      "count": 5,
+      "avg_rating": 2.6,
+      "preference_score": 2.312,
+      "last_read": "2025-06-08T00:00:00.000Z"
+    },
+    "Elodie Hart": {
+      "count": 9,
+      "avg_rating": 3,
+      "preference_score": 3.96,
+      "last_read": "2025-06-06T00:00:00.000Z"
+    },
+    "Kandi Steiner": {
+      "count": 2,
+      "avg_rating": 4,
+      "preference_score": 1.28,
+      "last_read": "2025-06-02T05:00:00.000Z"
+    },
+    "Ali Hazelwood": {
+      "count": 8,
+      "avg_rating": 4.25,
+      "preference_score": 3.71,
+      "last_read": "2025-05-31T00:00:00.000Z"
+    },
+    "Chloe Walsh": {
+      "count": 6,
+      "avg_rating": 4,
+      "preference_score": 2.8800000000000003,
+      "last_read": "2025-05-30T00:00:00.000Z"
+    },
+    "B.K. Borison": {
+      "count": 2,
+      "avg_rating": 3.5,
+      "preference_score": 1.22,
+      "last_read": "2025-05-23T00:00:00.000Z"
+    },
+    "Ana Huang": {
+      "count": 13,
+      "avg_rating": 3.923076923076923,
+      "preference_score": 5.670769230769231,
+      "last_read": "2025-05-27T00:00:00.000Z"
+    },
+    "Liz Tomforde": {
+      "count": 5,
+      "avg_rating": 4,
+      "preference_score": 2.48,
+      "last_read": "2025-05-25T00:00:00.000Z"
+    },
+    "Tessa Bailey": {
+      "count": 4,
+      "avg_rating": 3.5,
+      "preference_score": 2.02,
+      "last_read": "2025-05-24T00:00:00.000Z"
+    },
+    "Krista Ritchie": {
+      "count": 10,
+      "avg_rating": 4,
+      "preference_score": 4.48,
+      "last_read": "2025-05-18T00:00:00.000Z"
+    },
+    "Penelope Douglas": {
+      "count": 10,
+      "avg_rating": 3.8,
+      "preference_score": 4.4559999999999995,
+      "last_read": "2025-04-13T00:00:00.000Z"
+    },
+    "Becka Mack": {
+      "count": 4,
+      "avg_rating": 3.5,
+      "preference_score": 2.02,
+      "last_read": "2025-04-08T00:00:00.000Z"
+    },
+    "Rina Kent": {
+      "count": 7,
+      "avg_rating": 3.857142857142857,
+      "preference_score": 3.2628571428571433,
+      "last_read": "2025-04-04T00:00:00.000Z"
+    },
+    "Raven Kennedy": {
+      "count": 5,
+      "avg_rating": 4.6,
+      "preference_score": 2.552,
+      "last_read": "2025-04-02T00:00:00.000Z"
+    },
+    "Tahereh Mafi": {
+      "count": 4,
+      "avg_rating": 2.6666666666666665,
+      "preference_score": 1.9200000000000002,
+      "last_read": "2025-03-01T00:00:00.000Z"
+    },
+    "Sara Cate": {
+      "count": 8,
+      "avg_rating": 3.625,
+      "preference_score": 3.6350000000000002,
+      "last_read": "2025-03-23T00:00:00.000Z"
+    },
+    "Abby Jimenez": {
+      "count": 7,
+      "avg_rating": 4.571428571428571,
+      "preference_score": 3.3485714285714288,
+      "last_read": "2025-03-20T00:00:00.000Z"
+    },
+    "Callie Hart": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2025-03-19T00:00:00.000Z"
+    },
+    "S.M. Shade": {
+      "count": 2,
+      "avg_rating": 3.5,
+      "preference_score": 1.22,
+      "last_read": "2025-03-17T00:00:00.000Z"
+    },
+    "Christina Lauren": {
+      "count": 6,
+      "avg_rating": 4,
+      "preference_score": 2.8800000000000003,
+      "last_read": "2025-03-13T00:00:00.000Z"
+    },
+    "Elle Kennedy": {
+      "count": 10,
+      "avg_rating": 3.5,
+      "preference_score": 4.42,
+      "last_read": "2025-03-04T06:00:00.000Z"
+    },
+    "Kyra Parsi": {
+      "count": 3,
+      "avg_rating": 4.333333333333333,
+      "preference_score": 1.7200000000000002,
+      "last_read": "2024-03-28T05:00:00.000Z"
+    },
+    "Amanda Gambill": {
+      "count": 1,
+      "avg_rating": 5,
+      "preference_score": 1,
+      "last_read": "2024-02-24T06:00:00.000Z"
+    },
+    "Kay Cove": {
+      "count": 2,
+      "avg_rating": 4,
+      "preference_score": 1.28,
+      "last_read": "2024-03-14T05:00:00.000Z"
+    },
+    "S.T. Abby": {
+      "count": 5,
+      "avg_rating": 5,
+      "preference_score": 2.6,
+      "last_read": "2024-03-03T06:00:00.000Z"
+    },
+    "T.L. Swan": {
+      "count": 8,
+      "avg_rating": 4.125,
+      "preference_score": 3.6950000000000003,
+      "last_read": "2024-09-24T05:00:00.000Z"
+    },
+    "Melanie Moreland": {
+      "count": 5,
+      "avg_rating": 3.2,
+      "preference_score": 2.384,
+      "last_read": "2024-03-09T06:00:00.000Z"
+    },
+    "Kate Canterbary": {
+      "count": 5,
+      "avg_rating": 4.6,
+      "preference_score": 2.552,
+      "last_read": "2024-09-14T05:00:00.000Z"
+    },
+    "Stella Hart": {
+      "count": 3,
+      "avg_rating": 5,
+      "preference_score": 1.8000000000000003,
+      "last_read": "2024-03-13T05:00:00.000Z"
+    },
+    "Nina  West": {
+      "count": 4,
+      "avg_rating": 5,
+      "preference_score": 2.2,
+      "last_read": "2024-03-17T05:00:00.000Z"
+    },
+    "K.A. Tucker": {
+      "count": 1,
+      "avg_rating": 5,
+      "preference_score": 1,
+      "last_read": "2024-03-17T05:00:00.000Z"
+    },
+    "Sylvia Day": {
+      "count": 5,
+      "avg_rating": 5,
+      "preference_score": 2.6,
+      "last_read": "2024-03-21T05:00:00.000Z"
+    },
+    "Erin Hawkins": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2024-03-22T05:00:00.000Z"
+    },
+    "Meredith Wild": {
+      "count": 5,
+      "avg_rating": 4,
+      "preference_score": 2.48,
+      "last_read": "2024-03-25T05:00:00.000Z"
+    },
+    "Cara Bastone": {
+      "count": 4,
+      "avg_rating": 3.5,
+      "preference_score": 2.02,
+      "last_read": "2024-04-10T05:00:00.000Z"
+    },
+    "Katee Robert": {
+      "count": 15,
+      "avg_rating": 4.428571428571429,
+      "preference_score": 6.531428571428571,
+      "last_read": "2025-01-01T06:00:00.000Z"
+    },
+    "J.T. Geissinger": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2024-03-31T05:00:00.000Z"
+    },
+    "J. Kenner": {
+      "count": 20,
+      "avg_rating": 4,
+      "preference_score": 8.48,
+      "last_read": "2024-04-15T05:00:00.000Z"
+    },
+    "Lauren Blakely": {
+      "count": 2,
+      "avg_rating": 3,
+      "preference_score": 1.1600000000000001,
+      "last_read": "2024-04-14T05:00:00.000Z"
+    },
+    "Brynne Weaver": {
+      "count": 3,
+      "avg_rating": 5,
+      "preference_score": 1.8000000000000003,
+      "last_read": "2025-02-13T06:00:00.000Z"
+    },
+    "Sierra Simone": {
+      "count": 3,
+      "avg_rating": 3,
+      "preference_score": 1.56,
+      "last_read": "2024-10-04T05:00:00.000Z"
+    },
+    "Katherine Center": {
+      "count": 3,
+      "avg_rating": 3.3333333333333335,
+      "preference_score": 1.6,
+      "last_read": "2024-09-09T05:00:00.000Z"
+    },
+    "Elena  Armas": {
+      "count": 3,
+      "avg_rating": 4.333333333333333,
+      "preference_score": 1.7200000000000002,
+      "last_read": "2024-07-27T05:00:00.000Z"
+    },
+    "Sally  Thorne": {
+      "count": 1,
+      "avg_rating": 5,
+      "preference_score": 1,
+      "last_read": "2024-04-21T05:00:00.000Z"
+    },
+    "Alice Clayton": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2024-04-29T05:00:00.000Z"
+    },
+    "Laurelin Paige": {
+      "count": 5,
+      "avg_rating": 4.4,
+      "preference_score": 2.528,
+      "last_read": "2024-05-04T05:00:00.000Z"
+    },
+    "Robinne Lee": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2024-05-05T05:00:00.000Z"
+    },
+    "Emily Rath": {
+      "count": 4,
+      "avg_rating": 4.75,
+      "preference_score": 2.17,
+      "last_read": "2024-09-27T05:00:00.000Z"
+    },
+    "Casey McQuiston": {
+      "count": 1,
+      "avg_rating": 5,
+      "preference_score": 1,
+      "last_read": "2024-05-11T05:00:00.000Z"
+    },
+    "Mariana Zapata": {
+      "count": 2,
+      "avg_rating": 4.5,
+      "preference_score": 1.34,
+      "last_read": "2024-07-21T05:00:00.000Z"
+    },
+    "Scarlett St.  Clair": {
+      "count": 7,
+      "avg_rating": 4,
+      "preference_score": 3.2800000000000002,
+      "last_read": "2024-07-16T05:00:00.000Z"
+    },
+    "Lucy Score": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2024-07-29T05:00:00.000Z"
+    },
+    "Brit Benson": {
+      "count": 2,
+      "avg_rating": 4,
+      "preference_score": 1.28,
+      "last_read": "2024-08-03T05:00:00.000Z"
+    },
+    "Lauren Asher": {
+      "count": 3,
+      "avg_rating": 3.6666666666666665,
+      "preference_score": 1.6400000000000001,
+      "last_read": "2024-08-14T05:00:00.000Z"
+    },
+    "Michelle McCraw": {
+      "count": 1,
+      "avg_rating": 4,
+      "preference_score": 0.88,
+      "last_read": "2024-08-17T05:00:00.000Z"
+    },
+    "Beth O'Leary": {
+      "count": 1,
+      "avg_rating": 5,
+      "preference_score": 1,
+      "last_read": "2024-08-29T05:00:00.000Z"
+    },
+    "Sophia Travers": {
+      "count": 3,
+      "avg_rating": 4,
+      "preference_score": 1.6800000000000002,
+      "last_read": "2024-09-06T05:00:00.000Z"
+    },
+    "Morgan  Elizabeth": {
+      "count": 2,
+      "avg_rating": 3,
+      "preference_score": 1.1600000000000001,
+      "last_read": "2024-11-01T05:00:00.000Z"
+    },
+    "Marni Mann": {
+      "count": 8,
+      "avg_rating": 3,
+      "preference_score": 3.56,
+      "last_read": "2024-09-21T05:00:00.000Z"
+    },
+    "Sloane St. James": {
+      "count": 3,
+      "avg_rating": 3,
+      "preference_score": 1.56,
+      "last_read": "2024-09-23T05:00:00.000Z"
+    },
+    "Shantel Tessier": {
+      "count": 6,
+      "avg_rating": 4.666666666666667,
+      "preference_score": 2.9600000000000004,
+      "last_read": "2024-10-11T05:00:00.000Z"
+    },
+    "Danielle Lori": {
+      "count": 3,
+      "avg_rating": 3,
+      "preference_score": 1.56,
+      "last_read": "2024-10-27T05:00:00.000Z"
+    },
+    "I.A. Dice": {
+      "count": 5,
+      "avg_rating": 3,
+      "preference_score": 2.36,
+      "last_read": "2024-10-30T05:00:00.000Z"
+    },
+    "Amanda   Richardson": {
+      "count": 4,
+      "avg_rating": 3.25,
+      "preference_score": 1.9900000000000002,
+      "last_read": "2024-11-18T06:00:00.000Z"
+    },
+    "Sarah J. Maas": {
+      "count": 16,
+      "avg_rating": 4.8125,
+      "preference_score": 6.9775,
+      "last_read": "2025-02-05T06:00:00.000Z"
+    },
+    "C.W. Farnsworth": {
+      "count": 2,
+      "avg_rating": 3,
+      "preference_score": 1.1600000000000001,
+      "last_read": "2024-11-30T06:00:00.000Z"
+    },
+    "Rosa Lucas": {
+      "count": 3,
+      "avg_rating": 3,
+      "preference_score": 1.56,
+      "last_read": "2024-12-02T06:00:00.000Z"
+    },
+    "Ashley Jade": {
+      "count": 2,
+      "avg_rating": 3.5,
+      "preference_score": 1.22,
+      "last_read": "2024-12-09T06:00:00.000Z"
+    },
+    "Sarah   Blue": {
+      "count": 2,
+      "avg_rating": 2,
+      "preference_score": 1.04,
+      "last_read": "2024-12-11T06:00:00.000Z"
+    },
+    "Katie Bailey": {
+      "count": 2,
+      "avg_rating": 3,
+      "preference_score": 1.1600000000000001,
+      "last_read": "2024-12-20T06:00:00.000Z"
+    },
+    "Rebecca Yarros": {
+      "count": 3,
+      "avg_rating": 5,
+      "preference_score": 1.8000000000000003,
+      "last_read": "2025-01-27T06:00:00.000Z"
+    },
+    "Ivy Smoak": {
+      "count": 2,
+      "avg_rating": 2,
+      "preference_score": 1.04,
+      "last_read": "2025-01-29T06:00:00.000Z"
+    }
+  },
+  "tone_preferences": {},
+  "spice_preferences": {
+    "4": {
+      "count": 1,
+      "avg_rating": 0,
+      "preference_score": 0.00048661800486618007
+    }
+  },
+  "series_preferences": {
+    "series_books": 336,
+    "standalone_books": 75,
+    "series_avg_rating": 3.7410714285714284,
+    "standalone_avg_rating": 3.546666666666667,
+    "prefers_series": true
+  },
+  "reading_patterns": {
+    "reading_velocity": 5.719980069755854,
+    "completion_rate": 1.126027397260274,
+    "seasonal_patterns": {
+      "0": 27,
+      "1": 29,
+      "2": 81,
+      "3": 77,
+      "4": 30,
+      "5": 18,
+      "6": 22,
+      "7": 21,
+      "8": 28,
+      "9": 25,
+      "10": 23,
+      "11": 30
+    },
+    "most_productive_month": 2
+  },
+  "learning_confidence": 0.7000000000000001,
+  "last_updated": "2025-07-11T16:38:12.082Z"
+}
