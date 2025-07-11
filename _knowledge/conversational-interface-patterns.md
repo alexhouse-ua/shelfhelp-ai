@@ -98,69 +98,108 @@ Ready for reflection questions?
 
 ## Prioritized Recommendation Resources
 
-### Tier 1 - Primary Sources (Check First)
-1. **Goodreads**
-   - Best of year lists
-   - Choice Awards winners/nominees  
-   - Popular shelves and lists
-   - Similar book recommendations
+The system uses a comprehensive YAML-based source hierarchy stored in `data/recommendation-sources.yaml` with over 150 curated sources organized by priority and specialty.
 
-2. **BookTok/BookTube Trending**
-   - TikTok hashtag trends (#BookTok, #FantasyTok, #RomanceTok)
-   - Popular BookTuber recommendations
-   - Viral book discussions
+### Tier 1 - Primary Sources (Priority Weight: 1.0)
+**Bestsellers & Core Discovery:**
+- **Goodreads** - Lists, Choice Awards, similar book recommendations (Priority 1)
+- **Amazon** - Bestsellers, customer favorites (Priority 2)  
+- **New York Times** - Bestseller lists, book reviews (Priority 3)
+- **Barnes & Noble** - Staff picks, trending (Priority 4)
 
-3. **Publisher New Releases**
-   - Major publisher catalogs (Penguin Random House, HarperCollins, etc.)
-   - Genre-specific imprints (Berkley Romance, Tor Fantasy, etc.)
-   - Author newsletters and announcements
+**Social & Trending (Weight: 1.3x for trending queries):**
+- **BookTok (General)** - #BookTok, #FantasyTok, #RomanceTok trends
+- **Romance TikTokers** - beanchambers, Tierny Reads (romance specialists)
+- **Book Riot** - Trending articles, upcoming releases
+- **BookBub** - Popular recommendations, daily deals
 
-4. **Book Award Lists**
-   - Hugo Awards (Science Fiction/Fantasy)
-   - Rita Awards (Romance)
-   - Goodreads Choice Awards
-   - National Book Awards
+### Tier 2 - Secondary Sources (Priority Weight: 0.7)
+**Romance Specialists (Weight: 1.2x for romance queries):**
+- **Smart Bitches, Trashy Books** - Romance reviews and trending (Priority 1)
+- **All About Romance** - Upcoming releases, comprehensive reviews (Priority 2)
+- **Fated Mates** - Podcast recommendations, trending romance (Priority 3)
+- **She Reads Romance Books** - New releases, upcoming titles (Priority 4)
+- **Romance.io** - Trope and spice level search tools (Priority 5)
 
-### Tier 2 - Secondary Sources
-1. **Book Review Sites**
-   - Kirkus Reviews
-   - Publishers Weekly
-   - Library Journal
-   - Book Riot
+**Professional Reviews:**
+- **Kirkus Reviews** - Professional book reviews, new releases
+- **Publishers Weekly** - Industry insights, bestseller analysis  
+- **Library Journal** - Librarian recommendations
+- **BookPage** - New release spotlights
 
-2. **Genre-Specific Resources**
-   - Smart Bitches, Trashy Books (Romance)
-   - Tor.com (Science Fiction/Fantasy)
-   - The Romance Reviews
-   - All About Romance
+**BookTubers & Influencers:**
+- **A Clockwork Reader, Ava's Romance Books** - YouTube book reviews
+- **Chandler Ainsley, Loch's Library** - Romance-focused content
+- **Modern Mrs. Darcy** - Book discovery and recommendations
 
-3. **Retailer Lists**
-   - Amazon bestsellers and new releases
-   - Barnes & Noble staff picks
-   - Indie bookstore recommendations
-   - Book subscription box features
+**Traditional Media:**
+- **Entertainment Weekly, POPSUGAR** - Pop culture book trends
+- **Cosmopolitan, BuzzFeed** - Lifestyle-oriented book content
+- **Oprah Daily** - Book club selections and recommendations
 
-### Tier 3 - Extended Sources
-- Author social media and newsletters
-- Book festivals and convention buzz
-- Literary magazines and blogs
-- Reading community forums (Reddit r/books, etc.)
+### Tier 3 - Extended Sources (Priority Weight: 0.4)
+**Community-Driven:**
+- **Reddit r/RomanceBooks, r/FantasyRomance** - Community recommendations
+- **Fated Mates Discord** - Real-time romance book discussions
+- **Romance Devoured** - Community-curated lists
+
+**Retailers & Audiobooks:**
+- **Audible (US/UK)** - Audiobook bestsellers and trending
+- **Kobo, Indigo** - International perspective and staff picks
+
+**Specialized Bloggers:**
+- 50+ curated book blogs covering niches like **The Candid Cover** (romance), **Forever She Reads**, **Under the Covers Book Blog**
+
+**Lifestyle Magazines:**
+- **Elle, Marie Claire, People** - Mainstream book coverage
+
+### Dynamic Source Selection
+The AI automatically prioritizes sources based on query type:
+- **Romance queries** → Romance specialists get 1.2x weight boost
+- **Trending requests** → Social sources get 1.3x weight boost  
+- **Bestseller queries** → Traditional bestseller sources prioritized
+- **Discovery requests** → Community and blog sources emphasized
+
+### Search Pattern Examples
+```yaml
+Romance trending: "romance books trending on {source}"
+Similar books: "{source} books like {book_title}"  
+New releases: "{source} new releases {month} {year}"
+Spicy romance: "{source} spicy romance recommendations"
+```
+
+The system includes 150+ sources with pre-defined search patterns, scope tags (romance/overall), and algorithmic priority weights for optimal recommendation discovery.
 
 ## API Endpoints for Conversational Use
 
 ### GET /api/chat/recommendations/discover
-**Purpose**: External book discovery with source prioritization
+**Purpose**: External book discovery with YAML-based source prioritization
 ```json
 {
   "query": "dark fantasy romance trending 2024",
   "search_strategy": {
-    "tier1_sources": ["goodreads_trending", "booktok_viral", "publisher_releases"],
-    "tier2_sources": ["review_sites", "genre_blogs"],
-    "fallback_sources": ["general_web_search"]
+    "source_file": "data/recommendation-sources.yaml",
+    "tier1_primary": {
+      "weight": 1.0,
+      "sources": ["goodreads", "booktok_general", "book_riot", "bookbub"],
+      "romance_boost": 1.2,
+      "trending_boost": 1.3
+    },
+    "tier2_secondary": {
+      "weight": 0.7, 
+      "romance_specialists": ["smart_bitches_trashy_books", "all_about_romance", "fated_mates"],
+      "booktubers": ["avas_romance_books", "chandler_ainsley", "lochs_library"]
+    },
+    "search_patterns": [
+      "romance books trending on {source}",
+      "{source} dark fantasy romance 2024",
+      "{source} spicy romantasy recommendations"
+    ]
   },
   "user_context": {
     "recent_loves": ["Fourth Wing", "ACOTAR"],
     "preferred_genres": ["Fantasy Romance", "Dark Fantasy"],
+    "scope_preference": "romance",
     "avoid": ["YA", "Dystopian"]
   }
 }
