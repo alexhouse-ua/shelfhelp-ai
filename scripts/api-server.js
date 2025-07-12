@@ -22,9 +22,9 @@ const PORT = process.env.PORT || 3000;
 const helmet = require('helmet');
 app.use(helmet());
 
-// API key authentication middleware
+// Mandatory API key authentication for AI assistants
 const requireApiKey = (req, res, next) => {
-  // Skip authentication for health check and status endpoints
+  // Health checks remain public
   if (req.path === '/health' || req.path === '/status') {
     return next();
   }
@@ -32,30 +32,121 @@ const requireApiKey = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   const expectedKey = process.env.API_KEY;
   
+  // STRICT MODE: API key is mandatory for AI assistant deployment
   if (!expectedKey) {
-    logger.security('API_KEY environment variable not set - running without authentication', {
+    logger.error('DEPLOYMENT_ERROR: API_KEY environment variable required for AI assistant deployment', {
       path: req.path,
-      method: req.method
+      method: req.method,
+      timestamp: new Date().toISOString()
     });
-    return next();
+    return res.status(500).json({
+      error: 'Configuration Error',
+      message: 'API key configuration required for AI assistant access',
+      deployment_status: 'failed',
+      hint: 'Set API_KEY environment variable'
+    });
   }
   
   if (!apiKey || apiKey !== expectedKey) {
-    return res.status(401).json({ 
+    logger.security('AI assistant unauthorized access attempt', {
+      ip: req.ip,
+      path: req.path,
+      method: req.method,
+      userAgent: req.headers['user-agent'],
+      timestamp: new Date().toISOString(),
+      hasApiKey: !!apiKey
+    });
+    return res.status(401).json({
       error: 'Unauthorized',
-      message: 'Valid API key required in x-api-key header'
+      message: 'Valid API key required for AI assistant access',
+      hint: 'Include x-api-key header with your API key'
     });
   }
+  
+  // Log successful AI assistant access
+  logger.info('AI assistant authenticated access', {
+    path: req.path,
+    method: req.method,
+    userAgent: req.headers['user-agent'],
+    timestamp: new Date().toISOString()
+  });
   
   next();
 };
 
+// AI Assistant CORS Configuration
+const corsOptions = {
+  origin: [
+    // AI Platform Origins
+    'https://chat.openai.com',           // CustomGPT
+    'https://chatgpt.com',               // ChatGPT interface
+    'https://claude.ai',                 // Claude interface
+    'https://api.openai.com',            // OpenAI API calls
+    'https://api.anthropic.com',         // Anthropic API calls
+    
+    // Development & Deployment
+    'http://localhost:3000',             // Local development
+    'http://localhost:8080',             // Alternative local port
+    /^https:\/\/.*\.railway\.app$/,      // Railway deployments
+    /^https:\/\/.*\.render\.com$/,       // Render deployments
+    /^https:\/\/.*\.vercel\.app$/,       // Vercel deployments
+  ],
+  credentials: false,                    // API key in headers, not cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'x-api-key', 
+    'Authorization',
+    'User-Agent'
+  ],
+  exposedHeaders: ['X-Total-Count', 'X-Request-ID'],
+  optionsSuccessStatus: 200
+};
+
+// Rate limiting for AI assistants
+const rateLimit = require('express-rate-limit');
+
+const aiAssistantLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,              // 15 minutes
+  max: 1000,                             // 1000 requests per 15 min (generous for AI)
+  message: {
+    error: 'Rate limit exceeded',
+    message: 'AI assistant rate limit reached. Please wait before making more requests.',
+    retryAfter: '15 minutes',
+    maxRequests: 1000,
+    windowMs: 900000,
+    hint: 'Reduce request frequency or wait for rate limit window to reset'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Custom key generator for AI assistants
+  keyGenerator: (req) => {
+    // Use User-Agent + IP for better AI assistant identification
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const isAI = userAgent.includes('GPT') || userAgent.includes('Claude') || userAgent.includes('AI');
+    return isAI ? `ai_${userAgent}_${req.ip}` : req.ip;
+  },
+  // Skip rate limiting for health checks
+  skip: (req) => {
+    return req.path === '/health' || req.path === '/status';
+  }
+});
+
 // Basic middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' })); // Increased limit for knowledge files
+
+// Apply rate limiting to API routes
+app.use('/api/', aiAssistantLimiter);
+
+// Import knowledge management API
+const knowledgeRouter = require('./knowledge-api');
 
 // Apply authentication to all API routes
 app.use('/api', requireApiKey);
+
+// Register knowledge management endpoints
+app.use('/api', knowledgeRouter);
 
 // Firebase configuration - disabled by default to prevent socket hangs
 let db = null;
@@ -4917,10 +5008,82 @@ function getPublicationYearSpread(books) {
   };
 }
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+// AI Assistant Safe Error Handling Middleware
+app.use((error, req, res, next) => {
+  // Generate unique request ID for tracking
+  const requestId = req.headers['x-request-id'] || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Log full error details for debugging (server-side only)
+  logger.error('Request failed', {
+    requestId,
+    error: error.message,
+    stack: error.stack,
+    path: req.path,
+    method: req.method,
+    userAgent: req.headers['user-agent'],
+    apiKeyPresent: !!req.headers['x-api-key'],
+    timestamp: new Date().toISOString(),
+    ip: req.ip
+  });
+  
+  // Determine error type and status
+  let status = error.status || error.statusCode || 500;
+  let errorType = 'Internal Server Error';
+  let hint = null;
+  
+  // Categorize common errors for AI assistants
+  if (error.name === 'ValidationError') {
+    status = 400;
+    errorType = 'Validation Error';
+    hint = 'Check request format and required fields';
+  } else if (error.code === 'ENOENT') {
+    status = 404;
+    errorType = 'Resource Not Found';
+    hint = 'Requested resource does not exist';
+  } else if (error.name === 'JsonWebTokenError') {
+    status = 401;
+    errorType = 'Authentication Error';
+    hint = 'Check API key format and validity';
+  } else if (error.code === 'EACCES') {
+    status = 403;
+    errorType = 'Permission Denied';
+    hint = 'Insufficient permissions for this operation';
+  } else if (error.name === 'MongoError' || error.name === 'SequelizeError') {
+    status = 503;
+    errorType = 'Database Error';
+    hint = 'Database temporarily unavailable';
+  }
+  
+  // AI-safe error response (no internal details exposed)
+  const errorResponse = {
+    error: errorType,
+    message: 'The request could not be completed',
+    requestId,
+    timestamp: new Date().toISOString(),
+    status
+  };
+  
+  // Add helpful hints for AI assistants
+  if (hint) {
+    errorResponse.hint = hint;
+  }
+  
+  // Add specific guidance for common AI assistant scenarios
+  if (req.path.includes('/api/knowledge/')) {
+    errorResponse.knowledgeHelp = {
+      validExtensions: ['.md', '.yaml', '.json'],
+      filenamePattern: '^[a-zA-Z0-9_-]+\\.(md|yaml|json)$',
+      listEndpoint: 'GET /api/knowledge'
+    };
+  } else if (req.path.includes('/api/books/')) {
+    errorResponse.booksHelp = {
+      requiredFields: ['title', 'author_name'],
+      validStatuses: ['TBR', 'Reading', 'Read', 'DNF', 'Finished', 'Archived'],
+      searchEndpoint: 'GET /api/books?search=query'
+    };
+  }
+  
+  res.status(status).json(errorResponse);
 });
 
 // Start server
