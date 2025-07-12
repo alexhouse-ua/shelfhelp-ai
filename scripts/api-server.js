@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const admin = require('firebase-admin');
 const yaml = require('yaml');
+const logger = require('./logger');
 const { firebaseConfig, isFirebaseConfigured, hasFirebaseCredentials } = require('./firebase-config');
 const FuzzyClassificationMatcher = require('./fuzzy-classifier');
 const { SimpleVectorStore, SimpleEmbedder } = require('./rag-ingest');
@@ -32,7 +33,10 @@ const requireApiKey = (req, res, next) => {
   const expectedKey = process.env.API_KEY;
   
   if (!expectedKey) {
-    console.warn('⚠️ API_KEY environment variable not set - running without authentication');
+    logger.security('API_KEY environment variable not set - running without authentication', {
+      path: req.path,
+      method: req.method
+    });
     return next();
   }
   
@@ -68,17 +72,22 @@ if (process.env.ENABLE_FIREBASE === 'true') {
       
       db = admin.database();
       firebaseEnabled = true;
-      console.log('✅ Firebase initialized successfully');
+      logger.info('Firebase initialized successfully', { status: 'connected' });
     } else {
-      console.log('⚠️ Firebase credentials not properly configured');
+      logger.warn('Firebase credentials not properly configured', { 
+        hasConfig: isFirebaseConfigured(),
+        hasCredentials: hasFirebaseCredentials()
+      });
     }
   } catch (error) {
-    console.warn('⚠️ Firebase initialization failed:', error.message);
+    logger.error('Firebase initialization failed', { error: error.message });
     firebaseEnabled = false;
   }
 } else {
-  console.log('📁 Running in local-only mode (Firebase disabled)');
-  console.log('   Set ENABLE_FIREBASE=true to enable Firebase sync');
+  logger.info('Running in local-only mode (Firebase disabled)', { 
+    mode: 'local-only',
+    tip: 'Set ENABLE_FIREBASE=true to enable Firebase sync'
+  });
 }
 
 // Paths
@@ -116,7 +125,11 @@ let insightsReady = false;
 fuzzyMatcher.initialize(CLASSIFICATIONS_FILE)
   .then(() => {
     fuzzyMatcherReady = true;
-    console.log('✅ Fuzzy classification matcher ready');
+    logger.info('Fuzzy classification matcher ready', { 
+      genres: fuzzyMatcher.genres?.length || 0,
+      subgenres: fuzzyMatcher.subgenres?.length || 0,
+      tropes: fuzzyMatcher.tropes?.length || 0
+    });
   })
   .catch(error => {
     console.error('❌ Failed to initialize fuzzy matcher:', error.message);
@@ -141,7 +154,7 @@ async function initializeRAG() {
       embedder.idf = new Map(vocabData.idf);
       
       ragReady = true;
-      console.log('✅ RAG system ready for recommendations');
+      logger.info('RAG system ready for recommendations', { status: 'ready' });
     } else {
       console.log('⚠️ No existing vector store found - run RAG ingestion first');
     }
@@ -159,7 +172,7 @@ async function initializeSources() {
     await recommendationSources.loadSources();
     sourcesReady = true;
     const info = await recommendationSources.getSourcesInfo();
-    console.log(`✅ Recommendation sources ready (${info.totalSources} sources loaded)`);
+    logger.info('Recommendation sources ready', { totalSources: info.totalSources });
   } catch (error) {
     console.error('❌ Failed to initialize recommendation sources:', error.message);
     sourcesReady = false;
@@ -173,7 +186,7 @@ async function initializePreferences() {
   try {
     await preferenceLearner.loadData();
     preferencesReady = true;
-    console.log('✅ Preference learning system ready');
+    logger.info('Preference learning system ready', { status: 'ready' });
   } catch (error) {
     console.error('❌ Failed to initialize preference learning:', error.message);
     preferencesReady = false;
@@ -187,7 +200,7 @@ async function initializeInsights() {
   try {
     await readingInsights.loadData();
     insightsReady = true;
-    console.log('✅ Reading insights system ready');
+    logger.info('Reading insights system ready', { status: 'ready' });
   } catch (error) {
     console.error('❌ Failed to initialize reading insights:', error.message);
     insightsReady = false;
@@ -196,29 +209,61 @@ async function initializeInsights() {
 
 initializeInsights();
 
-// Helper functions
-async function readBooksFile() {
-  try {
-    const data = await fs.readFile(BOOKS_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return [];
+// File caching system for performance optimization
+class FileDataCache {
+  constructor(filePath, parser = JSON.parse) {
+    this.filePath = filePath;
+    this.parser = parser;
+    this.cache = null;
+    this.lastModified = null;
+  }
+  
+  async getData() {
+    try {
+      const stats = await fs.stat(this.filePath);
+      
+      // Check if cache is stale or doesn't exist
+      if (!this.cache || !this.lastModified || stats.mtime > this.lastModified) {
+        logger.cache(`Loading file into cache`, { filePath: this.filePath });
+        const data = await fs.readFile(this.filePath, 'utf-8');
+        this.cache = this.parser(data);
+        this.lastModified = stats.mtime;
+      }
+      
+      return this.cache;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        // Return appropriate empty structure based on file type
+        if (this.filePath.includes('books.json')) {
+          return [];
+        } else if (this.filePath.includes('classifications.yaml')) {
+          return { Genres: [], Spice_Levels: [], Tropes: [] };
+        }
+        return null;
+      }
+      throw error;
     }
-    throw error;
+  }
+  
+  // Force cache refresh (useful for testing or after writes)
+  async refresh() {
+    this.cache = null;
+    this.lastModified = null;
+    return await this.getData();
   }
 }
 
+// Initialize file caches
+const bookCache = new FileDataCache(BOOKS_FILE);
+const classificationsCache = new FileDataCache(CLASSIFICATIONS_FILE, yaml.parse);
+
+// Helper functions - now use caching
+async function readBooksFile() {
+  return await bookCache.getData();
+}
+
 async function readClassificationsFile() {
-  try {
-    const data = await fs.readFile(CLASSIFICATIONS_FILE, 'utf-8');
-    return yaml.parse(data);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return { Genres: [], Spice_Levels: [], Tropes: [] };
-    }
-    throw error;
-  }
+  return await classificationsCache.getData();
 }
 
 // Enhanced validation with fuzzy matching
@@ -333,6 +378,9 @@ function validateBookFields(bookData, classifications, options = {}) {
 
 async function writeBooksFile(books) {
   await fs.writeFile(BOOKS_FILE, JSON.stringify(books, null, 2));
+  
+  // Invalidate cache after write
+  await bookCache.refresh();
   
   // Create history snapshot
   const timestamp = new Date().toISOString();
@@ -4877,8 +4925,13 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`ShelfHelp API server running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
+  logger.info('ShelfHelp API server started', { 
+    port: PORT,
+    healthCheck: `http://localhost:${PORT}/health`,
+    environment: process.env.NODE_ENV || 'development',
+    firebaseEnabled,
+    authentication: !!process.env.API_KEY
+  });
 });
 
 module.exports = app;
