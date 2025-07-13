@@ -16,7 +16,7 @@
     "reflection-automation": "node scripts/reflection-automation.js",
     "library-check": "node scripts/library-checker.js",
     "merge-export": "node scripts/merge-export.js",
-    "build": "echo 'Build completed'",
+    "build": "echo 'API-only deployment - no static build required'",
     "postinstall": "echo 'ShelfHelp AI dependencies installed successfully'"
   },
   "repository": {
