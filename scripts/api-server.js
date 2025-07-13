@@ -97,6 +97,11 @@ const REPORTS_DIR = path.join(__dirname, '../reports');
 const fuzzyMatcher = new FuzzyClassificationMatcher();
 let fuzzyMatcherReady = false;
 
+// Initialize modular handlers
+const bookManager = new BookManager(BOOKS_FILE, HISTORY_DIR);
+const classificationHandler = new ClassificationHandler(fuzzyMatcher, BOOKS_FILE, HISTORY_DIR);
+let queueManager = null; // Will initialize after preference systems are ready
+
 // Initialize RAG system
 let vectorStore = null;
 let embedder = null;
@@ -180,6 +185,12 @@ async function initializePreferences() {
     await preferenceLearner.loadData();
     preferencesReady = true;
     logger.info('Preference learning system ready', { status: 'ready' });
+    
+    // Initialize queue manager now that preferences are ready
+    if (insightsReady && !queueManager) {
+      queueManager = new QueueManager(BOOKS_FILE, preferenceLearner, readingInsights);
+      logger.info('Queue manager initialized with preference systems');
+    }
   } catch (error) {
     logger.error('Failed to initialize preference learning', { error: error.message });
     preferencesReady = false;
@@ -194,6 +205,12 @@ async function initializeInsights() {
     await readingInsights.loadData();
     insightsReady = true;
     logger.info('Reading insights system ready', { status: 'ready' });
+    
+    // Initialize queue manager now that insights are ready
+    if (preferencesReady && !queueManager) {
+      queueManager = new QueueManager(BOOKS_FILE, preferenceLearner, readingInsights);
+      logger.info('Queue manager initialized with preference systems');
+    }
   } catch (error) {
     logger.error('Failed to initialize reading insights', { error: error.message });
     insightsReady = false;
@@ -2108,6 +2125,10 @@ app.get('/api/books/unclassified', async (req, res) => {
 });
 
 // GET /api/books/:id - Get a specific book
+// Modular endpoint demonstrating new architecture
+app.get('/api/v2/books/:id', bookManager.getBookById.bind(bookManager));
+
+// Legacy endpoint (will be migrated gradually)
 app.get('/api/books/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -2124,9 +2145,45 @@ app.get('/api/books/:id', async (req, res) => {
     
     res.json(book);
   } catch (error) {
-    console.error('Error reading book:', error);
+    logger.error('Error reading book', { 
+      error: error.message, 
+      bookId: id,
+      operation: 'get_book_by_id_legacy' 
+    });
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Modular endpoints demonstrating new architecture
+app.get('/api/v2/books', bookManager.getAllBooks.bind(bookManager));
+app.post('/api/v2/books', bookManager.createBook.bind(bookManager));
+app.patch('/api/v2/books/:id', bookManager.updateBook.bind(bookManager));
+app.get('/api/v2/books/unclassified', bookManager.getUnclassifiedBooks.bind(bookManager));
+
+app.get('/api/v2/classifications', classificationHandler.getClassifications.bind(classificationHandler));
+app.post('/api/v2/classify-book', classificationHandler.classifyBook.bind(classificationHandler));
+app.post('/api/v2/match-classification', classificationHandler.matchClassification.bind(classificationHandler));
+
+// Queue routes with lazy loading (queueManager initialized after preferences)
+app.get('/api/v2/queue', (req, res) => {
+  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  return queueManager.getQueue(req, res);
+});
+app.get('/api/v2/queue/tbr', (req, res) => {
+  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  return queueManager.getTbrQueue(req, res);
+});
+app.post('/api/v2/queue/reorder', (req, res) => {
+  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  return queueManager.reorderQueue(req, res);
+});
+app.post('/api/v2/queue/promote', (req, res) => {
+  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  return queueManager.promoteBook(req, res);
+});
+app.get('/api/v2/queue/insights', (req, res) => {
+  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  return queueManager.getQueueInsights(req, res);
 });
 
 // GET /api/queue - Get TBR queue sorted by position
