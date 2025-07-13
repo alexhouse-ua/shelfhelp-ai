@@ -1,24 +1,47 @@
 {
   "version": 2,
   "name": "shelfhelp-ai",
-  "builds": [
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 30,
+      "memory": 512
+    }
+  },
+  "rewrites": [
     {
-      "src": "scripts/api-server.js",
-      "use": "@vercel/node"
+      "source": "/api/books/:path*",
+      "destination": "/api/books"
+    },
+    {
+      "source": "/api/classify/:path*", 
+      "destination": "/api/classify"
+    },
+    {
+      "source": "/api/queue/:path*",
+      "destination": "/api/queue"
     }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/(.*)",
-      "dest": "scripts/api-server.js"
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options", 
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "functions": {
-    "scripts/api-server.js": {
-      "maxDuration": 10
-    }
   }
 }
