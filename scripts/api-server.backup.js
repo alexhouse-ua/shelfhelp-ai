@@ -13,15 +13,6 @@ const { PreferenceLearningSystem } = require('./preference-learning');
 const { ReadingInsightsSystem } = require('./reading-insights');
 const { LibraryChecker } = require('./library-checker');
 const { EnhancedAvailabilityChecker } = require('./enhanced-availability-checker');
-
-// Import modular components
-const corsOptions = require('../src/core/cors-config');
-const { requireApiKey } = require('../src/core/auth-middleware');
-const aiAssistantLimiter = require('../src/core/rate-limiter');
-const BookManager = require('../src/core/book-manager');
-const ClassificationHandler = require('../src/core/classification-handler');
-const QueueManager = require('../src/core/queue-manager');
-
 require('dotenv').config();
 
 const app = express();
@@ -31,8 +22,115 @@ const PORT = process.env.PORT || 3000;
 const helmet = require('helmet');
 app.use(helmet());
 
-// Middleware configuration replaced with modular imports
-// Auth, CORS, and Rate Limiting now imported from src/core/
+// Mandatory API key authentication for AI assistants
+const requireApiKey = (req, res, next) => {
+  // Health checks remain public
+  if (req.path === '/health' || req.path === '/status') {
+    return next();
+  }
+  
+  const apiKey = req.headers['x-api-key'];
+  const expectedKey = process.env.API_KEY;
+  
+  // STRICT MODE: API key is mandatory for AI assistant deployment
+  if (!expectedKey) {
+    logger.error('DEPLOYMENT_ERROR: API_KEY environment variable required for AI assistant deployment', {
+      path: req.path,
+      method: req.method,
+      timestamp: new Date().toISOString()
+    });
+    return res.status(500).json({
+      error: 'Configuration Error',
+      message: 'API key configuration required for AI assistant access',
+      deployment_status: 'failed',
+      hint: 'Set API_KEY environment variable'
+    });
+  }
+  
+  if (!apiKey || apiKey !== expectedKey) {
+    logger.security('AI assistant unauthorized access attempt', {
+      ip: req.ip,
+      path: req.path,
+      method: req.method,
+      userAgent: req.headers['user-agent'],
+      timestamp: new Date().toISOString(),
+      hasApiKey: !!apiKey
+    });
+    return res.status(401).json({
+      error: 'Unauthorized',
+      message: 'Valid API key required for AI assistant access',
+      hint: 'Include x-api-key header with your API key'
+    });
+  }
+  
+  // Log successful AI assistant access
+  logger.info('AI assistant authenticated access', {
+    path: req.path,
+    method: req.method,
+    userAgent: req.headers['user-agent'],
+    timestamp: new Date().toISOString()
+  });
+  
+  next();
+};
+
+// AI Assistant CORS Configuration
+const corsOptions = {
+  origin: [
+    // AI Platform Origins
+    'https://chat.openai.com',           // CustomGPT
+    'https://chatgpt.com',               // ChatGPT interface
+    'https://claude.ai',                 // Claude interface
+    'https://api.openai.com',            // OpenAI API calls
+    'https://api.anthropic.com',         // Anthropic API calls
+    
+    // Development & Deployment
+    'http://localhost:3000',             // Local development
+    'http://localhost:8080',             // Alternative local port
+    /^https:\/\/.*\.railway\.app$/,      // Railway deployments
+    /^https:\/\/.*\.render\.com$/,       // Render deployments
+    /^https:\/\/.*\.vercel\.app$/,       // Vercel deployments
+  ],
+  credentials: false,                    // API key in headers, not cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'x-api-key', 
+    'Authorization',
+    'User-Agent'
+  ],
+  exposedHeaders: ['X-Total-Count', 'X-Request-ID'],
+  optionsSuccessStatus: 200
+};
+
+// Rate limiting for AI assistants
+const rateLimit = require('express-rate-limit');
+
+const aiAssistantLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,              // 15 minutes
+  max: 1000,                             // 1000 requests per 15 min (generous for AI)
+  message: {
+    error: 'Rate limit exceeded',
+    message: 'AI assistant rate limit reached. Please wait before making more requests.',
+    retryAfter: '15 minutes',
+    maxRequests: 1000,
+    windowMs: 900000,
+    hint: 'Reduce request frequency or wait for rate limit window to reset'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Custom key generator for AI assistants
+  keyGenerator: (req) => {
+    // Use User-Agent + IP for better AI assistant identification
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const isAI = userAgent.includes('GPT') || userAgent.includes('Claude') || userAgent.includes('AI');
+    return isAI ? `ai_${userAgent}_${req.ip}` : req.ip;
+  },
+  // Skip rate limiting for health checks
+  skip: (req) => {
+    return req.path === '/health' || req.path === '/status';
+  }
+});
 
 // Basic middleware
 app.use(cors(corsOptions));

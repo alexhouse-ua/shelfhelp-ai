@@ -7,6 +7,7 @@
 const yaml = require('yaml');
 const fs = require('fs').promises;
 const path = require('path');
+const logger = require('./logger');
 
 class FuzzyClassificationMatcher {
   constructor() {
@@ -22,14 +23,18 @@ class FuzzyClassificationMatcher {
       const data = await fs.readFile(classificationsPath, 'utf-8');
       this.classifications = yaml.parse(data);
       this._buildSearchableArrays();
-      console.log('✅ Fuzzy matcher initialized with', {
+      logger.info('Fuzzy matcher initialized successfully', {
         genres: this.genres.length,
         subgenres: this.subgenres.length,
         tropes: this.tropes.length,
-        spiceLevels: this.spiceLevels.length
+        spiceLevels: this.spiceLevels.length,
+        operation: 'fuzzy_matcher_init'
       });
     } catch (error) {
-      console.error('❌ Failed to initialize fuzzy matcher:', error.message);
+      logger.error('Failed to initialize fuzzy matcher', { 
+        error: error.message,
+        operation: 'fuzzy_matcher_init' 
+      });
       throw error;
     }
   }
