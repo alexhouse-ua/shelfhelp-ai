@@ -38,7 +38,7 @@
   "license": "MIT",
   "type": "commonjs",
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "bugs": {
     "url": "https://github.com/alexhouse-ua/shelfhelp-ai/issues"
