@@ -1,12 +1,5 @@
 {
   "version": 2,
-  "name": "shelfhelp-ai",
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/api/books/:path*",
