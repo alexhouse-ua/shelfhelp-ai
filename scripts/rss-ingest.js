@@ -99,6 +99,17 @@ function determineStatusFromShelf(item) {
   return 'TBR';
 }
 
+function hasStatusChanged(oldStatus, newStatus) {
+  // Check if this is a meaningful status change that should trigger learning
+  const statusTransitions = {
+    'TBR': ['Reading', 'Finished'],
+    'Reading': ['Finished', 'TBR'],
+    'Finished': [] // Finished books don't typically change status
+  };
+  
+  return oldStatus !== newStatus && statusTransitions[oldStatus]?.includes(newStatus);
+}
+
 async function ingestRssFeed() {
   const rssUrl = process.env.GOODREADS_RSS_URL;
   
@@ -221,4 +232,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { ingestRssFeed };
+module.exports = { ingestRssFeed, hasStatusChanged, determineStatusFromShelf };

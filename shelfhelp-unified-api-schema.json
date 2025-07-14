@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "ShelfHelp AI Assistant API",
-    "description": "Complete AI-powered reading assistant with book management, classification, and queue operations",
+    "description": "Complete AI-powered reading assistant with book management, classification, and queue operations. Optimized for ChatGPT Plus Actions with mobile-first conversational interfaces.",
     "version": "1.0.0",
     "contact": {
       "name": "ShelfHelp AI Support",
@@ -67,7 +67,7 @@
       "get": {
         "operationId": "getAllBooks",
         "summary": "Get all books",
-        "description": "Retrieve all books in the library with optional filtering",
+        "description": "Retrieve all books in the user's library with optional filtering by status (tbr/reading/read), genre, and pagination. Perfect for browsing the complete collection.",
         "parameters": [
           {
             "name": "status",
@@ -159,7 +159,7 @@
       "get": {
         "operationId": "searchBooks",
         "summary": "Search books by title/author",
-        "description": "Search for books using title and/or author instead of requiring book ID",
+        "description": "Search for books using title and/or author keywords. Use this when the user mentions a specific book or author name to find it in their library.",
         "parameters": [
           {
             "name": "title",
@@ -316,8 +316,8 @@
       },
       "post": {
         "operationId": "unifiedClassifyBook",
-        "summary": "Unified book classification with web research",
-        "description": "Comprehensive book classification using web search (Goodreads, Romance.io), AI analysis, and classifications.yaml matching. Handles all classification scenarios in one endpoint.",
+        "summary": "Classify and add book with web research",
+        "description": "Automatically classify a book's genre, subgenre, and tropes using web research and AI analysis. Use this when adding new books or when the user mentions a book they want to add to their library.",
         "requestBody": {
           "required": true,
           "content": {
@@ -457,7 +457,7 @@
       "get": {
         "operationId": "getIntelligentTbrQueue",
         "summary": "Get intelligent TBR queue",
-        "description": "Retrieve TBR queue with preference-based scoring and prioritization",
+        "description": "Get the user's to-be-read queue with intelligent prioritization based on their reading preferences and patterns. Best for 'what should I read next?' questions.",
         "parameters": [
           {
             "name": "limit",
@@ -624,6 +624,253 @@
                     "success": {"type": "boolean"},
                     "book": {"$ref": "#/components/schemas/Book"},
                     "message": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recommendations/discover": {
+      "get": {
+        "operationId": "discoverBooks",
+        "summary": "Discover new books with external recommendations",
+        "description": "Get personalized book recommendations from external sources based on user preferences",
+        "parameters": [
+          {
+            "name": "mood",
+            "in": "query",
+            "description": "Current reading mood (light, intense, escapist, etc.)",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "description": "Preferred genre for recommendations",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of recommendations to return",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 10, "default": 5}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book recommendations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "recommendations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {"type": "string"},
+                          "author": {"type": "string"},
+                          "description": {"type": "string"},
+                          "match_reason": {"type": "string"},
+                          "source": {"type": "string"},
+                          "confidence": {"type": "number"}
+                        }
+                      }
+                    },
+                    "search_strategy": {"type": "string"},
+                    "total_sources": {"type": "number"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/preferences/insights": {
+      "get": {
+        "operationId": "getReadingInsights",
+        "summary": "Get reading insights and analytics",
+        "description": "Retrieve detailed analytics about reading preferences and patterns",
+        "responses": {
+          "200": {
+            "description": "Reading insights retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "personality_profile": {
+                      "type": "object",
+                      "properties": {
+                        "primary_type": {"type": "string"},
+                        "secondary_type": {"type": "string"},
+                        "traits": {"type": "array", "items": {"type": "string"}}
+                      }
+                    },
+                    "reading_patterns": {
+                      "type": "object",
+                      "properties": {
+                        "favorite_genres": {"type": "array", "items": {"type": "string"}},
+                        "seasonal_preferences": {"type": "object"},
+                        "reading_velocity": {"type": "string"}
+                      }
+                    },
+                    "recommendations_summary": {
+                      "type": "object",
+                      "properties": {
+                        "next_read_suggestion": {"type": "string"},
+                        "mood_based_options": {"type": "array", "items": {"type": "string"}},
+                        "genre_exploration": {"type": "array", "items": {"type": "string"}}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rss/ingest": {
+      "post": {
+        "operationId": "ingestRssFeed",
+        "summary": "Ingest RSS feed from Goodreads",
+        "description": "Process RSS feed from Goodreads to update book statuses and trigger preference learning when books are marked as 'read'. This is the core workflow for RSS-driven preference learning.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "force_update": {"type": "boolean", "default": false, "description": "Force update existing books"},
+                  "trigger_learning": {"type": "boolean", "default": true, "description": "Trigger preference learning for newly read books"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "RSS feed processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "newBooks": {"type": "number", "description": "Number of new books added"},
+                    "updatedBooks": {"type": "number", "description": "Number of books updated"},
+                    "newlyReadBooks": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}, "description": "Books newly marked as read that trigger preference learning"},
+                    "totalBooks": {"type": "number", "description": "Total books in database"},
+                    "learningPrompts": {"type": "array", "items": {"type": "string"}, "description": "AI prompts for preference learning conversations"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/preferences/learn": {
+      "post": {
+        "operationId": "learnFromBookExperience",
+        "summary": "Learn preferences from book reading experience",
+        "description": "Record user preferences based on their experience with a specific book. Used in RSS-triggered preference learning conversations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["book_id", "experience"],
+                "properties": {
+                  "book_id": {"type": "string", "description": "Book ID that was read"},
+                  "experience": {
+                    "type": "object",
+                    "properties": {
+                      "rating": {"type": "number", "minimum": 1, "maximum": 5, "description": "User rating"},
+                      "liked_aspects": {"type": "array", "items": {"type": "string"}, "description": "What the user liked"},
+                      "disliked_aspects": {"type": "array", "items": {"type": "string"}, "description": "What the user disliked"},
+                      "mood_when_read": {"type": "string", "description": "User's mood when reading"},
+                      "reading_context": {"type": "string", "description": "When/where/how they read it"},
+                      "would_recommend": {"type": "boolean", "description": "Would recommend to others"},
+                      "similar_books_wanted": {"type": "boolean", "description": "Wants similar recommendations"},
+                      "notes": {"type": "string", "description": "Additional notes"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preference learning recorded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "book": {"$ref": "#/components/schemas/Book"},
+                    "preferences_updated": {"type": "boolean"},
+                    "learning_insights": {"type": "object", "description": "Insights from preference learning"},
+                    "next_recommendations": {"type": "array", "items": {"type": "string"}, "description": "Updated recommendations based on learning"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/preferences/prompts": {
+      "get": {
+        "operationId": "getPreferenceLearningPrompts",
+        "summary": "Get AI prompts for preference learning",
+        "description": "Retrieve conversation prompts for AI assistants to learn user preferences from recently read books",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "query",
+            "description": "Specific book ID to generate prompts for",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of prompts",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 10, "default": 5}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preference learning prompts retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "prompts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "book_id": {"type": "string"},
+                          "book_title": {"type": "string"},
+                          "book_author": {"type": "string"},
+                          "conversation_starter": {"type": "string", "description": "Natural conversation starter about the book"},
+                          "follow_up_questions": {"type": "array", "items": {"type": "string"}, "description": "Questions to understand preferences"},
+                          "learning_objectives": {"type": "array", "items": {"type": "string"}, "description": "What to learn from this conversation"}
+                        }
+                      }
+                    },
+                    "total_unprocessed": {"type": "number", "description": "Total books awaiting preference learning"},
+                    "learning_strategy": {"type": "string", "description": "Recommended approach for learning conversations"}
                   }
                 }
               }

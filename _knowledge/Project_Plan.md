@@ -1,13 +1,18 @@
 # ShelfHelp AI - Complete Project Plan
 
-**Last Updated**: July 11, 2025  
-**Status**: Core Features Complete - Ready for Conversational Interface Development
+**Last Updated**: July 14, 2025  
+**Status**: Core Features Complete - Ready for Conversational Interface Development  
+**Task Management**: See `_knowledge/Task_Management_Guide.md` for active tasks and progress tracking
 
 ## Project Overview
 
 AI-powered reading assistant with real-time queue management, intelligent book classification, and personalized recommendations. The system provides conversational interfaces for managing reading queues, generating recommendations, and automating reflection workflows.
 
 **Core Philosophy**: Zero-cost operation beyond existing subscriptions, file-based canonical storage, comprehensive audit trails, and mobile-first conversational interfaces.
+
+## Task Management Integration
+
+**Primary Reference**: `_knowledge/Task_Management_Guide.md` contains the complete task breakdown with 52 tracked tasks across 4 phases. This document provides strategic context while the Task Management Guide provides operational task tracking.
 
 ## Completed Core Systems ✅
 

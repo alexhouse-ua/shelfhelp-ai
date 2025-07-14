@@ -30,6 +30,7 @@ AI-powered reading assistant with real-time queue management and intelligent boo
 
 | File | Purpose | When to Reference |
 |------|---------|-------------------|
+| `_knowledge/Task_Management_Guide.md` | **Master task tracking and project phases** | **EVERY SESSION - Check active tasks and update progress** |
 | `_knowledge/Operating_Instructions.md` | Field dictionary and operational rules | Before any book data modifications |
 | `_knowledge/Project_Plan.md` | Complete project strategy and architecture | For major feature decisions |
 | `_knowledge/summary.md` | Current project status and priorities | Every session to understand current state |
@@ -75,14 +76,17 @@ shelfhelp-ai/
 ## Project SDLC
 
 ### Development Process
-1. **Session Start**: Review `Claude.md` and `_knowledge/summary.md` for current state
-2. **Planning**: Identify specific tasks and check against existing documentation
-3. **Implementation**: Make incremental changes, prefer modification over rewriting
-4. **Testing**: Test with sample data before full implementation
-5. **Documentation**: Update relevant files in `_knowledge/` as needed
-6. **Commit Preparation**: Generate git commit command - never commit automatically
+1. **Session Start**: Review `Claude.md` and `_knowledge/Task_Management_Guide.md` for active tasks
+2. **Task Selection**: Choose active task from current phase/batch, update status to "IN PROGRESS"
+3. **Planning**: Identify specific implementation steps and check dependencies
+4. **Implementation**: Make incremental changes, prefer modification over rewriting
+5. **Testing**: Test with sample data before full implementation
+6. **Task Completion**: Mark task as "COMPLETED" and update progress in Task Management Guide
+7. **Documentation**: Update relevant files in `_knowledge/` as needed
+8. **Commit Preparation**: Generate git commit command - never commit automatically
 
 ### Quality Gates
+- **Task Management**: All work must be tracked in `Task_Management_Guide.md` with proper status updates
 - **Field Dictionary Compliance**: All book fields must match `Operating_Instructions.md`
 - **Classification Validation**: All genre/trope values must exist in `classifications.yaml`
 - **API Compatibility**: Changes must not break existing endpoints

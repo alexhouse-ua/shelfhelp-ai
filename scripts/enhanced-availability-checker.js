@@ -87,6 +87,54 @@ class EnhancedAvailabilityChecker {
   }
 
   /**
+   * Advanced validation for KU availability to reduce false positives
+   */
+  validateKUResult(html, book) {
+    const title = book.book_title || book.title;
+    const author = book.author_name;
+    
+    // Multi-layer validation
+    const hasKUIndicator = html.includes('Kindle Unlimited') || 
+                          html.includes('kindle-unlimited') ||
+                          html.includes('KU logo') ||
+                          html.includes('Read for free');
+    
+    const hasStrongKUIndicator = html.includes('Available on Kindle Unlimited') ||
+                                html.includes('Read for $0.00') ||
+                                html.includes('ku-logo') ||
+                                html.includes('kindle-unlimited-logo');
+    
+    // Title/author matching validation
+    const titleWords = title ? title.toLowerCase().split(' ').filter(word => word.length > 2) : [];
+    const authorWords = author ? author.toLowerCase().split(' ').filter(word => word.length > 2) : [];
+    
+    let titleMatch = false;
+    let authorMatch = false;
+    
+    if (titleWords.length > 0) {
+      titleMatch = titleWords.some(word => html.toLowerCase().includes(word));
+    }
+    
+    if (authorWords.length > 0) {
+      authorMatch = authorWords.some(word => html.toLowerCase().includes(word));
+    }
+    
+    // Require both KU indicators AND title/author match
+    const isValid = hasKUIndicator && hasStrongKUIndicator && (titleMatch || authorMatch);
+    
+    return {
+      isValid,
+      confidence: isValid ? (titleMatch && authorMatch ? 0.95 : 0.8) : 0.0,
+      reasons: {
+        hasKUIndicator,
+        hasStrongKUIndicator,
+        titleMatch,
+        authorMatch
+      }
+    };
+  }
+
+  /**
    * Check Kindle Unlimited availability using public Amazon search
    */
   async checkKindleUnlimitedAvailability(book) {
@@ -118,17 +166,14 @@ class EnhancedAvailabilityChecker {
         }
       });
       
-      // Look for KU indicators in the HTML response
+      // Use advanced validation to reduce false positives
       const html = response.data;
-      const hasKUBadge = html.includes('Kindle Unlimited') || 
-                        html.includes('kindle-unlimited') ||
-                        html.includes('KU logo') ||
-                        html.includes('Read for free');
+      const validation = this.validateKUResult(html, book);
       
       // Note: Real KU expiration dates require Amazon API access
       // For now, we'll use a placeholder system
       let expiresOn = null;
-      if (hasKUBadge) {
+      if (validation.isValid) {
         // Estimate typical KU rotation (books usually stay 6-18 months)
         const now = new Date();
         const estimatedExpiry = new Date(now.getTime() + (12 * 30 * 24 * 60 * 60 * 1000)); // 12 months
@@ -136,10 +181,12 @@ class EnhancedAvailabilityChecker {
       }
       
       return {
-        ku_availability: hasKUBadge,
+        ku_availability: validation.isValid,
         ku_expires_on: expiresOn,
         checked_at: new Date().toISOString(),
-        source: 'amazon_search'
+        source: 'amazon_search',
+        confidence: validation.confidence,
+        validation_reasons: validation.reasons
       };
       
     } catch (error) {
@@ -150,6 +197,52 @@ class EnhancedAvailabilityChecker {
         checked_at: new Date().toISOString()
       };
     }
+  }
+
+  /**
+   * Advanced validation for Hoopla availability to reduce false positives
+   */
+  validateHooplaResult(html, book) {
+    const title = book.book_title || book.title;
+    const author = book.author_name;
+    
+    // Title/author matching validation
+    const titleWords = title ? title.toLowerCase().split(' ').filter(word => word.length > 2) : [];
+    const authorWords = author ? author.toLowerCase().split(' ').filter(word => word.length > 2) : [];
+    
+    let titleMatch = false;
+    let authorMatch = false;
+    
+    if (titleWords.length > 0) {
+      titleMatch = titleWords.some(word => html.toLowerCase().includes(word));
+    }
+    
+    if (authorWords.length > 0) {
+      authorMatch = authorWords.some(word => html.toLowerCase().includes(word));
+    }
+    
+    // Format detection with validation
+    const hasEbook = (html.includes('eBook') || 
+                     html.includes('ebook') ||
+                     html.includes('digital book') ||
+                     html.includes('epub')) && (titleMatch || authorMatch);
+                     
+    const hasAudiobook = (html.includes('Audiobook') || 
+                         html.includes('audiobook') ||
+                         html.includes('audio book') ||
+                         html.includes('listen')) && (titleMatch || authorMatch);
+    
+    return {
+      ebookValid: hasEbook,
+      audiobookValid: hasAudiobook,
+      confidence: (titleMatch && authorMatch) ? 0.9 : (titleMatch || authorMatch) ? 0.7 : 0.0,
+      reasons: {
+        titleMatch,
+        authorMatch,
+        hasEbook,
+        hasAudiobook
+      }
+    };
   }
 
   /**
@@ -184,23 +277,15 @@ class EnhancedAvailabilityChecker {
       });
       
       const html = response.data;
-      
-      // Look for format indicators in search results
-      const hasEbook = html.includes('eBook') || 
-                      html.includes('ebook') ||
-                      html.includes('digital book') ||
-                      html.includes('epub');
-                      
-      const hasAudiobook = html.includes('Audiobook') || 
-                          html.includes('audiobook') ||
-                          html.includes('audio book') ||
-                          html.includes('listen');
+      const validation = this.validateHooplaResult(html, book);
       
       return {
-        hoopla_ebook_available: hasEbook,
-        hoopla_audio_available: hasAudiobook,
+        hoopla_ebook_available: validation.ebookValid,
+        hoopla_audio_available: validation.audiobookValid,
         checked_at: new Date().toISOString(),
-        source: 'hoopla_search'
+        source: 'hoopla_search',
+        confidence: validation.confidence,
+        validation_reasons: validation.reasons
       };
       
     } catch (error) {
@@ -259,27 +344,35 @@ class EnhancedAvailabilityChecker {
         });
         
         const html = response.data;
+        const title = book.book_title || book.title;
+        const author = book.author_name;
         
-        // Parse availability indicators
+        // Parse availability indicators with better validation
         let ebookStatus = 'Unavailable';
         let audioStatus = 'Unavailable';
         
-        // Look for availability indicators
-        if (html.includes('available') || html.includes('Available')) {
-          if (html.includes('ebook') || html.includes('eBook')) {
-            ebookStatus = 'Available';
-          }
-          if (html.includes('audiobook') || html.includes('Audiobook')) {
-            audioStatus = 'Available';
-          }
-        }
+        // More precise availability checking
+        const hasBookMatch = title && (html.includes(title.split(' ')[0]) || 
+                            (author && html.includes(author.split(' ')[0])));
         
-        // Look for wait time indicators
-        const waitTimeMatch = html.match(/(\\d+)\\s*(week|month)s?\\s*wait/i);
-        if (waitTimeMatch) {
-          const waitTime = `${waitTimeMatch[1]} ${waitTimeMatch[2]}s`;
-          if (ebookStatus !== 'Available') ebookStatus = waitTime;
-          if (audioStatus !== 'Available') audioStatus = waitTime;
+        if (hasBookMatch) {
+          // Look for availability indicators
+          if (html.includes('available') || html.includes('Available')) {
+            if (html.includes('ebook') || html.includes('eBook')) {
+              ebookStatus = 'Available';
+            }
+            if (html.includes('audiobook') || html.includes('Audiobook')) {
+              audioStatus = 'Available';
+            }
+          }
+          
+          // Look for wait time indicators
+          const waitTimeMatch = html.match(/(\\d+)\\s*(week|month)s?\\s*wait/i);
+          if (waitTimeMatch) {
+            const waitTime = `${waitTimeMatch[1]} ${waitTimeMatch[2]}s`;
+            if (ebookStatus !== 'Available') ebookStatus = waitTime;
+            if (audioStatus !== 'Available') audioStatus = waitTime;
+          }
         }
         
         return {
@@ -491,10 +584,58 @@ class EnhancedAvailabilityChecker {
     return updated;
   }
 
+  async validateBatchResults(results) {
+    const validation = {
+      total: results.length,
+      valid: 0,
+      invalid: 0,
+      kuFound: 0,
+      hooplaFound: 0,
+      libraryFound: 0,
+      highConfidence: 0,
+      lowConfidence: 0,
+      errors: 0
+    };
+    
+    results.forEach(result => {
+      if (result.error) {
+        validation.errors++;
+        validation.invalid++;
+        return;
+      }
+      
+      validation.valid++;
+      
+      // Count findings
+      if (result.ku?.ku_availability) {
+        validation.kuFound++;
+        if (result.ku.confidence >= 0.8) validation.highConfidence++;
+        else validation.lowConfidence++;
+      }
+      
+      if (result.hoopla?.hoopla_ebook_available || result.hoopla?.hoopla_audio_available) {
+        validation.hooplaFound++;
+        if (result.hoopla.confidence >= 0.8) validation.highConfidence++;
+        else validation.lowConfidence++;
+      }
+      
+      if (result.libraries) {
+        Object.values(result.libraries).forEach(lib => {
+          if (lib.ebook_status === 'Available' || lib.audio_status === 'Available') {
+            validation.libraryFound++;
+          }
+        });
+      }
+    });
+    
+    return validation;
+  }
+
   async checkBooksInBatch(books, batchSize = 5) {
     console.log(`🔍 Checking comprehensive availability for ${books.length} books in batches of ${batchSize}...`);
     
     const results = [];
+    const batchValidations = [];
     
     for (let i = 0; i < books.length; i += batchSize) {
       const batch = books.slice(i, i + batchSize);
@@ -503,15 +644,21 @@ class EnhancedAvailabilityChecker {
       
       console.log(`\\n📚 Processing batch ${batchNumber}/${totalBatches} (${batch.length} books)...`);
       
+      const batchResults = [];
+      
       for (let j = 0; j < batch.length; j++) {
         const book = batch[j];
         try {
           console.log(`\\n  📖 [${j + 1}/${batch.length}] Processing: ${book.book_title || book.title}`);
           const result = await this.checkBookAvailability(book);
           results.push(result);
+          batchResults.push(result);
           console.log(`  ✅ Completed: ${book.book_title || book.title}`);
         } catch (error) {
           console.log(`  ❌ Failed: ${book.book_title || book.title} - ${error.message}`);
+          const errorResult = { book_id: book.goodreads_id, error: error.message };
+          results.push(errorResult);
+          batchResults.push(errorResult);
           this.stats.errors++;
         }
         
@@ -521,8 +668,18 @@ class EnhancedAvailabilityChecker {
         }
       }
       
-      // Progress update
+      // Validate batch results
+      const batchValidation = await this.validateBatchResults(batchResults);
+      batchValidations.push({
+        batch: batchNumber,
+        validation: batchValidation,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Progress update with validation
       console.log(`\\n✅ Batch ${batchNumber} completed. Progress: ${Math.min(i + batchSize, books.length)}/${books.length} books`);
+      console.log(`   📊 Batch validation: ${batchValidation.valid}/${batchValidation.total} valid, ${batchValidation.kuFound} KU, ${batchValidation.hooplaFound} Hoopla, ${batchValidation.libraryFound} Library`);
+      console.log(`   🎯 Confidence: ${batchValidation.highConfidence} high, ${batchValidation.lowConfidence} low`);
       
       // Longer delay between batches
       if (i + batchSize < books.length) {
@@ -531,7 +688,23 @@ class EnhancedAvailabilityChecker {
       }
     }
     
-    return results;
+    // Overall validation summary
+    const overallValidation = await this.validateBatchResults(results);
+    console.log(`\\n📊 Overall Batch Validation Summary:`);
+    console.log(`   📚 Total processed: ${overallValidation.total}`);
+    console.log(`   ✅ Valid results: ${overallValidation.valid} (${(overallValidation.valid/overallValidation.total*100).toFixed(1)}%)`);
+    console.log(`   📖 KU found: ${overallValidation.kuFound} (${(overallValidation.kuFound/overallValidation.total*100).toFixed(1)}%)`);
+    console.log(`   🎧 Hoopla found: ${overallValidation.hooplaFound} (${(overallValidation.hooplaFound/overallValidation.total*100).toFixed(1)}%)`);
+    console.log(`   🏛️ Library found: ${overallValidation.libraryFound} (${(overallValidation.libraryFound/overallValidation.total*100).toFixed(1)}%)`);
+    console.log(`   🎯 High confidence: ${overallValidation.highConfidence} (${(overallValidation.highConfidence/overallValidation.total*100).toFixed(1)}%)`);
+    console.log(`   ⚠️ Low confidence: ${overallValidation.lowConfidence} (${(overallValidation.lowConfidence/overallValidation.total*100).toFixed(1)}%)`);
+    console.log(`   ❌ Errors: ${overallValidation.errors} (${(overallValidation.errors/overallValidation.total*100).toFixed(1)}%)`);
+    
+    return {
+      results,
+      batchValidations,
+      overallValidation
+    };
   }
 
   printStats() {
@@ -587,8 +760,9 @@ class EnhancedAvailabilityChecker {
         return { success: true, message: 'No books to process' };
       }
       
-      // Check availability
-      const availabilityResults = await this.checkBooksInBatch(booksToCheck, 3); // Smaller batches for comprehensive checking
+      // Check availability with enhanced batch processing
+      const batchResults = await this.checkBooksInBatch(booksToCheck, 3); // Smaller batches for comprehensive checking
+      const availabilityResults = batchResults.results;
       
       // Update books with availability data
       console.log('\\n🔄 Updating books with availability data...');
@@ -611,7 +785,9 @@ class EnhancedAvailabilityChecker {
       return {
         success: true,
         stats: this.stats,
-        processed: availabilityResults.length
+        processed: availabilityResults.length,
+        batchValidations: batchResults.batchValidations,
+        overallValidation: batchResults.overallValidation
       };
       
     } catch (error) {

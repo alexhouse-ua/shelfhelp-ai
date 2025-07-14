@@ -6,9 +6,16 @@
 - Claude Code installed and integrated
 - VS Code with REST Client extension for API testing
 - GitHub repository with automated workflows
+- **Task Management Guide**: `_knowledge/Task_Management_Guide.md` - MANDATORY session reference
 - Generate git commit commands after completing development tasks.
 - Local development server: `npm run dev`
 - Test endpoints via api-tests.http file
+
+## Task Management Protocol
+- **EVERY SESSION**: Check `_knowledge/Task_Management_Guide.md` for active tasks
+- **BEFORE CODING**: Update task status to "IN PROGRESS" in the guide
+- **AFTER COMPLETION**: Mark task as "COMPLETED" and update progress metrics
+- **NEVER SKIP**: Task tracking is mandatory for project coordination
 
 ## Firebase Configuration Notes
 - Use GitHub Secrets for service account credentials

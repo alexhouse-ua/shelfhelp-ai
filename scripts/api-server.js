@@ -13,6 +13,7 @@ const { PreferenceLearningSystem } = require('./preference-learning');
 const { ReadingInsightsSystem } = require('./reading-insights');
 const { LibraryChecker } = require('./library-checker');
 const { EnhancedAvailabilityChecker } = require('./enhanced-availability-checker');
+const { ingestRssFeed } = require('./rss-ingest');
 
 // Import modular components
 const corsOptions = require('../src/core/cors-config');
@@ -46,6 +47,52 @@ const knowledgeRouter = require('./knowledge-api');
 
 // Apply authentication to all API routes
 app.use('/api', requireApiKey);
+
+// Claude Pro response optimization middleware
+app.use('/api', (req, res, next) => {
+  const originalJson = res.json;
+  
+  res.json = function(data) {
+    // Optimize response for Claude Pro consumption
+    if (data && typeof data === 'object') {
+      // Add metadata for AI assistant context
+      if (!data.metadata) {
+        data.metadata = {
+          responseTime: Date.now(),
+          endpoint: req.path,
+          method: req.method,
+          aiOptimized: true
+        };
+      }
+      
+      // Add success indicator for clear AI interpretation
+      if (!data.success && !data.error) {
+        data.success = true;
+      }
+      
+      // Add helpful user-facing messages for key endpoints
+      if (req.path.includes('/queue/tbr')) {
+        data.userMessage = `Found ${data.queue?.length || 0} books in your TBR queue, prioritized by your reading preferences.`;
+      } else if (req.path.includes('/recommendations/discover')) {
+        data.userMessage = `Found ${data.recommendations?.length || 0} book recommendations based on your preferences.`;
+      } else if (req.path.includes('/classify')) {
+        data.userMessage = data.book ? `Successfully classified "${data.book.title}" by ${data.book.author}` : 'Book classification completed';
+      } else if (req.path.includes('/books/search')) {
+        data.userMessage = `Found ${data.books?.length || 0} books matching your search.`;
+      } else if (req.path.includes('/rss/ingest')) {
+        data.userMessage = data.userMessage || `RSS feed processed: ${data.newBooks} new books, ${data.updatedBooks} updated books. ${data.newlyReadBooks?.length || 0} newly completed books ready for preference learning.`;
+      } else if (req.path.includes('/preferences/learn')) {
+        data.userMessage = data.userMessage || `Preference learning recorded successfully. Your recommendations have been updated based on your feedback.`;
+      } else if (req.path.includes('/preferences/prompts')) {
+        data.userMessage = data.userMessage || `Generated ${data.prompts?.length || 0} conversation prompts for preference learning.`;
+      }
+    }
+    
+    return originalJson.call(this, data);
+  };
+  
+  next();
+});
 
 // Register knowledge management endpoints
 app.use('/api', knowledgeRouter);
@@ -4973,6 +5020,213 @@ function getPublicationYearSpread(books) {
     avg_publication_year: Math.round(years.reduce((sum, year) => sum + year, 0) / years.length),
     recent_books_count: years.filter(year => year >= currentYear - 2).length, // last 2 years
     classic_books_count: years.filter(year => year < currentYear - 20).length // 20+ years old
+  };
+}
+
+// RSS Integration Endpoints
+// POST /api/rss/ingest - RSS feed ingestion with preference learning triggers
+app.post('/api/rss/ingest', async (req, res) => {
+  try {
+    const { force_update = false, trigger_learning = true } = req.body;
+    
+    logger.info('RSS ingestion started', { force_update, trigger_learning });
+    
+    // Get books before RSS ingest to track newly read books
+    const booksBefore = await readBooksFile();
+    const readBooksBefore = booksBefore.filter(book => book.status === 'read' || book.status === 'Finished');
+    
+    // Run RSS ingestion
+    const result = await ingestRssFeed();
+    
+    // Get books after RSS ingest to detect newly read books
+    const booksAfter = await readBooksFile();
+    const readBooksAfter = booksAfter.filter(book => book.status === 'read' || book.status === 'Finished');
+    
+    // Find newly read books that trigger preference learning
+    const newlyReadBooks = readBooksAfter.filter(book => 
+      !readBooksBefore.some(before => before.goodreads_id === book.goodreads_id || before.guid === book.guid)
+    );
+    
+    // Generate learning prompts for newly read books
+    const learningPrompts = trigger_learning ? 
+      newlyReadBooks.map(book => generateLearningPrompt(book)) : [];
+    
+    logger.info('RSS ingestion completed', {
+      newBooks: result.newBooks,
+      updatedBooks: result.updatedBooks,
+      newlyReadBooks: newlyReadBooks.length,
+      learningPrompts: learningPrompts.length
+    });
+    
+    res.json({
+      success: true,
+      newBooks: result.newBooks,
+      updatedBooks: result.updatedBooks,
+      newlyReadBooks: newlyReadBooks,
+      totalBooks: result.totalBooks,
+      learningPrompts: learningPrompts,
+      userMessage: `RSS feed processed successfully. Added ${result.newBooks} new books, updated ${result.updatedBooks} books. ${newlyReadBooks.length} newly completed books are ready for preference learning.`
+    });
+    
+  } catch (error) {
+    logger.error('RSS ingestion failed', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: 'RSS ingestion failed',
+      message: error.message,
+      userMessage: 'Failed to process RSS feed. Please check your RSS URL and try again.'
+    });
+  }
+});
+
+// POST /api/preferences/learn - Record user preferences from book experience
+app.post('/api/preferences/learn', async (req, res) => {
+  try {
+    const { book_id, experience } = req.body;
+    
+    if (!book_id || !experience) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields',
+        message: 'book_id and experience are required'
+      });
+    }
+    
+    const books = await readBooksFile();
+    const book = books.find(b => b.id === book_id);
+    
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        error: 'Book not found',
+        message: `Book with ID ${book_id} not found`
+      });
+    }
+    
+    // Update book with experience data
+    book.user_rating = experience.rating;
+    book.liked_aspects = experience.liked_aspects;
+    book.disliked_aspects = experience.disliked_aspects;
+    book.mood_when_read = experience.mood_when_read;
+    book.reading_context = experience.reading_context;
+    book.would_recommend = experience.would_recommend;
+    book.similar_books_wanted = experience.similar_books_wanted;
+    book.notes = experience.notes;
+    book.preference_learning_completed = true;
+    book.updated_at = new Date().toISOString();
+    
+    // Save updated books
+    await writeBooksFile(books);
+    
+    // Update preference learning system
+    const preferenceLearning = new PreferenceLearningSystem(books);
+    const preferences = await preferenceLearning.generatePreferences();
+    
+    logger.info('Preference learning recorded', {
+      book_id,
+      rating: experience.rating,
+      liked_aspects: experience.liked_aspects?.length || 0,
+      disliked_aspects: experience.disliked_aspects?.length || 0
+    });
+    
+    res.json({
+      success: true,
+      book: book,
+      preferences_updated: true,
+      learning_insights: {
+        total_books_learned: books.filter(b => b.preference_learning_completed).length,
+        confidence_score: preferences.confidence || 0,
+        preferences_discovered: Object.keys(preferences.preferences || {}).length
+      },
+      next_recommendations: preferences.recommendations?.slice(0, 3) || [],
+      userMessage: `Thank you for sharing your thoughts on "${book.title}"! Your preferences have been updated to provide better recommendations.`
+    });
+    
+  } catch (error) {
+    logger.error('Preference learning failed', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: 'Preference learning failed',
+      message: error.message,
+      userMessage: 'Failed to record your preferences. Please try again.'
+    });
+  }
+});
+
+// GET /api/preferences/prompts - Get AI prompts for preference learning
+app.get('/api/preferences/prompts', async (req, res) => {
+  try {
+    const { book_id, limit = 5 } = req.query;
+    
+    const books = await readBooksFile();
+    
+    // Find recently read books that need preference learning
+    const recentlyReadBooks = books.filter(book => 
+      (book.status === 'read' || book.status === 'Finished') &&
+      !book.preference_learning_completed &&
+      (!book_id || book.id === book_id)
+    ).slice(0, limit);
+    
+    const prompts = recentlyReadBooks.map(book => generateLearningPrompt(book));
+    
+    const totalUnprocessed = books.filter(book => 
+      (book.status === 'read' || book.status === 'Finished') &&
+      !book.preference_learning_completed
+    ).length;
+    
+    res.json({
+      success: true,
+      prompts: prompts,
+      total_unprocessed: totalUnprocessed,
+      learning_strategy: totalUnprocessed > 10 ? 'batch_learning' : 'individual_discussion',
+      userMessage: `Found ${prompts.length} books ready for preference learning discussions.`
+    });
+    
+  } catch (error) {
+    logger.error('Failed to generate preference prompts', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate preference prompts',
+      message: error.message,
+      userMessage: 'Failed to generate learning prompts. Please try again.'
+    });
+  }
+});
+
+// Helper function to generate learning prompts
+function generateLearningPrompt(book) {
+  const conversationStarters = [
+    `I see you recently finished "${book.title}" by ${book.author_name}. How did you like it?`,
+    `You just completed "${book.title}" - I'd love to hear your thoughts on it!`,
+    `How was "${book.title}"? I'd like to understand what you enjoyed (or didn't enjoy) about it.`,
+    `Tell me about your experience reading "${book.title}" by ${book.author_name}.`
+  ];
+  
+  const followUpQuestions = [
+    'What aspects of the book did you enjoy most?',
+    'Was there anything you particularly disliked?',
+    'How did the book make you feel while reading it?',
+    'Would you recommend this book to others?',
+    'Are you interested in reading similar books?',
+    'What was the reading experience like for you?'
+  ];
+  
+  const learningObjectives = [
+    'Understand genre preferences',
+    'Identify preferred writing styles',
+    'Learn about mood and context preferences',
+    'Discover tropes and themes that resonate',
+    'Understand rating patterns',
+    'Map social sharing preferences'
+  ];
+  
+  return {
+    book_id: book.id,
+    book_title: book.title,
+    book_author: book.author_name,
+    conversation_starter: conversationStarters[Math.floor(Math.random() * conversationStarters.length)],
+    follow_up_questions: followUpQuestions,
+    learning_objectives: learningObjectives
   };
 }
 
