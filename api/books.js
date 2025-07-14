@@ -83,6 +83,8 @@ module.exports = async (req, res) => {
           result = await manager.getAllBooks(req, res);
         } else if (pathSegments.length === 2 && pathSegments[1] === 'unclassified') {
           result = await manager.getUnclassifiedBooks(req, res);
+        } else if (pathSegments.length === 2 && pathSegments[1] === 'search') {
+          result = await manager.searchBooks(req, res);
         } else if (pathSegments.length === 2) {
           result = await manager.getBookById(req, res);
         } else {

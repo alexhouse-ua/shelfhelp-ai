@@ -1,0 +1,667 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ShelfHelp AI Assistant API",
+    "description": "Complete AI-powered reading assistant with book management, classification, and queue operations",
+    "version": "1.0.0",
+    "contact": {
+      "name": "ShelfHelp AI Support",
+      "url": "https://shelfhelp-ai.vercel.app"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://shelfhelp-ai.vercel.app",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "API key for ShelfHelp AI access"
+      }
+    },
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string", "description": "Unique book identifier"},
+          "title": {"type": "string", "description": "Book title"},
+          "author": {"type": "string", "description": "Book author"},
+          "genre": {"type": "string", "description": "Primary genre"},
+          "subgenre": {"type": "string", "description": "Specific subgenre"},
+          "tropes": {"type": "array", "items": {"type": "string"}, "description": "Story tropes"},
+          "status": {"type": "string", "enum": ["tbr", "reading", "read"], "description": "Reading status"},
+          "rating": {"type": "number", "minimum": 0, "maximum": 5, "description": "User rating"},
+          "dateAdded": {"type": "string", "format": "date-time", "description": "Date added to library"},
+          "priority": {"type": "number", "description": "Queue priority score"}
+        }
+      },
+      "Classification": {
+        "type": "object",
+        "properties": {
+          "genres": {"type": "array", "items": {"type": "string"}, "description": "Available genres"},
+          "subgenres": {"type": "object", "description": "Genre to subgenre mapping"},
+          "tropes": {"type": "array", "items": {"type": "string"}, "description": "Available tropes"}
+        }
+      },
+      "QueueInsights": {
+        "type": "object",
+        "properties": {
+          "total_books": {"type": "number", "description": "Total books in queue"},
+          "estimated_reading_time": {"type": "string", "description": "Estimated time to complete queue"},
+          "top_genres": {"type": "array", "items": {"type": "string"}, "description": "Most common genres"},
+          "recommendations": {"type": "array", "items": {"type": "string"}, "description": "Reading recommendations"}
+        }
+      }
+    }
+  },
+  "security": [
+    {"ApiKeyAuth": []}
+  ],
+  "paths": {
+    "/api/books": {
+      "get": {
+        "operationId": "getAllBooks",
+        "summary": "Get all books",
+        "description": "Retrieve all books in the library with optional filtering",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by reading status",
+            "schema": {"type": "string", "enum": ["tbr", "reading", "read"]}
+          },
+          {
+            "name": "genre",
+            "in": "query", 
+            "description": "Filter by genre",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of results (max 50 for performance)",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 50, "default": 20}
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Offset for pagination",
+            "schema": {"type": "integer", "minimum": 0, "default": 0}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "books": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}},
+                    "total": {"type": "number", "description": "Total books available"},
+                    "filtered": {"type": "number", "description": "Books matching filters"},
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "limit": {"type": "number"},
+                        "offset": {"type": "number"},
+                        "hasMore": {"type": "boolean"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createBook",
+        "summary": "Add new book",
+        "description": "Add a new book to the library",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "author"],
+                "properties": {
+                  "title": {"type": "string", "description": "Book title"},
+                  "author": {"type": "string", "description": "Book author"},
+                  "genre": {"type": "string", "description": "Primary genre"},
+                  "subgenre": {"type": "string", "description": "Specific subgenre"},
+                  "tropes": {"type": "array", "items": {"type": "string"}, "description": "Story tropes"},
+                  "status": {"type": "string", "enum": ["tbr", "reading", "read"], "default": "tbr"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Book created successfully",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Book"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/books/search": {
+      "get": {
+        "operationId": "searchBooks",
+        "summary": "Search books by title/author",
+        "description": "Search for books using title and/or author instead of requiring book ID",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Book title to search for (partial matches allowed)",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "author",
+            "in": "query", 
+            "description": "Author name to search for (partial matches allowed)",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Books found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "books": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}},
+                    "searchTerms": {"type": "object"},
+                    "resultsCount": {"type": "number"},
+                    "totalBooks": {"type": "number"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/books/{id}": {
+      "get": {
+        "operationId": "getBookById",
+        "summary": "Get specific book",
+        "description": "Retrieve a specific book by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Book ID",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book found",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Book"}
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateBook",
+        "summary": "Update book",
+        "description": "Update an existing book's information",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Book ID",
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {"type": "string"},
+                  "author": {"type": "string"},
+                  "genre": {"type": "string"},
+                  "subgenre": {"type": "string"},
+                  "tropes": {"type": "array", "items": {"type": "string"}},
+                  "status": {"type": "string", "enum": ["tbr", "reading", "read"]},
+                  "rating": {"type": "number", "minimum": 0, "maximum": 5}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Book"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/books/unclassified": {
+      "get": {
+        "operationId": "getUnclassifiedBooks",
+        "summary": "Get unclassified books",
+        "description": "Retrieve books that need genre/trope classification",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of results",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 20, "default": 10}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unclassified books retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "books": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}},
+                    "total_unclassified": {"type": "number"},
+                    "classification_progress": {"type": "number", "description": "Percentage classified"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/classify": {
+      "get": {
+        "operationId": "getClassifications",
+        "summary": "Get available classifications",
+        "description": "Retrieve all available genres, subgenres, and tropes for book classification",
+        "responses": {
+          "200": {
+            "description": "Classifications retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Classification"}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "classifyBook",
+        "summary": "Classify book with fuzzy matching",
+        "description": "Classify a book using fuzzy matching against available genres and tropes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "author"],
+                "properties": {
+                  "title": {"type": "string", "description": "Book title"},
+                  "author": {"type": "string", "description": "Book author"},
+                  "description": {"type": "string", "description": "Book description or synopsis"},
+                  "genre_hint": {"type": "string", "description": "Suspected genre"},
+                  "confidence_threshold": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.6}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book classified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "genre": {"type": "string"},
+                    "subgenre": {"type": "string"},
+                    "tropes": {"type": "array", "items": {"type": "string"}},
+                    "confidence_scores": {"type": "object"},
+                    "suggestions": {"type": "array", "items": {"type": "string"}}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/classify/match": {
+      "post": {
+        "operationId": "matchClassification",
+        "summary": "Match specific classification field",
+        "description": "Match a specific text against genre, subgenre, or trope classifications",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text", "field"],
+                "properties": {
+                  "text": {"type": "string", "description": "Text to match"},
+                  "field": {"type": "string", "enum": ["genre", "subgenre", "trope"], "description": "Classification field"},
+                  "limit": {"type": "integer", "minimum": 1, "maximum": 10, "default": 5}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Matches found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "matches": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "value": {"type": "string"},
+                          "score": {"type": "number"},
+                          "type": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/classify/ai": {
+      "post": {
+        "operationId": "aiClassifyBook",
+        "summary": "AI-powered book classification",
+        "description": "Use AI agent to intelligently classify books with web research",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["book_id"],
+                "properties": {
+                  "book_id": {"type": "string", "description": "Book ID to classify"},
+                  "use_web_search": {"type": "boolean", "default": true, "description": "Enable web research"},
+                  "save_results": {"type": "boolean", "default": true, "description": "Save classification to book"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI classification completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "classification": {
+                      "type": "object",
+                      "properties": {
+                        "genre": {"type": "string"},
+                        "subgenre": {"type": "string"},
+                        "tropes": {"type": "array", "items": {"type": "string"}}
+                      }
+                    },
+                    "confidence": {"type": "number"},
+                    "research_sources": {"type": "array", "items": {"type": "string"}},
+                    "saved": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/queue": {
+      "get": {
+        "operationId": "getBasicQueue",
+        "summary": "Get basic TBR queue",
+        "description": "Retrieve basic to-be-read queue",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of books",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 50, "default": 10}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Queue retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "queue": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}},
+                    "total": {"type": "number"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/queue/tbr": {
+      "get": {
+        "operationId": "getIntelligentTbrQueue",
+        "summary": "Get intelligent TBR queue",
+        "description": "Retrieve TBR queue with preference-based scoring and prioritization",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of books",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 20, "default": 10}
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "Queue prioritization mode",
+            "schema": {"type": "string", "enum": ["balanced", "diversity", "preferences"], "default": "balanced"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Intelligent TBR queue retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "queue": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {"$ref": "#/components/schemas/Book"},
+                          {
+                            "type": "object",
+                            "properties": {
+                              "preference_score": {"type": "number"},
+                              "priority_reason": {"type": "string"}
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "total": {"type": "number"},
+                    "algorithm": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/queue/smart": {
+      "get": {
+        "operationId": "getSmartQueue",
+        "summary": "Get smart prioritized queue",
+        "description": "Retrieve queue with advanced AI-driven prioritization",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of books",
+            "schema": {"type": "integer", "minimum": 1, "maximum": 15, "default": 8}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Smart queue retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "queue": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}},
+                    "reasoning": {"type": "array", "items": {"type": "string"}},
+                    "optimization": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/queue/insights": {
+      "get": {
+        "operationId": "getQueueInsights",
+        "summary": "Get comprehensive queue analytics",
+        "description": "Retrieve detailed analytics and insights about the reading queue",
+        "responses": {
+          "200": {
+            "description": "Queue insights retrieved",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/QueueInsights"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/queue/reorder": {
+      "post": {
+        "operationId": "reorderQueue",
+        "summary": "Reorder book position",
+        "description": "Change the position of a book in the reading queue",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["book_id", "new_position"],
+                "properties": {
+                  "book_id": {"type": "string", "description": "Book ID to reorder"},
+                  "new_position": {"type": "integer", "minimum": 1, "description": "New position in queue"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book reordered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "book": {"$ref": "#/components/schemas/Book"},
+                    "new_queue": {"type": "array", "items": {"$ref": "#/components/schemas/Book"}}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/queue/promote": {
+      "post": {
+        "operationId": "promoteBook",
+        "summary": "Promote book to top priority",
+        "description": "Move a book to the top of the reading queue",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["book_id"],
+                "properties": {
+                  "book_id": {"type": "string", "description": "Book ID to promote"},
+                  "reason": {"type": "string", "description": "Reason for promotion"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book promoted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "book": {"$ref": "#/components/schemas/Book"},
+                    "message": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
