@@ -405,6 +405,52 @@
         }
       }
     },
+    "/api/classify/title": {
+      "post": {
+        "operationId": "classifyBookByTitle",
+        "summary": "Classify book by title/author",
+        "description": "Find and classify a book using title and optional author name",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": {"type": "string", "description": "Book title to find and classify"},
+                  "author": {"type": "string", "description": "Author name (optional, for disambiguation)"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book found and classified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "book": {"$ref": "#/components/schemas/Book"},
+                    "classification_applied": {"type": "boolean"},
+                    "ai_research": {"type": "object"},
+                    "fuzzy_classification": {"type": "object"}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          },
+          "300": {
+            "description": "Multiple matches found"
+          }
+        }
+      }
+    },
     "/api/classify/ai": {
       "post": {
         "operationId": "aiClassifyBook",
@@ -416,9 +462,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["book_id"],
                 "properties": {
                   "book_id": {"type": "string", "description": "Book ID to classify"},
+                  "title": {"type": "string", "description": "Book title (if no book_id)"},
+                  "author": {"type": "string", "description": "Book author (if no book_id)"},
                   "use_web_search": {"type": "boolean", "default": true, "description": "Enable web research"},
                   "save_results": {"type": "boolean", "default": true, "description": "Save classification to book"}
                 }

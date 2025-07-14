@@ -107,6 +107,8 @@ module.exports = async (req, res) => {
           result = await classificationHandler.matchClassification(req, res);
         } else if (pathSegments.length === 2 && pathSegments[1] === 'ai') {
           result = await classificationHandler.aiClassifyBook(req, res);
+        } else if (pathSegments.length === 2 && pathSegments[1] === 'title') {
+          result = await classificationHandler.classifyBookByTitle(req, res);
         } else {
           throw new Error('Invalid POST endpoint');
         }

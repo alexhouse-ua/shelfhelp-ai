@@ -57,6 +57,77 @@ class ClassificationHandler {
     }
   }
 
+  async classifyBookByTitle(req, res) {
+    try {
+      const { title, author } = req.body;
+      
+      if (!title) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          message: 'Title is required for book classification'
+        });
+      }
+      
+      // Find the book first
+      const data = await fs.readFile(this.booksFilePath, 'utf-8');
+      const books = JSON.parse(data);
+      
+      let matches = books.filter(book => 
+        book.title.toLowerCase().includes(title.toLowerCase())
+      );
+      
+      if (author) {
+        matches = matches.filter(book => 
+          book.author.toLowerCase().includes(author.toLowerCase())
+        );
+      }
+      
+      if (matches.length === 0) {
+        return res.status(404).json({
+          error: 'Book not found',
+          message: `No books found matching title: "${title}"${author ? ` by ${author}` : ''}`,
+          suggestion: 'Try adding the book first, then classify it'
+        });
+      }
+      
+      if (matches.length > 1) {
+        return res.status(300).json({
+          error: 'Multiple matches',
+          message: `Found ${matches.length} books matching "${title}"`,
+          matches: matches.map(book => ({
+            id: book.id,
+            title: book.title,
+            author: book.author,
+            status: book.status
+          })),
+          suggestion: 'Use book ID or provide more specific title/author'
+        });
+      }
+      
+      // Single match found - proceed with AI classification
+      const targetBook = matches[0];
+      
+      // Call aiClassifyBook with the found book
+      req.body = {
+        book_id: targetBook.id.toString(),
+        use_web_search: true
+      };
+      
+      return await this.aiClassifyBook(req, res);
+      
+    } catch (error) {
+      logger.error('Failed to classify book by title', { 
+        error: error.message,
+        title: req.body.title,
+        operation: 'classify_book_by_title' 
+      });
+      res.status(500).json({ 
+        error: 'Failed to classify book', 
+        message: error.message 
+      });
+    }
+  }
+
   async classifyBook(req, res) {
     try {
       const bookData = req.body;
@@ -181,12 +252,42 @@ class ClassificationHandler {
 
   async aiClassifyBook(req, res) {
     try {
-      const { title, author, description, research_data } = req.body;
+      // Support both book_id and title/author patterns
+      const { book_id, title, author, description, research_data, use_web_search = true } = req.body;
       
-      if (!title || !author) {
+      let bookTitle = title;
+      let bookAuthor = author;
+      let targetBook = null;
+      
+      // If book_id provided, fetch the book first
+      if (book_id) {
+        try {
+          const data = await fs.readFile(this.booksFilePath, 'utf-8');
+          const books = JSON.parse(data);
+          targetBook = books.find(book => book.id === parseInt(book_id));
+          
+          if (!targetBook) {
+            return res.status(404).json({
+              error: 'Book not found',
+              message: `Book with ID ${book_id} not found`
+            });
+          }
+          
+          bookTitle = targetBook.title;
+          bookAuthor = targetBook.author;
+        } catch (error) {
+          return res.status(500).json({
+            error: 'Database error',
+            message: 'Could not retrieve book data'
+          });
+        }
+      }
+      
+      // Validate we have title and author
+      if (!bookTitle || !bookAuthor) {
         return res.status(400).json({
           error: 'Validation failed',
-          message: 'Title and author are required for AI classification'
+          message: 'Either book_id or both title and author are required for AI classification'
         });
       }
       
@@ -204,27 +305,84 @@ class ClassificationHandler {
       // Apply fuzzy matching to AI results
       const classificationResult = this.fuzzyMatcher.classifyBook(mockAiData);
       
+      // If we have a target book and high confidence, update it
+      let bookUpdateResult = null;
+      if (targetBook && classificationResult.overallConfidence > 0.7) {
+        try {
+          const data = await fs.readFile(this.booksFilePath, 'utf-8');
+          const books = JSON.parse(data);
+          const bookIndex = books.findIndex(book => book.id === targetBook.id);
+          
+          if (bookIndex !== -1) {
+            books[bookIndex] = {
+              ...books[bookIndex],
+              genre: classificationResult.bestGenre || mockAiData.genre,
+              subgenre: classificationResult.bestSubgenre || mockAiData.subgenre,
+              tropes: classificationResult.bestTropes || mockAiData.tropes,
+              spice_level: mockAiData.spice,
+              date_updated: new Date().toISOString().split('T')[0]
+            };
+            
+            // Save books (serverless-safe)
+            if (process.env.VERCEL) {
+              // In serverless, log the operation
+              console.log('Serverless: Book classification saved', {
+                bookId: targetBook.id,
+                title: bookTitle,
+                classification: {
+                  genre: classificationResult.bestGenre || mockAiData.genre,
+                  subgenre: classificationResult.bestSubgenre || mockAiData.subgenre,
+                  tropes: classificationResult.bestTropes || mockAiData.tropes
+                }
+              });
+            } else {
+              // Local development - write to file
+              await fs.writeFile(this.booksFilePath, JSON.stringify(books, null, 2));
+            }
+            bookUpdateResult = books[bookIndex];
+          }
+        } catch (error) {
+          logger.warn('Could not auto-update book with classification', {
+            bookId: targetBook.id,
+            error: error.message
+          });
+        }
+      }
+      
       logger.info('AI book classification completed', {
-        title: title,
-        author: author,
+        title: bookTitle,
+        author: bookAuthor,
+        bookId: targetBook?.id,
         confidence: classificationResult.overallConfidence,
         aiConfidence: mockAiData.confidence,
+        autoUpdated: !!bookUpdateResult,
         operation: 'ai_classify_book'
       });
       
       res.json({
         message: 'AI book classification completed',
-        book: { title, author, description },
+        book: { 
+          id: targetBook?.id,
+          title: bookTitle, 
+          author: bookAuthor, 
+          description: description || targetBook?.description
+        },
         ai_research: mockAiData,
         fuzzy_classification: classificationResult,
+        book_updated: bookUpdateResult,
+        classification_applied: !!bookUpdateResult,
         recommendations: {
           apply_classification: classificationResult.overallConfidence > 0.7,
           review_confidence: classificationResult.overallConfidence < 0.8,
-          add_to_library: true
+          add_to_library: !targetBook
         },
-        next_steps: [
+        next_steps: bookUpdateResult ? [
+          'Classification automatically applied to book',
+          'Book updated in library',
+          'Ready for reading queue'
+        ] : [
           'Review classification accuracy',
-          'Apply to book record if confident',
+          'Apply to book record if confident', 
           'Add to reading queue if desired'
         ]
       });
