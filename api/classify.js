@@ -6,11 +6,13 @@
 const path = require('path');
 const { requireApiKey } = require('../src/core/auth-middleware');
 const ClassificationHandler = require('../src/core/classification-handler');
+const UnifiedClassificationService = require('../src/core/unified-classification');
 const FuzzyClassificationMatcher = require('../scripts/fuzzy-classifier');
 
 // Initialize systems (reused across invocations for performance)
 let fuzzyMatcher = null;
 let classificationHandler = null;
+let unifiedClassificationService = null;
 let initPromise = null;
 
 // Initialize classification systems (once per cold start)
@@ -25,7 +27,8 @@ async function initializeClassificationSystems() {
     fuzzyMatcher = new FuzzyClassificationMatcher();
     await fuzzyMatcher.initialize(CLASSIFICATIONS_FILE);
     classificationHandler = new ClassificationHandler(fuzzyMatcher, BOOKS_FILE, HISTORY_DIR);
-    console.log('Classification systems initialized for serverless');
+    unifiedClassificationService = new UnifiedClassificationService(BOOKS_FILE, CLASSIFICATIONS_FILE, HISTORY_DIR);
+    console.log('Classification systems initialized for serverless (including unified service)');
   })();
   
   return initPromise;
@@ -102,15 +105,15 @@ module.exports = async (req, res) => {
         
       case 'POST':
         if (pathSegments.length === 1 && pathSegments[0] === 'classify') {
-          result = await classificationHandler.classifyBook(req, res);
+          // NEW: Unified classification endpoint - handles all scenarios
+          result = await unifiedClassificationService.classifyBook(req, res);
         } else if (pathSegments.length === 2 && pathSegments[1] === 'match') {
           result = await classificationHandler.matchClassification(req, res);
-        } else if (pathSegments.length === 2 && pathSegments[1] === 'ai') {
-          result = await classificationHandler.aiClassifyBook(req, res);
-        } else if (pathSegments.length === 2 && pathSegments[1] === 'title') {
-          result = await classificationHandler.classifyBookByTitle(req, res);
+        } else if (pathSegments.length === 2 && pathSegments[1] === 'legacy') {
+          // Legacy endpoints for backward compatibility
+          result = await classificationHandler.classifyBook(req, res);
         } else {
-          throw new Error('Invalid POST endpoint');
+          throw new Error('Invalid POST endpoint - use /api/classify for unified classification');
         }
         break;
         

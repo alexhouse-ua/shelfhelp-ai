@@ -6,11 +6,13 @@
 const fs = require('fs').promises;
 const path = require('path');
 const logger = require('../../scripts/logger');
+const WebBookSearchService = require('./web-book-search');
 
 class BookManager {
   constructor(booksFilePath, historyDir) {
     this.booksFilePath = booksFilePath;
     this.historyDir = historyDir;
+    this.webSearchService = new WebBookSearchService();
   }
 
   async getAllBooks(req, res) {
@@ -83,11 +85,16 @@ class BookManager {
       const bookData = req.body;
       
       // Validate required fields
-      if (!bookData.title || !bookData.author) {
+      if (!bookData.title) {
         return res.status(400).json({
           error: 'Validation failed',
-          message: 'Title and author are required fields'
+          message: 'Title is required field'
         });
+      }
+      
+      // If only title provided, perform web search for matches
+      if (!bookData.author || bookData.auto_lookup !== false) {
+        return await this.createBookWithWebLookup(req, res);
       }
       
       // Read current books
@@ -408,6 +415,142 @@ class BookManager {
     } catch (error) {
       console.error('Error searching books by title:', error);
       return [];
+    }
+  }
+
+  async createBookWithWebLookup(req, res) {
+    try {
+      const { title, author } = req.body;
+      
+      // Perform web search for book metadata
+      const searchResults = await this.webSearchService.searchBookMetadata(title, author);
+      
+      if (searchResults.length === 0) {
+        return res.status(404).json({
+          error: 'Book not found',
+          message: `No books found for "${title}"${author ? ` by ${author}` : ''}`,
+          suggestion: 'Try a different title or add the book manually with auto_lookup=false'
+        });
+      }
+      
+      if (searchResults.length === 1) {
+        // Single match - auto-create with web data
+        const webResult = searchResults[0];
+        const enhancedBookData = {
+          title: webResult.title,
+          author: webResult.author,
+          genre: webResult.genre,
+          subgenre: webResult.subgenre,
+          tropes: webResult.tropes,
+          isbn: webResult.isbn,
+          published_date: webResult.publishedDate,
+          pages: webResult.pages,
+          description: webResult.description,
+          goodreads_id: webResult.goodreadsId,
+          rating_average: webResult.rating,
+          rating_count: webResult.ratingsCount,
+          spice_level: webResult.spice_level,
+          image_url: webResult.imageUrl,
+          status: req.body.status || 'tbr',
+          date_added: new Date().toISOString().split('T')[0],
+          date_updated: new Date().toISOString().split('T')[0],
+          source: 'web_lookup_auto_created',
+          web_confidence: webResult.confidence
+        };
+        
+        return await this.createBookFromData(enhancedBookData, res);
+      }
+      
+      // Multiple matches - return options for user selection
+      return res.status(300).json({
+        message: `Found ${searchResults.length} potential matches for "${title}"`,
+        matches: searchResults.map(result => ({
+          title: result.title,
+          author: result.author,
+          published_date: result.publishedDate,
+          description: result.description?.substring(0, 200) + '...',
+          rating: result.rating,
+          confidence: result.confidence,
+          source: result.source,
+          create_url: `/api/books/create-from-match`,
+          match_data: {
+            title: result.title,
+            author: result.author,
+            isbn: result.isbn,
+            goodreads_id: result.goodreadsId
+          }
+        })),
+        instructions: {
+          auto_select: 'If you see the correct book, use createBookFromMatch with the match_data',
+          manual_add: 'To add manually without lookup, use auto_lookup=false in request'
+        }
+      });
+      
+    } catch (error) {
+      logger.error('Failed to create book with web lookup', {
+        error: error.message,
+        title: req.body.title,
+        author: req.body.author,
+        operation: 'create_book_web_lookup'
+      });
+      res.status(500).json({
+        error: 'Web lookup failed',
+        message: error.message,
+        fallback: 'Try adding the book manually with auto_lookup=false'
+      });
+    }
+  }
+
+  async createBookFromData(bookData, res) {
+    try {
+      // Read current books
+      const data = await fs.readFile(this.booksFilePath, 'utf-8');
+      const books = JSON.parse(data);
+      
+      // Generate new ID
+      const maxId = books.length > 0 ? Math.max(...books.map(b => b.id || 0)) : 0;
+      const newBook = {
+        id: maxId + 1,
+        ...bookData
+      };
+      
+      // Add to books array
+      books.push(newBook);
+      
+      // Write back to file (handle serverless environment)
+      await this.saveBooks(books);
+      
+      // Log to history
+      await this.logBookHistory('create', newBook);
+      
+      logger.info('Book created from web data', {
+        bookId: newBook.id,
+        title: newBook.title,
+        author: newBook.author,
+        source: newBook.source,
+        confidence: newBook.web_confidence,
+        operation: 'create_book_from_data'
+      });
+      
+      res.status(201).json({
+        message: 'Book created successfully with web lookup',
+        book: newBook,
+        web_lookup: {
+          source: newBook.source,
+          confidence: newBook.web_confidence,
+          auto_classified: !!(newBook.genre && newBook.subgenre)
+        }
+      });
+    } catch (error) {
+      logger.error('Failed to create book from data', {
+        error: error.message,
+        title: bookData.title,
+        operation: 'create_book_from_data'
+      });
+      res.status(500).json({
+        error: 'Failed to create book',
+        message: error.message
+      });
     }
   }
 

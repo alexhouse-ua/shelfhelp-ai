@@ -315,22 +315,21 @@
         }
       },
       "post": {
-        "operationId": "classifyBook",
-        "summary": "Classify book with fuzzy matching",
-        "description": "Classify a book using fuzzy matching against available genres and tropes",
+        "operationId": "unifiedClassifyBook",
+        "summary": "Unified book classification with web research",
+        "description": "Comprehensive book classification using web search (Goodreads, Romance.io), AI analysis, and classifications.yaml matching. Handles all classification scenarios in one endpoint.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "author"],
                 "properties": {
-                  "title": {"type": "string", "description": "Book title"},
-                  "author": {"type": "string", "description": "Book author"},
-                  "description": {"type": "string", "description": "Book description or synopsis"},
-                  "genre_hint": {"type": "string", "description": "Suspected genre"},
-                  "confidence_threshold": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.6}
+                  "title": {"type": "string", "description": "Book title (required if no book_id)"},
+                  "author": {"type": "string", "description": "Book author (optional, helps with disambiguation)"},
+                  "book_id": {"type": "string", "description": "Existing book ID to classify (alternative to title/author)"},
+                  "description": {"type": "string", "description": "Book description (optional, improves classification)"},
+                  "force_web_search": {"type": "boolean", "default": true, "description": "Perform web research for enhanced metadata"}
                 }
               }
             }
@@ -338,21 +337,39 @@
         },
         "responses": {
           "200": {
-            "description": "Book classified successfully",
+            "description": "Book classified successfully with comprehensive metadata",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "genre": {"type": "string"},
-                    "subgenre": {"type": "string"},
-                    "tropes": {"type": "array", "items": {"type": "string"}},
-                    "confidence_scores": {"type": "object"},
-                    "suggestions": {"type": "array", "items": {"type": "string"}}
+                    "message": {"type": "string"},
+                    "book": {"$ref": "#/components/schemas/Book"},
+                    "classification": {
+                      "type": "object",
+                      "properties": {
+                        "genre": {"type": "string"},
+                        "subgenre": {"type": "string"},
+                        "tropes": {"type": "array", "items": {"type": "string"}},
+                        "spice_level": {"type": "number"},
+                        "confidence": {"type": "number"},
+                        "source": {"type": "string"}
+                      }
+                    },
+                    "web_research": {"type": "object", "description": "Goodreads and other web sources data"},
+                    "spice_research": {"type": "object", "description": "Romance.io spice level data"},
+                    "book_updated": {"type": "boolean", "description": "Whether book was automatically updated"},
+                    "auto_applied": {"type": "boolean", "description": "Whether classification was automatically applied"}
                   }
                 }
               }
             }
+          },
+          "300": {
+            "description": "Multiple books found - disambiguation needed"
+          },
+          "404": {
+            "description": "Book not found"
           }
         }
       }
@@ -397,101 +414,6 @@
                         }
                       }
                     }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/classify/title": {
-      "post": {
-        "operationId": "classifyBookByTitle",
-        "summary": "Classify book by title/author",
-        "description": "Find and classify a book using title and optional author name",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["title"],
-                "properties": {
-                  "title": {"type": "string", "description": "Book title to find and classify"},
-                  "author": {"type": "string", "description": "Author name (optional, for disambiguation)"}
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Book found and classified successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "book": {"$ref": "#/components/schemas/Book"},
-                    "classification_applied": {"type": "boolean"},
-                    "ai_research": {"type": "object"},
-                    "fuzzy_classification": {"type": "object"}
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Book not found"
-          },
-          "300": {
-            "description": "Multiple matches found"
-          }
-        }
-      }
-    },
-    "/api/classify/ai": {
-      "post": {
-        "operationId": "aiClassifyBook",
-        "summary": "AI-powered book classification",
-        "description": "Use AI agent to intelligently classify books with web research",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "book_id": {"type": "string", "description": "Book ID to classify"},
-                  "title": {"type": "string", "description": "Book title (if no book_id)"},
-                  "author": {"type": "string", "description": "Book author (if no book_id)"},
-                  "use_web_search": {"type": "boolean", "default": true, "description": "Enable web research"},
-                  "save_results": {"type": "boolean", "default": true, "description": "Save classification to book"}
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "AI classification completed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "classification": {
-                      "type": "object",
-                      "properties": {
-                        "genre": {"type": "string"},
-                        "subgenre": {"type": "string"},
-                        "tropes": {"type": "array", "items": {"type": "string"}}
-                      }
-                    },
-                    "confidence": {"type": "number"},
-                    "research_sources": {"type": "array", "items": {"type": "string"}},
-                    "saved": {"type": "boolean"}
                   }
                 }
               }
