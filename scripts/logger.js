@@ -33,8 +33,8 @@ const logger = winston.createLogger({
   ]
 });
 
-// Add file logging in production
-if (process.env.NODE_ENV === 'production') {
+// Add file logging in production (but not in serverless)
+if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
   logger.add(new winston.transports.File({
     filename: path.join(logDir, 'error.log'),
     level: 'error',
@@ -47,6 +47,11 @@ if (process.env.NODE_ENV === 'production') {
     maxsize: 5242880, // 5MB
     maxFiles: 10
   }));
+}
+
+// In serverless, use console only
+if (process.env.VERCEL) {
+  logger.info('Running in Vercel serverless environment - using console transport only');
 }
 
 // Helper functions for common logging patterns
