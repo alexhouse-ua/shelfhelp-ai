@@ -26,28 +26,28 @@ npm start
 ## Documentation Structure
 
 ### 📋 Core Documentation
-- **[Task Management Guide](../_knowledge/Task_Management_Guide.md)** - Master project tracking
-- **[Project Plan](../_knowledge/Project_Plan.md)** - Complete strategy & architecture
-- **[Operating Instructions](../_knowledge/Operating_Instructions.md)** - Field dictionary & rules
+- **[Task Management Guide](workflows/Task_Management_Guide.md)** - Master project tracking
+- **[Project Plan](workflows/Project_Plan.md)** - Complete strategy & architecture
+- **[Operating Instructions](guides/Operating_Instructions.md)** - Field dictionary & rules
 
 ### 🚀 Deployment
 - **[Deployment Guide](DEPLOYMENT.md)** - Production deployment instructions
 - **[Configuration](../config/)** - Environment & deployment configurations
 
 ### 📊 Reports & Status
-- **[Project Summary](../_knowledge/summary.md)** - Current status & priorities
+- **[Project Summary](reports/summary.md)** - Current status & priorities
 - **[Backend Audit](../BACKEND_AUDIT_REPORT.md)** - Architecture analysis
-- **[Library Integration Report](../_knowledge/P2-B2_Library_Integration_Report.md)**
+- **[Library Integration Report](reports/P2-B2_Library_Integration_Report.md)**
 
 ### 🔧 Development Guides
-- **[Backfill Strategy](../_knowledge/backfill-strategy-guide.md)** - AI classification workflow
-- **[Historical Import](../_knowledge/historical-import-guide.md)** - Data migration process
-- **[Workflow Protocol](../_knowledge/Session_Workflow_Protocol.md)** - Development process
-- **[Conversational Patterns](../_knowledge/conversational-interface-patterns.md)** - Mobile UI patterns
+- **[Backfill Strategy](guides/backfill-strategy-guide.md)** - AI classification workflow
+- **[Historical Import](guides/historical-import-guide.md)** - Data migration process
+- **[Workflow Protocol](workflows/Session_Workflow_Protocol.md)** - Development process
+- **[Conversational Patterns](guides/conversational-interface-patterns.md)** - Mobile UI patterns
 
 ### 🎯 Development Examples
-- **[AI Classification Demo](../_knowledge/ai-classification-demo.md)** - Live classification examples
-- **[Fuzzy Classification](../_knowledge/fuzzy-classification-examples.md)** - Matching examples
+- **[AI Classification Demo](guides/ai-classification-demo.md)** - Live classification examples
+- **[Fuzzy Classification](guides/fuzzy-classification-examples.md)** - Matching examples
 
 ## Key Features
 
@@ -106,23 +106,22 @@ npm run validate-schema
 ├── data/           # Canonical data store
 ├── docs/           # Documentation (this directory)
 ├── scripts/        # API server and utilities
-├── _knowledge/     # Project documentation
 ├── src/            # Core application modules
 └── test/           # Testing framework
 ```
 
 ## Contributing
 
-1. Check [Task Management Guide](../_knowledge/Task_Management_Guide.md) for active tasks
-2. Follow [Session Workflow Protocol](../_knowledge/Session_Workflow_Protocol.md)
-3. Reference [Operating Instructions](../_knowledge/Operating_Instructions.md) for data rules
+1. Check [Task Management Guide](workflows/Task_Management_Guide.md) for active tasks
+2. Follow [Session Workflow Protocol](workflows/Session_Workflow_Protocol.md)
+3. Reference [Operating Instructions](guides/Operating_Instructions.md) for data rules
 4. Update documentation with changes
 
 ## Support
 
 - **Issues**: GitHub Issues
 - **Documentation**: This docs/ directory
-- **Task Tracking**: ../_knowledge/Task_Management_Guide.md
+- **Task Tracking**: workflows/Task_Management_Guide.md
 - **Architecture**: ../BACKEND_AUDIT_REPORT.md
 
 ---

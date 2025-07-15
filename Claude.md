@@ -2,7 +2,7 @@
 
 ## How to Use This File
 - This file contains essential project information needed for every development session
-- Detailed documentation can be found in referenced files in the `_knowledge/` directory
+- Detailed documentation can be found in referenced files in the `docs/` directory
 - Update both this file and referenced files when making changes
 - Always review this file before starting any development work
 - Complex coding should happen in Claude Code for optimal performance
@@ -35,12 +35,12 @@ AI-powered reading assistant with real-time queue management and intelligent boo
 
 | File | Purpose | When to Reference |
 |------|---------|-------------------|
-| `_knowledge/Task_Management_Guide.md` | **Master task tracking and project phases** | **EVERY SESSION - Check active tasks and update progress** |
+| `docs/workflows/Task_Management_Guide.md` | **Master task tracking and project phases** | **EVERY SESSION - Check active tasks and update progress** |
 | `backend-audit-questions.txt` | **User preferences and answered questions** | **Reference for all development decisions** |
 | `BACKEND_AUDIT_REPORT.md` | **Architecture analysis and optimization plan** | **For performance and structure improvements** |
-| `_knowledge/Operating_Instructions.md` | Field dictionary and operational rules | Before any book data modifications |
-| `_knowledge/Project_Plan.md` | Complete project strategy and architecture | For major feature decisions |
-| `_knowledge/summary.md` | Current project status and priorities | Every session to understand current state |
+| `docs/guides/Operating_Instructions.md` | Field dictionary and operational rules | Before any book data modifications |
+| `docs/workflows/Project_Plan.md` | Complete project strategy and architecture | For major feature decisions |
+| `docs/reports/summary.md` | Current project status and priorities | Every session to understand current state |
 | `data/classifications.yaml` | Authoritative genre/trope taxonomy | When adding/validating book metadata |
 | `data/books.json` | Canonical book records | Never modify directly - use API only |
 | `scripts/api-server.js` | Main API server | For all API modifications |
@@ -173,7 +173,7 @@ npm install
 
 ## Next Development Steps
 
-**Active Tasks**: See [Task Management Guide](_knowledge/Task_Management_Guide.md) for current active tasks and detailed implementation plans.
+**Active Tasks**: See [Task Management Guide](docs/workflows/Task_Management_Guide.md) for current active tasks and detailed implementation plans.
 
 **Current Priority**: **Phase 2 - Batch 5**: Critical infrastructure cleanup including file organization, performance optimization, and technical debt removal.
 
