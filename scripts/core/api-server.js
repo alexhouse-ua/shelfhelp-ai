@@ -16,16 +16,16 @@ const { EnhancedAvailabilityChecker } = require('./enhanced-availability-checker
 const { ingestRssFeed } = require('./rss-ingest');
 
 // Import modular components
-const corsOptions = require('../src/core/cors-config');
-const { requireApiKey } = require('../src/core/auth-middleware');
-const aiAssistantLimiter = require('../src/core/rate-limiter');
-const BookManager = require('../src/core/book-manager');
-const ClassificationHandler = require('../src/core/classification-handler');
-const QueueManager = require('../src/core/queue-manager');
+const corsOptions = require('../../src/core/cors-config');
+const { requireApiKey } = require('../../src/core/auth-middleware');
+const aiAssistantLimiter = require('../../src/core/rate-limiter');
+const BookManager = require('../../src/core/book-manager');
+const ClassificationHandler = require('../../src/core/classification-handler');
+const QueueManager = require('../../src/core/queue-manager');
 
 // Performance optimization - Enhanced caching system
-const bookCache = require('../src/core/book-cache');
-const classificationCache = require('../src/core/classification-cache');
+const bookCache = require('../../src/core/book-cache');
+const classificationCache = require('../../src/core/classification-cache');
 
 require('dotenv').config();
 
