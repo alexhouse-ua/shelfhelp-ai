@@ -1,0 +1,25 @@
+{
+  "port": 3000,
+  "cors": {
+    "enabled": true,
+    "origins": ["http://localhost:3000", "https://chatgpt.com", "https://claude.ai"],
+    "credentials": true
+  },
+  "rateLimit": {
+    "windowMs": 900000,
+    "max": 2000,
+    "aiOptimized": true
+  },
+  "logging": {
+    "level": "debug",
+    "format": "dev"
+  },
+  "firebase": {
+    "enabled": true,
+    "gracefulDegradation": true
+  },
+  "security": {
+    "helmet": true,
+    "authRequired": true
+  }
+}

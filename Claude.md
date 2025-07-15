@@ -134,6 +134,8 @@ npm install
 
 ## Development Status
 
+**Current Status**: See [Task Management Guide](_knowledge/Task_Management_Guide.md) for complete project status, active tasks, and progress tracking.
+
 ### Completed Features
 - **Core API Infrastructure**: Express server with CRUD operations (`scripts/api-server.js`)
 - **RSS Ingestion Pipeline**: Automated Goodreads RSS polling (`scripts/rss_ingest.js`)
@@ -171,35 +173,9 @@ npm install
 
 ## Next Development Steps
 
-### Immediate Priorities
-1. **Conversational Interface Development**: Design ChatGPT Custom GPT with API actions for mobile-first book management
-2. **Library Integration Fixes**: Resolve availability checking issues and configure real API credentials 
-3. **Production Deployment**: Complete zero-cost hosting setup with automated deployments
-4. **API Documentation**: Create comprehensive documentation for all new endpoints
+**Active Tasks**: See [Task Management Guide](_knowledge/Task_Management_Guide.md) for current active tasks and detailed implementation plans.
 
-### Core Feature Enhancement
-- **AI-Driven Backfill**: Execute classification of remaining 411 unclassified books using web search
-- **Advanced Analytics**: Expand reading insights with goal tracking and trend analysis
-- **Automated Reporting**: Implement weekly/monthly reading summaries and reflection prompts
-- **Performance Optimization**: Add caching and rate limiting for production use
-
-### User Experience
-- **Mobile Optimization**: Ensure all conversational patterns work seamlessly on mobile devices
-- **Natural Language Processing**: Enhance API responses for AI assistant consumption
-- **Error Recovery**: Improve handling of edge cases and service unavailability
-- **Progressive Disclosure**: Implement smart information presentation for chat interfaces
-
-### Technical Infrastructure
-- **Test Coverage**: Implement comprehensive test suite for all new functionality
-- **Monitoring**: Add health checks and performance monitoring
-- **Security**: Implement proper rate limiting and input validation
-- **Documentation**: Complete API documentation with usage examples
-
-### Outstanding Technical Debt
-- **Library API Configuration**: Set up proper OverDrive/Libby library system integrations
-- **Availability System Fixes**: Resolve false positive issues in KU/Hoopla checking
-- **Firebase Integration**: Complete GitHub Secrets configuration for production sync
-- **Performance Testing**: Validate system performance under load
+**Current Priority**: **Phase 2 - Batch 5**: Critical infrastructure cleanup including file organization, performance optimization, and technical debt removal.
 
 ### Ready for Production
 - Core recommendation and queue management systems are complete and functional

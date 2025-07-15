@@ -55,6 +55,10 @@
 - [ ] **P2-B4-002**: Preference Analytics Enhancement (Full DB analysis)
 - [ ] **P2-B4-003**: Romance-focused Recommendation Tuning
 - [ ] **P2-B4-004**: Detailed Analytics for Personal Insights
+- [ ] **P2-B5-001**: 🔴 **CRITICAL: File Organization & Cleanup** (Project structure)
+- [ ] **P2-B5-002**: 🔴 **CRITICAL: Performance Optimization** (Caching & response times)
+- [ ] **P2-B5-003**: 🔴 **CRITICAL: Remove Technical Debt** (Unused scripts/docs)
+- [ ] **P2-B5-004**: 🔴 **CRITICAL: Development Workflow Setup** (Testing & CI/CD)
 
 ### **Phase 3: Production Deployment** 📋 **PLANNED**
 *Free hosting optimization and set-and-forget automation*
@@ -167,6 +171,81 @@
 
 ---
 
+## 🚨 **CRITICAL CLEANUP BATCH** (Phase 2 - Batch 5)
+
+### **Phase 2 - Batch 5: Critical Infrastructure Cleanup** 🔄 **NEXT PRIORITY**
+*Priority*: 🔴 **CRITICAL**  
+*Target Completion*: July 21, 2025  
+*Estimated Hours*: 16-20 hours  
+*Based on*: BACKEND_AUDIT_REPORT.md findings
+
+#### **P2-B5-001: File Organization & Cleanup**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🔴 **CRITICAL**
+- **Estimated Time**: 4-6 hours
+- **Dependencies**: None
+- **Description**: Reorganize scattered configuration, consolidate documentation, remove duplicates
+- **Files**: `/config/`, `/docs/`, remove outdated files in root
+- **Success Criteria**: 
+  - [ ] Configuration files consolidated in `/config/`
+  - [ ] Documentation merged into `/docs/`
+  - [ ] Remove 6+ outdated files (SESSION_*.md, etc.)
+  - [ ] Clean `/data/` backup clutter
+  - [ ] Organize `/scripts/` into logical subdirectories
+- **Blockers**: None
+- **Notes**: **Health Score Impact**: +10 points (85→95/100)
+
+#### **P2-B5-002: Performance Optimization**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🔴 **CRITICAL**
+- **Estimated Time**: 4-5 hours
+- **Dependencies**: P2-B5-001 (file cleanup)
+- **Description**: Add caching, pagination, optimize memory usage
+- **Files**: `scripts/api-server.js`, new middleware files
+- **Success Criteria**:
+  - [ ] Response caching implemented (50-70% faster)
+  - [ ] API pagination added (60-80% faster loads)
+  - [ ] Memory usage optimization (40-50% reduction)
+  - [ ] Request validation middleware
+- **Blockers**: None
+- **Notes**: **Target**: <200ms API response times
+
+#### **P2-B5-003: Remove Technical Debt**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🔴 **CRITICAL**
+- **Estimated Time**: 3-4 hours
+- **Dependencies**: P2-B5-001 (file organization)
+- **Description**: Remove unused scripts, clean up 35+ script files, remove outdated docs
+- **Files**: `/scripts/` cleanup, root directory cleanup
+- **Success Criteria**:
+  - [ ] Remove unused utility scripts
+  - [ ] Organize scripts into `/core/`, `/maintenance/`, `/testing/`
+  - [ ] Remove duplicate backup/test scripts
+  - [ ] Archive old conversation files
+- **Blockers**: None
+- **Notes**: **Maintenance Reduction**: Eliminate confusion from unused files
+
+#### **P2-B5-004: Development Workflow Setup**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🔴 **CRITICAL**
+- **Estimated Time**: 5-6 hours
+- **Dependencies**: P2-B5-001, P2-B5-003 (cleanup tasks)
+- **Description**: Add testing framework, CI/CD pipeline, code quality tools
+- **Files**: `test/` directory, `.github/workflows/`, package.json updates
+- **Success Criteria**:
+  - [ ] Jest testing framework setup
+  - [ ] Basic unit/integration test structure
+  - [ ] GitHub Actions CI/CD pipeline
+  - [ ] ESLint/Prettier code quality enforcement
+- **Blockers**: None
+- **Notes**: **Foundation** for reliable development workflow
+
+---
+
 ## 🎯 **TASK TRACKING SYSTEM**
 
 ### **Task ID Format**: `P[Phase]-B[Batch]-[Task]`
@@ -194,17 +273,18 @@
 
 ### **Overall Project Progress**
 - **Phase 1**: ✅ **100%** (16/16 tasks complete)
-- **Phase 2**: 🔄 **25%** (4/16 tasks complete)
+- **Phase 2**: 🔄 **20%** (4/20 tasks complete)
 - **Phase 3**: 📋 **0%** (0/12 tasks complete)
 - **Phase 4**: 🎯 **0%** (0/12 tasks complete)
 
-**Total Project**: **29%** (20/56 tasks complete)
+**Total Project**: **27%** (20/60 tasks complete)
 
 ### **Current Phase Progress (Phase 2)**
 - **Batch 1**: ✅ **100%** (4/4 tasks complete)
 - **Batch 2**: 📋 **0%** (0/4 tasks complete)
 - **Batch 3**: 📋 **0%** (0/4 tasks complete)
 - **Batch 4**: 📋 **0%** (0/4 tasks complete)
+- **Batch 5**: 📋 **0%** (0/4 critical cleanup tasks)
 
 ### **Velocity Tracking**
 - **Phase 1 Duration**: 45 days (May 28 - July 12, 2025)
@@ -261,10 +341,11 @@
 ## 🎯 **STRATEGIC PRIORITIES**
 
 ### **July 2025 Focus** (Phase 2)
-1. **Metadata Quality**: Fix incomplete book data (P2-B3)
-2. **Library APIs**: Accurate availability for TBR positioning (P2-B2)
-3. **Firebase Integration**: Real-time sync for mobile use (P2-B4)
-4. **Romance Focus**: Enhance recommendation algorithms (P2-B4)
+1. **🔴 CRITICAL CLEANUP**: File organization, performance optimization, technical debt removal (P2-B5)
+2. **Metadata Quality**: Fix incomplete book data (P2-B3)
+3. **Library APIs**: Accurate availability for TBR positioning (P2-B2)
+4. **Firebase Integration**: Real-time sync for mobile use (P2-B4)
+5. **Romance Focus**: Enhance recommendation algorithms (P2-B4)
 
 ### **August 2025 Focus** (Phase 3)
 1. **Production**: Zero-cost hosting optimization
@@ -297,8 +378,8 @@
 ## 🎯 **SUCCESS METRICS**
 
 ### **Quality Gates**
-- **Code Quality**: 90%+ test coverage
-- **Performance**: <200ms API response times
+- **Code Quality**: 90%+ test coverage (currently 0%)
+- **Performance**: <200ms API response times (currently ~500ms)
 - **Security**: Zero vulnerabilities
 - **Documentation**: 100% API coverage
 
@@ -313,6 +394,22 @@
 - **Maintenance**: Set-and-forget automation
 - **Reliability**: 99.5% success rate for personal workflows
 - **Focus**: Romance recommendations with mood-based variety
+
+### **Performance Targets** (From Backend Audit)
+- **API Response Time**: <200ms (currently ~500ms) - 60% improvement needed
+- **Memory Usage**: <512MB (currently ~1GB) - 50% reduction needed
+- **Error Rate**: <1% (currently ~5%) - 80% improvement needed
+- **Book Search**: <100ms response time
+- **Queue Operations**: <50ms response time
+- **Recommendation Generation**: <2s response time
+- **Mobile Interface**: <3s initial load time
+
+### **Development Metrics**
+- **Deployment Time**: <5 minutes (currently manual)
+- **Bug Detection**: <1 day (currently weeks)
+- **Feature Delivery**: <1 week (currently months)
+- **Code Quality**: >90% (currently unmeasured)
+- **Project Health Score**: 95/100 (currently 85/100)
 
 ---
 
@@ -343,6 +440,56 @@
 ### **For Vibe Coders: Step-by-Step Implementation Commands**
 
 This section provides complete SuperClaude commands for implementing each task. Copy and paste these commands directly into Claude Code for automated implementation.
+
+#### **📋 Phase 2 - Batch 5: Critical Infrastructure Cleanup**
+
+**P2-B5-001: File Organization & Cleanup**
+```bash
+# Step 1: Consolidate configuration files
+/sc:cleanup --target files --organize-by-type --create-config-dir
+
+# Step 2: Merge documentation
+/sc:document --merge --source _knowledge/ --output docs/ --remove-duplicates
+
+# Step 3: Remove outdated files
+/sc:cleanup --target outdated --files "SESSION_*.md,INTEGRATION_*.md" --archive-conversations
+```
+
+**P2-B5-002: Performance Optimization**
+```bash
+# Step 1: Add response caching
+/sc:improve --target performance --add-memory-cache --optimize-frequent-queries
+
+# Step 2: Implement API pagination
+/sc:improve --target api --add-pagination --default-limit 20 --optimize-payloads
+
+# Step 3: Optimize memory usage
+/sc:improve --target performance --optimize-json --add-streaming --reduce-memory-40%
+```
+
+**P2-B5-003: Remove Technical Debt**
+```bash
+# Step 1: Clean up scripts directory
+/sc:cleanup --target scripts --organize-subdirs core,maintenance,testing
+
+# Step 2: Remove unused utilities
+/sc:cleanup --target code --remove-unused --keep-essential-only
+
+# Step 3: Archive old files
+/sc:cleanup --target archive --move-conversations --clean-data-backups
+```
+
+**P2-B5-004: Development Workflow Setup**
+```bash
+# Step 1: Setup testing framework
+/sc:test --setup --framework jest --types unit,integration --coverage-target 80%
+
+# Step 2: Add CI/CD pipeline
+/sc:deploy --setup-cicd --provider github-actions --test-on-commit
+
+# Step 3: Add code quality tools
+/sc:improve --target quality --add-eslint-prettier --setup-pre-commit-hooks
+```
 
 #### **📋 Phase 2 - Batch 2: Library API Integration**
 
@@ -598,6 +745,7 @@ This section provides complete SuperClaude commands for implementing each task. 
 
 ### **Audit & Questions**
 - [Backend Audit Questions](../backend-audit-questions.txt)
+- [**Backend Audit Report**](../BACKEND_AUDIT_REPORT.md) - **Critical findings integrated into P2-B5**
 - [Optimization Recommendations](../BACKEND_AUDIT_REPORT.md#optimization-opportunities)
 
 ---
