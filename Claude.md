@@ -13,7 +13,7 @@ AI-powered reading assistant with real-time queue management and intelligent boo
 
 **Architecture**: Node.js Express API + File-based storage + Optional Firebase sync + RAG-powered recommendations
 
-**Core Philosophy**: Zero-cost operation beyond existing subscriptions, file-based canonical storage, comprehensive audit trails, and mobile-first conversational interfaces.
+**Core Philosophy**: Zero-cost operation beyond existing subscriptions, file-based canonical storage with Firebase real-time sync, comprehensive audit trails, mobile-first conversational interfaces, and personal use focused (no social features).
 
 ### Key Requirements
 
@@ -22,7 +22,12 @@ AI-powered reading assistant with real-time queue management and intelligent boo
 - **All CRUD through API layer** - never write directly to JSON files
 - **RAG before recommendations** - always query vector index first for contextual responses
 - **Git audit trail** - every change logged in `history/*.jsonl`
-- **Mobile-first UX** - all essential flows must work within chat interfaces
+- **Mobile-first UX** - all essential flows must work within chat interfaces  
+- **Personal use focused** - no social features, multi-user support, or community aspects
+- **Firebase real-time sync** - multi-device support using free tier limitations
+- **Romance-focused recommendations** - primary genre focus with mood-based variety
+- **Set-and-forget automation** - minimal maintenance required
+- **Detailed metadata** - comprehensive book classification including spice, tropes, themes
 - **Maintain backward compatibility** - never change existing field names without migration
 - **Validate against classifications** - all genre/trope values must exist in `classifications.yaml`
 
@@ -31,6 +36,8 @@ AI-powered reading assistant with real-time queue management and intelligent boo
 | File | Purpose | When to Reference |
 |------|---------|-------------------|
 | `_knowledge/Task_Management_Guide.md` | **Master task tracking and project phases** | **EVERY SESSION - Check active tasks and update progress** |
+| `backend-audit-questions.txt` | **User preferences and answered questions** | **Reference for all development decisions** |
+| `BACKEND_AUDIT_REPORT.md` | **Architecture analysis and optimization plan** | **For performance and structure improvements** |
 | `_knowledge/Operating_Instructions.md` | Field dictionary and operational rules | Before any book data modifications |
 | `_knowledge/Project_Plan.md` | Complete project strategy and architecture | For major feature decisions |
 | `_knowledge/summary.md` | Current project status and priorities | Every session to understand current state |
