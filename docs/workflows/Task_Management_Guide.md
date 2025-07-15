@@ -55,10 +55,14 @@
 - [ ] **P2-B4-002**: Preference Analytics Enhancement (Full DB analysis)
 - [ ] **P2-B4-003**: Romance-focused Recommendation Tuning
 - [ ] **P2-B4-004**: Detailed Analytics for Personal Insights
-- [ ] **P2-B5-001**: 🔴 **CRITICAL: File Organization & Cleanup** (Project structure)
-- [ ] **P2-B5-002**: 🔴 **CRITICAL: Performance Optimization** (Caching & response times)
-- [ ] **P2-B5-003**: 🔴 **CRITICAL: Remove Technical Debt** (Unused scripts/docs)
-- [ ] **P2-B5-004**: 🔴 **CRITICAL: Development Workflow Setup** (Testing & CI/CD)
+- [x] **P2-B5-001**: 🔴 **CRITICAL: File Organization & Cleanup** (Project structure)
+- [x] **P2-B5-002**: 🔴 **CRITICAL: Performance Optimization** (Caching & response times)
+- [x] **P2-B5-003**: 🔴 **CRITICAL: Remove Technical Debt** (Unused scripts/docs)
+- [x] **P2-B5-004**: 🔴 **CRITICAL: Development Workflow Setup** (Testing & CI/CD)
+- [ ] **P2-B6-001**: 🏗️ **ARCHITECTURE: Enhanced Availability Checker Refactoring** (Service separation)
+- [ ] **P2-B6-002**: 🏗️ **ARCHITECTURE: Service Registry & Configuration** (Dependency injection)
+- [ ] **P2-B6-003**: 🏗️ **ARCHITECTURE: Data Layer Abstraction** (Repository pattern)
+- [ ] **P2-B6-004**: 🏗️ **ARCHITECTURE: Validation Framework** (Strategy pattern)
 
 ### **Phase 3: Production Deployment** 📋 **PLANNED**
 *Free hosting optimization and set-and-forget automation*
@@ -279,6 +283,79 @@
   - **Security**: Vulnerability scanning, dependency review
   - **Documentation**: Comprehensive CI/CD guide
 
+### **Phase 2 - Batch 6: Architecture Refactoring** 📋 **PLANNED**
+*Priority*: 🏗️ **HIGH - ARCHITECTURE**  
+*Target Completion*: July 28, 2025  
+*Estimated Hours*: 20-24 hours  
+*Based on*: Enhanced Availability Checker architectural analysis
+
+#### **P2-B6-001: Enhanced Availability Checker Refactoring**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🏗️ **HIGH**
+- **Estimated Time**: 6-8 hours
+- **Dependencies**: P2-B5-004 (Development Workflow Setup)
+- **Description**: Refactor monolithic availability checker into service-oriented architecture
+- **Files**: `scripts/core/enhanced-availability-checker.js` → service classes
+- **Success Criteria**:
+  - [ ] Extract KindleUnlimitedService with interface
+  - [ ] Extract HooplaService with interface  
+  - [ ] Extract LibraryService with interface
+  - [ ] Create AvailabilityOrchestrator for coordination
+  - [ ] Reduce main class from 854 lines to <300 lines
+  - [ ] Maintain 100% functional compatibility
+- **Blockers**: None
+- **Notes**: **Quality Impact**: Improved maintainability, testability, and extensibility
+
+#### **P2-B6-002: Service Registry & Configuration**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🏗️ **HIGH**
+- **Estimated Time**: 4-5 hours
+- **Dependencies**: P2-B6-001 (Service extraction)
+- **Description**: Implement dependency injection and configuration management
+- **Files**: `src/core/service-registry.js`, `src/core/availability-config.js`
+- **Success Criteria**:
+  - [ ] Create AvailabilityConfig class with validation
+  - [ ] Implement ServiceRegistry for dynamic service discovery
+  - [ ] Add environment validation with early failure
+  - [ ] Enable service mocking for testing
+- **Blockers**: None
+- **Notes**: **Foundation** for scalable service architecture
+
+#### **P2-B6-003: Data Layer Abstraction**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🏗️ **MEDIUM**
+- **Estimated Time**: 5-6 hours
+- **Dependencies**: P2-B6-001 (Service extraction)
+- **Description**: Implement repository pattern for data access abstraction
+- **Files**: `src/core/book-repository.js`, `src/core/file-book-repository.js`
+- **Success Criteria**:
+  - [ ] Define BookRepository interface
+  - [ ] Implement FileBookRepository for current JSON storage
+  - [ ] Add caching layer for frequent reads
+  - [ ] Enable future database migration path
+- **Blockers**: None
+- **Notes**: **Scalability**: Prepares for database migration in Phase 3
+
+#### **P2-B6-004: Validation Framework**
+- **Status**: 📋 **PLANNED**
+- **Assignee**: Development Team
+- **Priority**: 🏗️ **MEDIUM**
+- **Estimated Time**: 5-6 hours
+- **Dependencies**: P2-B6-001, P2-B6-002 (Service architecture)
+- **Description**: Implement strategy pattern for result validation
+- **Files**: `src/core/validation/`, multiple validator classes
+- **Success Criteria**:
+  - [ ] Create AvailabilityValidator interface
+  - [ ] Implement KindleUnlimitedValidator
+  - [ ] Implement HooplaValidator
+  - [ ] Standardize confidence scoring algorithms
+  - [ ] Add comprehensive validation test suite
+- **Blockers**: None
+- **Notes**: **Quality**: Reduces false positives and improves reliability
+
 ---
 
 ## 🎯 **TASK TRACKING SYSTEM**
@@ -308,11 +385,11 @@
 
 ### **Overall Project Progress**
 - **Phase 1**: ✅ **100%** (16/16 tasks complete)
-- **Phase 2**: 🔄 **40%** (8/20 tasks complete)
+- **Phase 2**: 🔄 **33%** (8/24 tasks complete)
 - **Phase 3**: 📋 **0%** (0/12 tasks complete)
 - **Phase 4**: 🎯 **0%** (0/12 tasks complete)
 
-**Total Project**: **40%** (24/60 tasks complete)
+**Total Project**: **38%** (24/64 tasks complete)
 
 ### **Current Phase Progress (Phase 2)**
 - **Batch 1**: ✅ **100%** (4/4 tasks complete)
@@ -320,6 +397,7 @@
 - **Batch 3**: 📋 **0%** (0/4 tasks complete)
 - **Batch 4**: 📋 **0%** (0/4 tasks complete)
 - **Batch 5**: ✅ **100%** (4/4 critical cleanup tasks)
+- **Batch 6**: 📋 **0%** (0/4 architecture tasks)
 
 ### **Velocity Tracking**
 - **Phase 1 Duration**: 45 days (May 28 - July 12, 2025)
@@ -376,11 +454,12 @@
 ## 🎯 **STRATEGIC PRIORITIES**
 
 ### **July 2025 Focus** (Phase 2)
-1. **🔴 CRITICAL CLEANUP**: File organization, performance optimization, technical debt removal (P2-B5)
-2. **Metadata Quality**: Fix incomplete book data (P2-B3)
-3. **Library APIs**: Accurate availability for TBR positioning (P2-B2)
-4. **Firebase Integration**: Real-time sync for mobile use (P2-B4)
-5. **Romance Focus**: Enhance recommendation algorithms (P2-B4)
+1. **✅ CRITICAL CLEANUP**: File organization, performance optimization, technical debt removal (P2-B5) - **COMPLETED**
+2. **🏗️ ARCHITECTURE REFACTORING**: Enhanced availability checker service-oriented architecture (P2-B6)
+3. **Metadata Quality**: Fix incomplete book data (P2-B3)
+4. **Library APIs**: Accurate availability for TBR positioning (P2-B2)
+5. **Firebase Integration**: Real-time sync for mobile use (P2-B4)
+6. **Romance Focus**: Enhance recommendation algorithms (P2-B4)
 
 ### **August 2025 Focus** (Phase 3)
 1. **Production**: Zero-cost hosting optimization
@@ -600,6 +679,68 @@ This section provides complete SuperClaude commands for implementing each task. 
 
 # Step 3: Test web search features
 /sc:test --target web-search --validate-results --check-rate-limits
+```
+
+#### **📋 Phase 2 - Batch 6: Architecture Refactoring**
+
+**P2-B6-001: Enhanced Availability Checker Refactoring**
+```bash
+# Step 1: Analyze current architecture and extract services
+/sc:analyze --focus architecture --target scripts/core/enhanced-availability-checker.js
+/sc:refactor --extract-services --target enhanced-availability-checker.js --pattern service-oriented
+
+# Step 2: Create service interfaces and implementations
+/sc:design --target availability-services --create-interfaces --dependency-injection
+/sc:build --target services --create KindleUnlimitedService,HooplaService,LibraryService
+
+# Step 3: Implement orchestrator and maintain compatibility
+/sc:build --target orchestrator --create AvailabilityOrchestrator --coordinate-services
+/sc:test --target availability-checker --validate-compatibility --measure-performance
+```
+
+**P2-B6-002: Service Registry & Configuration**
+```bash
+# Step 1: Create configuration management system
+/sc:build --target config --create AvailabilityConfig --environment-validation
+/sc:improve --target config --add-validation --early-failure-detection
+
+# Step 2: Implement service registry for dependency injection
+/sc:build --target registry --create ServiceRegistry --dynamic-discovery
+/sc:improve --target registry --add-mocking --enable-testing
+
+# Step 3: Integrate and validate configuration system
+/sc:integrate --target services --with-registry --validate-dependencies
+/sc:test --target config-registry --validate-injection --check-environment
+```
+
+**P2-B6-003: Data Layer Abstraction**
+```bash
+# Step 1: Design repository interface and pattern
+/sc:design --target data-layer --create-interfaces --repository-pattern
+/sc:build --target repository --create BookRepository --abstract-data-access
+
+# Step 2: Implement file-based repository with caching
+/sc:build --target file-repository --implement FileBookRepository --maintain-compatibility
+/sc:improve --target repository --add-caching --optimize-frequent-reads
+
+# Step 3: Enable future database migration path
+/sc:design --target migration --prepare-database-support --scalability-planning
+/sc:test --target repository --validate-interface --measure-performance
+```
+
+**P2-B6-004: Validation Framework**
+```bash
+# Step 1: Create validation strategy pattern
+/sc:design --target validation --create-interfaces --strategy-pattern
+/sc:build --target validators --create AvailabilityValidator --standardize-interface
+
+# Step 2: Implement service-specific validators
+/sc:build --target validators --create KindleUnlimitedValidator,HooplaValidator --reduce-false-positives
+/sc:improve --target confidence --standardize-scoring --algorithm-optimization
+
+# Step 3: Integrate comprehensive validation system
+/sc:integrate --target validation --with-services --comprehensive-testing
+/sc:test --target validation --validate-accuracy --measure-confidence-improvement
 ```
 
 #### **📋 Phase 3 - Batch 1: Production Deployment**
