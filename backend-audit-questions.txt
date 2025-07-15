@@ -1,0 +1,202 @@
+# ShelfHelp AI Backend Audit - Questions for Clarification
+
+## Project Usage & Priorities
+
+### Core Usage Patterns
+1. **Primary Use Case**: What's your main workflow? 
+   - Manual book entry → AI classification → queue management?
+   - RSS automation → reading completion → preference learning?
+   - AI assistant conversations for book discovery?
+   * All of the above. Read books will always come from RSS. 
+   These books may or may not be on my TBR or listed as reading. 
+   TBR will always be through the AI assistant, whether I tell it to add to my TBR or I tell it to add based on its recommendations
+
+2. **Interface Preferences**: Which interfaces do you actually use?
+   - CustomGPT via ChatGPT Plus (mobile/web)?
+   - Direct API calls via tools?
+   - Web dashboard (if we build one)?
+   *Either CustomGPT or another custom ai assistant buildable for free.
+
+3. **Reading Workflow**: How do you typically use the system?
+   - Add books → get recommendations → read → reflect?
+   - Bulk import → classify → organize → discover?
+   - Real-time queue management during reading sessions?
+   *Add books → get recommendations → read → reflect. I also want recommendations not currently added.
+
+## Technical Configuration & Preferences
+
+### External Services
+4. **Library Systems**: Which libraries do you actually use?
+   - Tuscaloosa Public Library (configured in .env)?
+   - Camellia Net (configured in .env)?
+   - Seattle Public Library (configured in .env)?
+   - Or should we focus on different libraries?
+   *Those three libraries are correct. We will need to test these, as the configuration is not accurate, though it appears to work through false answer.
+
+5. **Subscription Services**: Which services do you actively use?
+   - Kindle Unlimited (KU checking priority)?
+   - Hoopla Digital (which library system)?
+   - Audible/other audiobook services?
+   *I have all of the above. Hoopla can be done through Tuscaloosa or Seattle.
+
+6. **Firebase Setup**: Do you want real-time sync?
+   - Firebase credentials available for setup?
+   - Prefer local-only storage for privacy?
+   - Multi-device sync important?
+   *I want real-time sync, as long as I can do it under the free limitations. I will mainly be using my phone to interact with the AI assistant, so it needs to be available on multiple devices.
+
+### Data & Privacy
+7. **Data Retention**: How much history do you want to keep?
+   - All reading history indefinitely?
+   - Recent books only (last 2 years)?
+   - Specific data minimization preferences?
+   *All reading history indefinitely.
+
+8. **Backup Strategy**: How do you want data protected?
+   - Git-based backup (current approach)?
+   - Cloud storage integration?
+   - Export capabilities for data portability?
+   *Git-based backup is okay for now, but will like to put in some failsafes.
+
+## Feature Priorities & Preferences
+
+### AI Integration
+9. **Recommendation Style**: What type of recommendations work best?
+   - Similar books based on recent reads?
+   - Mood-based suggestions?
+   - Seasonal/themed recommendations?
+   - Discovery of new genres/authors?
+   *Mainly similar books and mood-based, but I also am open to seasonal/themed for vibe reading. I would like to largely stick to romance, but am not limited on authors I want to read. I am open to most all, unless I state otherwise.
+
+10. **Classification Granularity**: How detailed should book metadata be?
+    - Genre/subgenre sufficient?
+    - Detailed tropes and themes?
+    - Spice level tracking important?
+    - Reading difficulty/complexity scoring?
+    *As detailed as it can be. Reading difficulty is not important, but subgenre, tropes, themes, tone and spice are all important.
+
+### Queue Management
+11. **Queue Organization**: How do you prefer to organize your TBR?
+    - Priority-based ranking?
+    - Mood/genre-based grouping?
+    - Availability-based sorting (library/KU first)?
+    - Series completion tracking?
+    *All of the above should be integrated.
+
+12. **Availability Checking**: How important is real-time availability?
+    - Critical for decision-making?
+    - Nice-to-have background feature?
+    - Prefer manual checking to avoid API costs?
+    *Nice to have, but it can be once daily or as needed checks, for example, when I add to my TBR, I would like to know if I need to put the book on hold at a library and it positions it in my queue based on the wait time.
+
+### Reflection & Analytics
+13. **Reading Insights**: What analytics interest you most?
+    - Reading pace and goal tracking?
+    - Genre preference evolution?
+    - Author discovery patterns?
+    - Seasonal reading trends?
+    *All of the above and more. I want very detailed analytics for myself and the assistant to learn my reading patterns.
+
+14. **Reflection Prompts**: How do you want to capture thoughts?
+    - Automated prompts after book completion?
+    - Manual reflection when inspired?
+    - Structured templates vs. free-form?
+    *Automated prompts after book completion. It should be structured enough that the ai assistant can learn my preferences and create its own rating system and deliver continuously improving recommendations, but I am open to bespoke questions based on the type of book I read.
+
+## Current Pain Points
+
+### System Issues
+15. **Performance Problems**: What feels slow or clunky?
+    - Book classification speed?
+    - Recommendation generation time?
+    - API response times?
+    - File loading/saving delays?
+    *Because of the limitations of fetching the database, I am concerned it won't be able to deliver recommendations and analytics. We need to find a way for it to run data on the entire database and store documented knowledge on my preferences that it can continually review and update.
+
+16. **Data Quality Issues**: What needs improvement?
+    - Incomplete book metadata?
+    - Inaccurate classifications?
+    - Duplicate entries?
+    - Missing availability info?
+    *Incomplete book metadata. we need to work on how it's pulling in information.
+
+### User Experience
+17. **Workflow Friction**: What steps feel tedious?
+    - Manual book entry process?
+    - Classification validation?
+    - Queue reordering?
+    - Reflection writing?
+    *Not all have been tested, so I'm not sure.
+
+18. **Missing Features**: What capabilities do you wish existed?
+    - Better mobile interface?
+    - Voice input for quick adds?
+    - Integration with other reading apps?
+    - Social features (sharing, following)?
+    *I don't want any of this at this moment. This will always be a personal app. remove all references to social or multi-user support.
+
+## Technical Constraints & Preferences
+
+### Development Approach
+19. **Coding Style**: Given your "vibe coder" preference:
+    - Prefer simple, readable code over complex optimizations?
+    - Want extensive comments and documentation?
+    - Need step-by-step deployment guides?
+    - Prefer modular, easy-to-modify structure?
+    *I want accuracy and verification to ensure it will work. 
+
+20. **Maintenance Level**: How much ongoing maintenance do you want?
+    - Set-and-forget automation?
+    - Regular tweaking and optimization?
+    - Continuous feature development?
+    - Minimal maintenance mode?
+    *Would rather set-and-forget. My hope would be that I only have to use the AI assistant and not touch the backend, unless something major happens.
+
+### Deployment & Hosting
+21. **Hosting Preferences**: Where do you want to deploy?
+    - Railway (current setup)?
+    - Vercel for API endpoints?
+    - Local development only?
+    - Other hosting platforms?
+    *I don't care, whatever makes it free and available on-the-go.
+
+22. **Cost Tolerance**: What's your budget for external services?
+    - Zero additional costs beyond current subscriptions?
+    - Small monthly fees for enhanced features?
+    - Pay-per-use APIs acceptable?
+    *Zero additional costs beyond current subscriptions.
+
+## Future Vision
+
+### Growth & Evolution
+23. **Feature Roadmap**: What excites you most for future development?
+    - Enhanced AI capabilities?
+    - Social/community features?
+    - Integration with more services?
+    - Advanced analytics and insights?
+    - Enhanced AI capabilities and advanced analyitcs and insights.
+
+24. **Sharing & Community**: Do you want to share this project?
+    - Open source for other readers?
+    - Personal use only?
+    - Template for others to customize?
+    - Personal use only.
+
+25. **Learning Goals**: What do you want to learn through this project?
+    - AI/ML integration techniques?
+    - API development best practices?
+    - Database design and optimization?
+    - Mobile app development?
+    *All of the above.
+
+---
+
+## Instructions for Answering
+
+Please answer these questions in any format that's convenient - you can:
+- Number your responses to match the questions
+- Group answers by category
+- Skip questions that aren't relevant
+- Add any additional context or preferences
+
+Focus on the questions that matter most to your daily usage and long-term goals. This will help me optimize the project architecture and create a focused development plan.
