@@ -67,13 +67,13 @@ class FuzzyClassificationMatcher {
    * Calculate similarity between two strings using multiple algorithms
    */
   _calculateSimilarity(str1, str2) {
-    if (!str1 || !str2) return 0;
+    if (!str1 || !str2) {return 0;}
     
     const s1 = str1.toLowerCase().trim();
     const s2 = str2.toLowerCase().trim();
     
     // Exact match
-    if (s1 === s2) return 1.0;
+    if (s1 === s2) {return 1.0;}
     
     // Contains match (high score for substring matches)
     if (s1.includes(s2) || s2.includes(s1)) {
@@ -98,8 +98,8 @@ class FuzzyClassificationMatcher {
   _levenshteinSimilarity(str1, str2) {
     const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
     
-    for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
-    for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+    for (let i = 0; i <= str1.length; i++) {matrix[0][i] = i;}
+    for (let j = 0; j <= str2.length; j++) {matrix[j][0] = j;}
     
     for (let j = 1; j <= str2.length; j++) {
       for (let i = 1; i <= str1.length; i++) {
@@ -130,7 +130,7 @@ class FuzzyClassificationMatcher {
     const tokens1 = str1.toLowerCase().split(/\s+/).sort();
     const tokens2 = str2.toLowerCase().split(/\s+/).sort();
     
-    if (tokens1.join('') === tokens2.join('')) return 0.9; // Same words, different order
+    if (tokens1.join('') === tokens2.join('')) {return 0.9;} // Same words, different order
     
     let matches = 0;
     const checked = new Set();
@@ -152,7 +152,7 @@ class FuzzyClassificationMatcher {
    * Find best matching genre with confidence score
    */
   matchGenre(input, threshold = 0.6) {
-    if (!input) return null;
+    if (!input) {return null;}
     
     let bestMatch = null;
     let bestScore = 0;
@@ -176,7 +176,7 @@ class FuzzyClassificationMatcher {
    * Find best matching subgenre with confidence score
    */
   matchSubgenre(input, threshold = 0.6) {
-    if (!input) return null;
+    if (!input) {return null;}
     
     let bestMatch = null;
     let bestScore = 0;
@@ -200,12 +200,12 @@ class FuzzyClassificationMatcher {
    * Find best matching tropes with confidence scores
    */
   matchTropes(inputTropes, threshold = 0.6, maxResults = 10) {
-    if (!inputTropes || !Array.isArray(inputTropes)) return [];
+    if (!inputTropes || !Array.isArray(inputTropes)) {return [];}
     
     const matches = [];
     
     inputTropes.forEach(input => {
-      if (!input) return;
+      if (!input) {return;}
       
       let bestMatch = null;
       let bestScore = 0;
@@ -237,7 +237,7 @@ class FuzzyClassificationMatcher {
    * Intelligent spice level matching (handles various formats)
    */
   matchSpiceLevel(input) {
-    if (!input) return null;
+    if (!input) {return null;}
     
     const inputStr = String(input).toLowerCase().trim();
     

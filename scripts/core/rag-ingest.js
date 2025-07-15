@@ -51,7 +51,7 @@ class SimpleVectorStore {
   }
 
   async search(queryEmbedding, k = 5) {
-    if (this.embeddings.length === 0) return [];
+    if (this.embeddings.length === 0) {return [];}
 
     const similarities = this.embeddings.map((embedding, index) => ({
       index,
@@ -178,15 +178,15 @@ function createBookChunk(book) {
   const parts = [];
   
   parts.push(`Title: ${book.title}`);
-  if (book.author_name) parts.push(`Author: ${book.author_name}`);
-  if (book.series_name) parts.push(`Series: ${book.series_name} #${book.series_number}`);
-  if (book.genre) parts.push(`Genre: ${book.genre}`);
-  if (book.subgenre) parts.push(`Subgenre: ${book.subgenre}`);
-  if (book.tropes && book.tropes.length > 0) parts.push(`Tropes: ${book.tropes.join(', ')}`);
-  if (book.status) parts.push(`Status: ${book.status}`);
-  if (book.liked !== null) parts.push(`Liked: ${book.liked}`);
-  if (book.notes) parts.push(`Notes: ${book.notes}`);
-  if (book.book_description) parts.push(`Description: ${book.book_description}`);
+  if (book.author_name) {parts.push(`Author: ${book.author_name}`);}
+  if (book.series_name) {parts.push(`Series: ${book.series_name} #${book.series_number}`);}
+  if (book.genre) {parts.push(`Genre: ${book.genre}`);}
+  if (book.subgenre) {parts.push(`Subgenre: ${book.subgenre}`);}
+  if (book.tropes && book.tropes.length > 0) {parts.push(`Tropes: ${book.tropes.join(', ')}`);}
+  if (book.status) {parts.push(`Status: ${book.status}`);}
+  if (book.liked !== null) {parts.push(`Liked: ${book.liked}`);}
+  if (book.notes) {parts.push(`Notes: ${book.notes}`);}
+  if (book.book_description) {parts.push(`Description: ${book.book_description}`);}
   
   return parts.join('\n');
 }

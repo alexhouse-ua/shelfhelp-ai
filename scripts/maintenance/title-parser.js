@@ -125,7 +125,7 @@ class TitleParser {
    * @returns {number|null} - Parsed number or null
    */
   parseSeriesNumber(numberStr) {
-    if (!numberStr) return null;
+    if (!numberStr) {return null;}
     
     const cleaned = numberStr.toString().trim();
     const num = parseFloat(cleaned);

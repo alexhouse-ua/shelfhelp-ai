@@ -164,8 +164,8 @@ class ReadingInsightsSystem {
           };
         }
         genreStats[book.genre].count++;
-        if (book.user_rating) genreStats[book.genre].ratings.push(book.user_rating);
-        if (book.pages_source) genreStats[book.genre].total_pages += book.pages_source;
+        if (book.user_rating) {genreStats[book.genre].ratings.push(book.user_rating);}
+        if (book.pages_source) {genreStats[book.genre].total_pages += book.pages_source;}
         
         if (book.user_read_at) {
           if (new Date(book.user_read_at) < new Date(genreStats[book.genre].first_read)) {
@@ -183,7 +183,7 @@ class ReadingInsightsSystem {
           subgenreStats[book.subgenre] = { count: 0, ratings: [] };
         }
         subgenreStats[book.subgenre].count++;
-        if (book.user_rating) subgenreStats[book.subgenre].ratings.push(book.user_rating);
+        if (book.user_rating) {subgenreStats[book.subgenre].ratings.push(book.user_rating);}
       }
 
       // Trope analysis
@@ -193,7 +193,7 @@ class ReadingInsightsSystem {
             tropeStats[trope] = { count: 0, ratings: [] };
           }
           tropeStats[trope].count++;
-          if (book.user_rating) tropeStats[trope].ratings.push(book.user_rating);
+          if (book.user_rating) {tropeStats[trope].ratings.push(book.user_rating);}
         });
       }
     });
@@ -419,16 +419,16 @@ class ReadingInsightsSystem {
         monthlyStats[month] = (monthlyStats[month] || 0) + 1;
         
         // Seasonal mapping
-        if (month >= 2 && month <= 4) seasonalStats.Spring++;
-        else if (month >= 5 && month <= 7) seasonalStats.Summer++;
-        else if (month >= 8 && month <= 10) seasonalStats.Fall++;
-        else seasonalStats.Winter++;
+        if (month >= 2 && month <= 4) {seasonalStats.Spring++;}
+        else if (month >= 5 && month <= 7) {seasonalStats.Summer++;}
+        else if (month >= 8 && month <= 10) {seasonalStats.Fall++;}
+        else {seasonalStats.Winter++;}
         
         // Quarterly mapping
-        if (month >= 0 && month <= 2) quarterlyStats.Q1++;
-        else if (month >= 3 && month <= 5) quarterlyStats.Q2++;
-        else if (month >= 6 && month <= 8) quarterlyStats.Q3++;
-        else quarterlyStats.Q4++;
+        if (month >= 0 && month <= 2) {quarterlyStats.Q1++;}
+        else if (month >= 3 && month <= 5) {quarterlyStats.Q2++;}
+        else if (month >= 6 && month <= 8) {quarterlyStats.Q3++;}
+        else {quarterlyStats.Q4++;}
       }
     });
 
@@ -614,7 +614,7 @@ class ReadingInsightsSystem {
   }
 
   calculateConsistencyScore(ratings) {
-    if (ratings.length < 2) return 100;
+    if (ratings.length < 2) {return 100;}
     
     const avg = ratings.reduce((a, b) => a + b, 0) / ratings.length;
     const variance = ratings.reduce((sum, rating) => sum + Math.pow(rating - avg, 2), 0) / ratings.length;

@@ -37,7 +37,7 @@ class HistoricalDataImporter {
   }
 
   parseDate(dateStr) {
-    if (!dateStr || dateStr === '' || dateStr === 'null') return null;
+    if (!dateStr || dateStr === '' || dateStr === 'null') {return null;}
     
     try {
       const date = new Date(dateStr);
@@ -48,21 +48,21 @@ class HistoricalDataImporter {
   }
 
   parseNumber(numStr) {
-    if (!numStr || numStr === '' || numStr === 'null') return null;
+    if (!numStr || numStr === '' || numStr === 'null') {return null;}
     
     const num = parseFloat(numStr);
     return isNaN(num) ? null : num;
   }
 
   parseInteger(intStr) {
-    if (!intStr || intStr === '' || intStr === 'null') return null;
+    if (!intStr || intStr === '' || intStr === 'null') {return null;}
     
     const int = parseInt(intStr);
     return isNaN(int) ? null : int;
   }
 
   parseArray(str) {
-    if (!str || str === '' || str === 'null') return [];
+    if (!str || str === '' || str === 'null') {return [];}
     
     try {
       // Handle various array formats: "item1,item2" or "item1; item2" or JSON array
@@ -148,8 +148,8 @@ class HistoricalDataImporter {
     const booksByGoodreadsId = new Map();
     
     existingBooks.forEach(book => {
-      if (book.guid) booksByGuid.set(book.guid, book);
-      if (book.goodreads_id) booksByGoodreadsId.set(book.goodreads_id, book);
+      if (book.guid) {booksByGuid.set(book.guid, book);}
+      if (book.goodreads_id) {booksByGoodreadsId.set(book.goodreads_id, book);}
     });
 
     console.log(`📚 Found ${existingBooks.length} existing books`);
@@ -194,8 +194,8 @@ class HistoricalDataImporter {
                 } else {
                   // Add new historical book
                   existingBooks.push(mappedBook);
-                  if (mappedBook.guid) booksByGuid.set(mappedBook.guid, mappedBook);
-                  if (mappedBook.goodreads_id) booksByGoodreadsId.set(mappedBook.goodreads_id, mappedBook);
+                  if (mappedBook.guid) {booksByGuid.set(mappedBook.guid, mappedBook);}
+                  if (mappedBook.goodreads_id) {booksByGoodreadsId.set(mappedBook.goodreads_id, mappedBook);}
                   this.stats.newBooks++;
                 }
 

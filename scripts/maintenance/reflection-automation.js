@@ -42,14 +42,14 @@ class ReflectionAutomation {
     
     for (const book of books) {
       // Only check finished books
-      if (book.status !== 'finished') continue;
+      if (book.status !== 'finished') {continue;}
       
       // Must have a finish date
-      if (!book.date_finished) continue;
+      if (!book.date_finished) {continue;}
       
       // Must be within the specified timeframe
       const finishedDate = new Date(book.date_finished);
-      if (finishedDate < cutoffDate) continue;
+      if (finishedDate < cutoffDate) {continue;}
       
       // Check if reflection already exists
       const bookId = book.goodreads_id || book.guid;
@@ -200,7 +200,7 @@ ${this.reflectionQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
     const finishedBooks = books.filter(book => book.status === 'finished');
     
     let completedReflections = 0;
-    let totalFinished = finishedBooks.length;
+    const totalFinished = finishedBooks.length;
     const missingReflections = [];
     
     for (const book of finishedBooks) {

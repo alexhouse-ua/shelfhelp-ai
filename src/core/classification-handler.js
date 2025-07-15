@@ -453,7 +453,7 @@ class ClassificationHandler {
                                       field === 'subgenre' ? 'subgenres' : 
                                       field === 'tropes' ? 'tropes' : []];
       
-      if (!candidates) return [];
+      if (!candidates) {return [];}
       
       return candidates
         .map(candidate => ({
@@ -471,10 +471,10 @@ class ClassificationHandler {
 
   _getPriorityFields(analysis) {
     const priorities = [];
-    if (analysis.missing_genre > 0) priorities.push('genre');
-    if (analysis.missing_subgenre > 0) priorities.push('subgenre');
-    if (analysis.missing_tropes > 0) priorities.push('tropes');
-    if (analysis.missing_spice > 0) priorities.push('spice');
+    if (analysis.missing_genre > 0) {priorities.push('genre');}
+    if (analysis.missing_subgenre > 0) {priorities.push('subgenre');}
+    if (analysis.missing_tropes > 0) {priorities.push('tropes');}
+    if (analysis.missing_spice > 0) {priorities.push('spice');}
     return priorities;
   }
 
@@ -482,8 +482,8 @@ class ClassificationHandler {
     const totalMissing = analysis.missing_genre + analysis.missing_subgenre + 
                         analysis.missing_tropes + analysis.missing_spice;
     
-    if (totalMissing < 50) return 'Low (1-2 hours)';
-    if (totalMissing < 200) return 'Medium (3-5 hours)';
+    if (totalMissing < 50) {return 'Low (1-2 hours)';}
+    if (totalMissing < 200) {return 'Medium (3-5 hours)';}
     return 'High (6+ hours)';
   }
 }

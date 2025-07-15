@@ -370,8 +370,8 @@ class EnhancedAvailabilityChecker {
           const waitTimeMatch = html.match(/(\\d+)\\s*(week|month)s?\\s*wait/i);
           if (waitTimeMatch) {
             const waitTime = `${waitTimeMatch[1]} ${waitTimeMatch[2]}s`;
-            if (ebookStatus !== 'Available') ebookStatus = waitTime;
-            if (audioStatus !== 'Available') audioStatus = waitTime;
+            if (ebookStatus !== 'Available') {ebookStatus = waitTime;}
+            if (audioStatus !== 'Available') {audioStatus = waitTime;}
           }
         }
         
@@ -544,20 +544,20 @@ class EnhancedAvailabilityChecker {
     // Check each source in priority order: Library → KU → Hoopla → Purchase
     
     // Libraries first (highest priority)
-    if (book.library_hold_status_tuscaloosa_ebook === 'Available') ebookSources.push('Tuscaloosa Library');
-    if (book.library_hold_status_camellia_ebook === 'Available') ebookSources.push('Camellia Net');
-    if (book.library_hold_status_seattle_ebook === 'Available') ebookSources.push('Seattle Library');
+    if (book.library_hold_status_tuscaloosa_ebook === 'Available') {ebookSources.push('Tuscaloosa Library');}
+    if (book.library_hold_status_camellia_ebook === 'Available') {ebookSources.push('Camellia Net');}
+    if (book.library_hold_status_seattle_ebook === 'Available') {ebookSources.push('Seattle Library');}
     
-    if (book.library_hold_status_tuscaloosa_audio === 'Available') audioSources.push('Tuscaloosa Library');
-    if (book.library_hold_status_camellia_audio === 'Available') audioSources.push('Camellia Net');
-    if (book.library_hold_status_seattle_audio === 'Available') audioSources.push('Seattle Library');
+    if (book.library_hold_status_tuscaloosa_audio === 'Available') {audioSources.push('Tuscaloosa Library');}
+    if (book.library_hold_status_camellia_audio === 'Available') {audioSources.push('Camellia Net');}
+    if (book.library_hold_status_seattle_audio === 'Available') {audioSources.push('Seattle Library');}
     
     // KU (second priority for ebooks only)
-    if (book.ku_availability) ebookSources.push('Kindle Unlimited');
+    if (book.ku_availability) {ebookSources.push('Kindle Unlimited');}
     
     // Hoopla (third priority)
-    if (book.hoopla_ebook_available) ebookSources.push('Hoopla');
-    if (book.hoopla_audio_available) audioSources.push('Hoopla');
+    if (book.hoopla_ebook_available) {ebookSources.push('Hoopla');}
+    if (book.hoopla_audio_available) {audioSources.push('Hoopla');}
     
     // Update availability source fields (split as requested)
     const newEbookSource = ebookSources.length > 0 ? ebookSources[0] : 'Purchase';
@@ -609,14 +609,14 @@ class EnhancedAvailabilityChecker {
       // Count findings
       if (result.ku?.ku_availability) {
         validation.kuFound++;
-        if (result.ku.confidence >= 0.8) validation.highConfidence++;
-        else validation.lowConfidence++;
+        if (result.ku.confidence >= 0.8) {validation.highConfidence++;}
+        else {validation.lowConfidence++;}
       }
       
       if (result.hoopla?.hoopla_ebook_available || result.hoopla?.hoopla_audio_available) {
         validation.hooplaFound++;
-        if (result.hoopla.confidence >= 0.8) validation.highConfidence++;
-        else validation.lowConfidence++;
+        if (result.hoopla.confidence >= 0.8) {validation.highConfidence++;}
+        else {validation.lowConfidence++;}
       }
       
       if (result.libraries) {

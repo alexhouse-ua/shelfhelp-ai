@@ -91,9 +91,9 @@ function determineStatusFromShelf(item) {
   // Map Goodreads shelf to our status enum
   const shelf = item.user_shelves ? item.user_shelves[0] : '';
   
-  if (shelf.includes('to-read')) return 'TBR';
-  if (shelf.includes('currently-reading')) return 'Reading';
-  if (shelf.includes('read')) return 'Finished';
+  if (shelf.includes('to-read')) {return 'TBR';}
+  if (shelf.includes('currently-reading')) {return 'Reading';}
+  if (shelf.includes('read')) {return 'Finished';}
   
   // Default to TBR if unclear
   return 'TBR';
@@ -145,8 +145,8 @@ async function ingestRssFeed() {
     const booksByGoodreadsId = new Map();
     
     existingBooks.forEach(book => {
-      if (book.guid) booksByGuid.set(book.guid, book);
-      if (book.goodreads_id) booksByGoodreadsId.set(book.goodreads_id, book);
+      if (book.guid) {booksByGuid.set(book.guid, book);}
+      if (book.goodreads_id) {booksByGoodreadsId.set(book.goodreads_id, book);}
     });
     
     let newBooks = 0;

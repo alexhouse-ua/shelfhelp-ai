@@ -11,7 +11,7 @@ const path = require('path');
 const BOOKS_FILE = path.join(__dirname, '../data/books.json');
 
 function extractGoodreadsId(url) {
-  if (!url) return null;
+  if (!url) {return null;}
   
   // Extract from URLs like: https://www.goodreads.com/review/show/7714008089?utm_medium=api&utm_source=rss
   // Or from book URLs like: https://www.goodreads.com/book/show/123456

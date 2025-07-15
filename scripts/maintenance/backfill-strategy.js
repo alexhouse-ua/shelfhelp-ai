@@ -68,7 +68,7 @@ class BackfillStrategy {
     let processed = 0;
     
     for (const book of books) {
-      if (!this.needsClassificationBackfill(book)) continue;
+      if (!this.needsClassificationBackfill(book)) {continue;}
       
       try {
         const enrichment = await this.intelligentClassify(book, confidence);
@@ -325,7 +325,7 @@ class BackfillStrategy {
   }
 
   inferGenreFromTitle(title) {
-    if (!title) return null;
+    if (!title) {return null;}
     
     const titleLower = title.toLowerCase();
     

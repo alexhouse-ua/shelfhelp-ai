@@ -366,7 +366,7 @@ class QueueManager {
   }
 
   _calculatePreferenceScore(book, preferences) {
-    if (!preferences || !book) return 0.5;
+    if (!preferences || !book) {return 0.5;}
     
     let score = 0.5; // Base score
     
@@ -392,7 +392,7 @@ class QueueManager {
   }
 
   _calculateRecencyScore(book) {
-    if (!book.date_added) return 0.5;
+    if (!book.date_added) {return 0.5;}
     
     const daysSinceAdded = (Date.now() - new Date(book.date_added).getTime()) / (1000 * 60 * 60 * 24);
     return Math.max(0, 1 - (daysSinceAdded / 365)); // Decay over a year
@@ -445,7 +445,7 @@ class QueueManager {
   }
 
   _getAverageScore(books) {
-    if (books.length === 0) return 0;
+    if (books.length === 0) {return 0;}
     const sum = books.reduce((acc, book) => acc + (book.priority_score || 0), 0);
     return Math.round((sum / books.length) * 100) / 100;
   }
@@ -454,9 +454,9 @@ class QueueManager {
     const ranges = { high: 0, medium: 0, low: 0 };
     books.forEach(book => {
       const score = book.priority_score || 0;
-      if (score >= 0.7) ranges.high++;
-      else if (score >= 0.4) ranges.medium++;
-      else ranges.low++;
+      if (score >= 0.7) {ranges.high++;}
+      else if (score >= 0.4) {ranges.medium++;}
+      else {ranges.low++;}
     });
     return ranges;
   }
@@ -586,7 +586,7 @@ class QueueManager {
 
   _analyzeStaleness(books) {
     const oldBooks = books.filter(book => {
-      if (!book.date_added) return false;
+      if (!book.date_added) {return false;}
       const daysSinceAdded = (Date.now() - new Date(book.date_added).getTime()) / (1000 * 60 * 60 * 24);
       return daysSinceAdded > 180; // 6 months
     });

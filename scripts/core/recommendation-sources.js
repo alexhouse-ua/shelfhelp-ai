@@ -67,17 +67,17 @@ class RecommendationSourcesManager {
 
     // Process each tier with appropriate weights
     const tiers = ['tier1_primary', 'tier2_secondary'];
-    if (includeExtended) tiers.push('tier3_extended');
+    if (includeExtended) {tiers.push('tier3_extended');}
 
     for (const tierName of tiers) {
       const tier = this.sources.recommendation_sources[tierName];
-      if (!tier) continue;
+      if (!tier) {continue;}
 
       const baseWeight = this.sources.priority_weights[tierName] || 1.0;
 
       // Process each category in the tier
       for (const [categoryName, sources] of Object.entries(tier)) {
-        if (!Array.isArray(sources)) continue;
+        if (!Array.isArray(sources)) {continue;}
 
         for (const source of sources) {
           let weight = baseWeight;
@@ -173,7 +173,7 @@ class RecommendationSourcesManager {
     
     for (const [tierName, tier] of Object.entries(this.sources.recommendation_sources)) {
       for (const [categoryName, categoryContent] of Object.entries(tier)) {
-        if (!Array.isArray(categoryContent)) continue;
+        if (!Array.isArray(categoryContent)) {continue;}
         
         for (const source of categoryContent) {
           if (source.categories?.includes(category) && 
@@ -370,7 +370,7 @@ class RecommendationSourcesManager {
       let tierCount = 0;
       
       for (const [categoryName, sources] of Object.entries(tier)) {
-        if (!Array.isArray(sources)) continue;
+        if (!Array.isArray(sources)) {continue;}
         
         tierCount += sources.length;
         info.totalSources += sources.length;

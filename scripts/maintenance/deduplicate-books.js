@@ -30,7 +30,7 @@ class BookDeduplicator {
 
   // Normalize text for comparison
   normalizeText(text) {
-    if (!text) return '';
+    if (!text) {return '';}
     return text
       .toLowerCase()
       .replace(/[^\w\s]/g, '') // Remove punctuation
@@ -43,8 +43,8 @@ class BookDeduplicator {
     const s1 = this.normalizeText(str1);
     const s2 = this.normalizeText(str2);
     
-    if (s1 === s2) return 1.0;
-    if (s1.length === 0 || s2.length === 0) return 0.0;
+    if (s1 === s2) {return 1.0;}
+    if (s1.length === 0 || s2.length === 0) {return 0.0;}
 
     const matrix = [];
     for (let i = 0; i <= s2.length; i++) {
@@ -126,7 +126,7 @@ class BookDeduplicator {
     const processed = new Set();
     
     for (let i = 0; i < this.books.length; i++) {
-      if (processed.has(i)) continue;
+      if (processed.has(i)) {continue;}
       
       const book1 = this.books[i];
       const duplicateGroup = {
@@ -135,7 +135,7 @@ class BookDeduplicator {
       };
 
       for (let j = i + 1; j < this.books.length; j++) {
-        if (processed.has(j)) continue;
+        if (processed.has(j)) {continue;}
         
         const book2 = this.books[j];
         const match = this.areDuplicates(book1, book2);

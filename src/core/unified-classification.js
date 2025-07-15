@@ -250,7 +250,7 @@ class UnifiedClassificationService {
       const books = JSON.parse(data);
       const bookIndex = books.findIndex(b => b.id === book.id);
       
-      if (bookIndex === -1) return null;
+      if (bookIndex === -1) {return null;}
       
       books[bookIndex] = {
         ...books[bookIndex],
@@ -290,10 +290,10 @@ class UnifiedClassificationService {
   }
 
   getConfidenceDescription(confidence) {
-    if (confidence >= 0.9) return 'Very High - Automatically applied';
-    if (confidence >= 0.7) return 'High - Recommended for auto-apply';
-    if (confidence >= 0.5) return 'Medium - Review before applying';
-    if (confidence >= 0.3) return 'Low - Manual verification needed';
+    if (confidence >= 0.9) {return 'Very High - Automatically applied';}
+    if (confidence >= 0.7) {return 'High - Recommended for auto-apply';}
+    if (confidence >= 0.5) {return 'Medium - Review before applying';}
+    if (confidence >= 0.3) {return 'Low - Manual verification needed';}
     return 'Very Low - Consider manual research';
   }
 }

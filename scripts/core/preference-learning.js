@@ -110,7 +110,7 @@ class PreferenceLearningSystem {
         genreCounts[book.genre] = (genreCounts[book.genre] || 0) + 1;
         
         if (book.user_rating) {
-          if (!genreRatings[book.genre]) genreRatings[book.genre] = [];
+          if (!genreRatings[book.genre]) {genreRatings[book.genre] = [];}
           genreRatings[book.genre].push(book.user_rating);
         }
       }
@@ -144,7 +144,7 @@ class PreferenceLearningSystem {
         subgenreCounts[book.subgenre] = (subgenreCounts[book.subgenre] || 0) + 1;
         
         if (book.user_rating) {
-          if (!subgenreRatings[book.subgenre]) subgenreRatings[book.subgenre] = [];
+          if (!subgenreRatings[book.subgenre]) {subgenreRatings[book.subgenre] = [];}
           subgenreRatings[book.subgenre].push(book.user_rating);
         }
       }
@@ -178,7 +178,7 @@ class PreferenceLearningSystem {
           tropeCounts[trope] = (tropeCounts[trope] || 0) + 1;
           
           if (book.user_rating) {
-            if (!tropeRatings[trope]) tropeRatings[trope] = [];
+            if (!tropeRatings[trope]) {tropeRatings[trope] = [];}
             tropeRatings[trope].push(book.user_rating);
           }
         });
@@ -212,7 +212,7 @@ class PreferenceLearningSystem {
         authorCounts[book.author_name] = (authorCounts[book.author_name] || 0) + 1;
         
         if (book.user_rating) {
-          if (!authorRatings[book.author_name]) authorRatings[book.author_name] = [];
+          if (!authorRatings[book.author_name]) {authorRatings[book.author_name] = [];}
           authorRatings[book.author_name].push(book.user_rating);
         }
       }
@@ -245,7 +245,7 @@ class PreferenceLearningSystem {
         toneCounts[book.tone] = (toneCounts[book.tone] || 0) + 1;
         
         if (book.user_rating) {
-          if (!toneRatings[book.tone]) toneRatings[book.tone] = [];
+          if (!toneRatings[book.tone]) {toneRatings[book.tone] = [];}
           toneRatings[book.tone].push(book.user_rating);
         }
       }
@@ -278,7 +278,7 @@ class PreferenceLearningSystem {
         spiceCounts[spiceLevel] = (spiceCounts[spiceLevel] || 0) + 1;
         
         if (book.user_rating) {
-          if (!spiceRatings[spiceLevel]) spiceRatings[spiceLevel] = [];
+          if (!spiceRatings[spiceLevel]) {spiceRatings[spiceLevel] = [];}
           spiceRatings[spiceLevel].push(book.user_rating);
         }
       }
@@ -379,25 +379,25 @@ class PreferenceLearningSystem {
     let confidence = 0;
     
     // Base confidence on number of books
-    if (books.length >= 100) confidence += 0.4;
-    else if (books.length >= 50) confidence += 0.3;
-    else if (books.length >= 20) confidence += 0.2;
-    else confidence += 0.1;
+    if (books.length >= 100) {confidence += 0.4;}
+    else if (books.length >= 50) {confidence += 0.3;}
+    else if (books.length >= 20) {confidence += 0.2;}
+    else {confidence += 0.1;}
     
     // Increase confidence with ratings
     const ratedBooks = books.filter(book => book.user_rating);
-    if (ratedBooks.length >= books.length * 0.5) confidence += 0.2;
-    else if (ratedBooks.length >= books.length * 0.3) confidence += 0.1;
+    if (ratedBooks.length >= books.length * 0.5) {confidence += 0.2;}
+    else if (ratedBooks.length >= books.length * 0.3) {confidence += 0.1;}
     
     // Increase confidence with classified books
     const classifiedBooks = books.filter(book => book.genre && book.tropes);
-    if (classifiedBooks.length >= books.length * 0.8) confidence += 0.3;
-    else if (classifiedBooks.length >= books.length * 0.5) confidence += 0.2;
-    else if (classifiedBooks.length >= books.length * 0.3) confidence += 0.1;
+    if (classifiedBooks.length >= books.length * 0.8) {confidence += 0.3;}
+    else if (classifiedBooks.length >= books.length * 0.5) {confidence += 0.2;}
+    else if (classifiedBooks.length >= books.length * 0.3) {confidence += 0.1;}
     
     // Increase confidence with time span
     const dateRange = this.getDateRange(books);
-    if (dateRange >= 365) confidence += 0.1;
+    if (dateRange >= 365) {confidence += 0.1;}
     
     this.preferences.learning_confidence = Math.min(confidence, 1.0);
   }
@@ -422,7 +422,7 @@ class PreferenceLearningSystem {
       return book[field] === value;
     });
     
-    if (matchingBooks.length === 0) return null;
+    if (matchingBooks.length === 0) {return null;}
     
     return matchingBooks
       .filter(book => book.user_read_at)
@@ -454,7 +454,7 @@ class PreferenceLearningSystem {
   }
 
   getTopPreferences(category, limit) {
-    if (!this.preferences[category]) return [];
+    if (!this.preferences[category]) {return [];}
     
     return Object.entries(this.preferences[category])
       .sort((a, b) => b[1].preference_score - a[1].preference_score)
@@ -468,7 +468,7 @@ class PreferenceLearningSystem {
   }
 
   getBottomPreferences(category, limit) {
-    if (!this.preferences[category]) return [];
+    if (!this.preferences[category]) {return [];}
     
     return Object.entries(this.preferences[category])
       .filter(([key, data]) => data.avg_rating < 3.0 || data.count === 1)
@@ -482,7 +482,7 @@ class PreferenceLearningSystem {
   }
 
   getSpiceRange() {
-    if (!this.preferences.spice_preferences) return { min: 1, max: 5 };
+    if (!this.preferences.spice_preferences) {return { min: 1, max: 5 };}
     
     const spiceScores = Object.entries(this.preferences.spice_preferences)
       .map(([level, data]) => ({
@@ -491,7 +491,7 @@ class PreferenceLearningSystem {
       }))
       .sort((a, b) => b.score - a.score);
     
-    if (spiceScores.length === 0) return { min: 1, max: 5 };
+    if (spiceScores.length === 0) {return { min: 1, max: 5 };}
     
     const topSpice = spiceScores[0];
     return {
@@ -613,7 +613,7 @@ class PreferenceLearningSystem {
       book.status === 'finished' && book.user_read_at && book.genre
     ).sort((a, b) => new Date(a.user_read_at) - new Date(b.user_read_at));
     
-    if (finishedBooks.length < 10) return { insufficient_data: true };
+    if (finishedBooks.length < 10) {return { insufficient_data: true };}
     
     const midpoint = Math.floor(finishedBooks.length / 2);
     const earlierBooks = finishedBooks.slice(0, midpoint);

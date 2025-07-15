@@ -115,7 +115,7 @@ class ExportMerger {
   }
 
   parseDate(dateStr) {
-    if (!dateStr || dateStr.trim() === '') return null;
+    if (!dateStr || dateStr.trim() === '') {return null;}
     
     try {
       // Handle various date formats from Goodreads export
@@ -126,8 +126,8 @@ class ExportMerger {
       if (cleaned.includes('/')) {
         const parts = cleaned.split('/');
         if (parts.length === 3) {
-          let month = parseInt(parts[0]);
-          let day = parseInt(parts[1]);
+          const month = parseInt(parts[0]);
+          const day = parseInt(parts[1]);
           let year = parseInt(parts[2]);
           
           // Handle 2-digit years
@@ -149,25 +149,25 @@ class ExportMerger {
   }
 
   parseYear(yearStr) {
-    if (!yearStr) return null;
+    if (!yearStr) {return null;}
     const year = parseInt(yearStr);
     return (year > 1800 && year <= new Date().getFullYear() + 5) ? year : null;
   }
 
   parseFloat(str) {
-    if (!str) return null;
+    if (!str) {return null;}
     const num = parseFloat(str);
     return isNaN(num) ? null : num;
   }
 
   parseInt(str) {
-    if (!str) return null;
+    if (!str) {return null;}
     const num = parseInt(str);
     return isNaN(num) ? null : num;
   }
 
   parseTitle(title) {
-    if (!title) return { cleanTitle: '', seriesName: null, seriesNumber: null };
+    if (!title) {return { cleanTitle: '', seriesName: null, seriesNumber: null };}
     
     // Extract series info from title like "Title (Series Name, #1)"
     const seriesMatch = title.match(/^(.+?)\s*\(([^,]+),?\s*#?(\d+(?:\.\d+)?)\)$/);
@@ -204,13 +204,13 @@ class ExportMerger {
     let match = this.existingBooks.find(book => 
       book.goodreads_id === exportBook.goodreads_id
     );
-    if (match) return { book: match, method: 'goodreads_id' };
+    if (match) {return { book: match, method: 'goodreads_id' };}
     
     // 2. Match by GUID
     match = this.existingBooks.find(book => 
       book.guid === exportBook.guid
     );
-    if (match) return { book: match, method: 'guid' };
+    if (match) {return { book: match, method: 'guid' };}
     
     // 3. Match by title + author (fuzzy)
     match = this.existingBooks.find(book => 
@@ -219,7 +219,7 @@ class ExportMerger {
       this.normalizeString(book.title) === this.normalizeString(exportBook.title) &&
       this.normalizeString(book.author_name) === this.normalizeString(exportBook.author_name)
     );
-    if (match) return { book: match, method: 'title_author' };
+    if (match) {return { book: match, method: 'title_author' };}
     
     // 4. Match by book_title + author (in case title formatting differs)
     match = this.existingBooks.find(book => 
@@ -228,7 +228,7 @@ class ExportMerger {
       this.normalizeString(book.book_title) === this.normalizeString(exportBook.book_title) &&
       this.normalizeString(book.author_name) === this.normalizeString(exportBook.author_name)
     );
-    if (match) return { book: match, method: 'book_title_author' };
+    if (match) {return { book: match, method: 'book_title_author' };}
     
     return null;
   }
