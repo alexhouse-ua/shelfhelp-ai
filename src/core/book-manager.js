@@ -5,7 +5,7 @@
 
 const fs = require('fs').promises;
 const path = require('path');
-const logger = require('../../scripts/logger');
+const logger = require('../../scripts/core/logger');
 const WebBookSearchService = require('./web-book-search');
 
 class BookManager {

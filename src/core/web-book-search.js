@@ -3,7 +3,7 @@
  * Performs web searches using recommendation sources to find accurate book metadata
  */
 
-const logger = require('../../scripts/logger');
+const logger = require('../../scripts/core/logger');
 
 class WebBookSearchService {
   constructor() {

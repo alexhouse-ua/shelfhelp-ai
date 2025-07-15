@@ -4,7 +4,7 @@
  */
 
 const fs = require('fs').promises;
-const logger = require('../../scripts/logger');
+const logger = require('../../scripts/core/logger');
 
 class QueueManager {
   constructor(booksFilePath, preferenceLearning, readingInsights) {

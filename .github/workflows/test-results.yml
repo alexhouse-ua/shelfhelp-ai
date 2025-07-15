@@ -1,0 +1,49 @@
+name: Test Results Publisher
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline - ShelfHelp AI"]
+    types: [completed]
+
+jobs:
+  publish-test-results:
+    name: Publish Test Results
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request'
+    
+    steps:
+    - name: Download test results
+      uses: actions/download-artifact@v4
+      with:
+        name: test-results
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.event.workflow_run.id }}
+        
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: "test-results.xml"
+        comment_title: "Test Results"
+        check_name: "Test Results"
+        
+    - name: Set badge color
+      run: |
+        if [ -f coverage/coverage-summary.json ]; then
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+            echo "BADGE_COLOR=brightgreen" >> $GITHUB_ENV
+          else
+            echo "BADGE_COLOR=red" >> $GITHUB_ENV
+          fi
+        fi
+        
+    - name: Create coverage badge
+      uses: schneegans/dynamic-badges-action@v1.7.0
+      with:
+        auth: ${{ secrets.GITHUB_TOKEN }}
+        gistID: ${{ secrets.GIST_ID }}
+        filename: coverage.json
+        label: Coverage
+        message: ${{ env.COVERAGE }}%
+        color: ${{ env.BADGE_COLOR }}

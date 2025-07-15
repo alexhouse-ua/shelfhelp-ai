@@ -7,7 +7,7 @@ const path = require('path');
 const { requireApiKey } = require('../src/core/auth-middleware');
 const ClassificationHandler = require('../src/core/classification-handler');
 const UnifiedClassificationService = require('../src/core/unified-classification');
-const FuzzyClassificationMatcher = require('../scripts/fuzzy-classifier');
+const FuzzyClassificationMatcher = require('../scripts/core/fuzzy-classifier');
 
 // Initialize systems (reused across invocations for performance)
 let fuzzyMatcher = null;

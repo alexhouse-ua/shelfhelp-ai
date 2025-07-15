@@ -4,20 +4,28 @@
   "description": "AI-powered reading assistant with real-time queue management and intelligent book classification",
   "main": "scripts/api-server.js",
   "scripts": {
-    "dev": "nodemon scripts/api-server.js",
-    "start": "node scripts/api-server.js",
-    "test": "node scripts/test-endpoints.js",
-    "lint": "eslint scripts/ --fix",
-    "format": "prettier --write scripts/ data/ _knowledge/",
+    "dev": "nodemon scripts/core/api-server.js",
+    "start": "node scripts/core/api-server.js",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --coverage --ci --watchAll=false",
+    "lint": "eslint scripts/ src/ --fix",
+    "format": "prettier --write scripts/ src/ tests/ data/",
     "validate-schema": "node scripts/validate-schema.js",
-    "rss-ingest": "node scripts/rss_ingest.js",
-    "rag-ingest": "node scripts/rag_ingest.js",
+    "rss-ingest": "node scripts/core/rss-ingest.js",
+    "rag-ingest": "node scripts/core/rag-ingest.js",
     "generate-weekly": "node scripts/generate_weekly.js",
-    "reflection-automation": "node scripts/reflection-automation.js",
-    "library-check": "node scripts/library-checker.js",
-    "merge-export": "node scripts/merge-export.js",
+    "reflection-automation": "node scripts/maintenance/reflection-automation.js",
+    "library-check": "node scripts/core/library-checker.js",
+    "merge-export": "node scripts/maintenance/merge-export.js",
     "build": "echo 'API-only deployment - no static build required'",
-    "postinstall": "echo 'ShelfHelp AI dependencies installed successfully'"
+    "postinstall": "echo 'ShelfHelp AI dependencies installed successfully'",
+    "prepare": "husky install",
+    "pre-commit": "npm run lint && npm run test:ci",
+    "security-check": "npm audit --audit-level=moderate"
   },
   "repository": {
     "type": "git",
@@ -66,9 +74,16 @@
     "yaml": "^2.8.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@types/jest": "^30.0.0",
+    "babel-jest": "^30.0.4",
     "eslint": "^9.30.1",
     "husky": "^9.1.7",
+    "jest": "^30.0.4",
+    "jest-html-reporters": "^3.1.7",
     "nodemon": "^3.1.10",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.3"
   }
 }

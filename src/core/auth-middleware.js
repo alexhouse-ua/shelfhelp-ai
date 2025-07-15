@@ -3,7 +3,7 @@
  * Handles API key validation for AI assistant access
  */
 
-const logger = require('../../scripts/logger');
+const logger = require('../../scripts/core/logger');
 
 /**
  * Mandatory API key authentication for AI assistants
