@@ -630,7 +630,7 @@ async function generateWeeklyReport(weekOffset = 0) {
     
     // Filter books finished this week
     const finishedThisWeek = books.filter(book => {
-      if ((book.status !== 'Finished' && book.status !== 'Read') || !book.user_read_at) return false;
+      if ((book.status !== 'Finished' && book.status !== 'Read') || !book.user_read_at) {return false;}
       const completedDate = new Date(book.user_read_at);
       return completedDate >= startDate && completedDate <= endDate;
     });
@@ -803,10 +803,10 @@ function analyzeBooksForClassificationOpportunities(allBooks, finishedThisWeek) 
     completedFields += analysis.completedFields;
     
     // Track missing classifications
-    if (!book.genre) insights.missingClassification.genre++;
-    if (!book.subgenre) insights.missingClassification.subgenre++;
-    if (!book.tropes || book.tropes.length === 0) insights.missingClassification.tropes++;
-    if (!book.spice) insights.missingClassification.spice++;
+    if (!book.genre) {insights.missingClassification.genre++;}
+    if (!book.subgenre) {insights.missingClassification.subgenre++;}
+    if (!book.tropes || book.tropes.length === 0) {insights.missingClassification.tropes++;}
+    if (!book.spice) {insights.missingClassification.spice++;}
     
     if (analysis.missingFields > 0) {
       insights.missingClassification.total++;
@@ -846,8 +846,8 @@ function analyzeBooksForClassificationOpportunities(allBooks, finishedThisWeek) 
   // Sort improvement opportunities by priority and limit to top 10
   insights.improvementOpportunities = insights.improvementOpportunities
     .sort((a, b) => {
-      if (a.priority === 'high' && b.priority !== 'high') return -1;
-      if (b.priority === 'high' && a.priority !== 'high') return 1;
+      if (a.priority === 'high' && b.priority !== 'high') {return -1;}
+      if (b.priority === 'high' && a.priority !== 'high') {return 1;}
       return b.missing.length - a.missing.length;
     })
     .slice(0, 10);
@@ -912,7 +912,7 @@ async function getReflectionHighlights(finishedBooks) {
   const highlights = [];
   
   for (const book of finishedBooks) {
-    if (!book.goodreads_id) continue;
+    if (!book.goodreads_id) {continue;}
     
     try {
       const reflectionDir = path.join(REFLECTIONS_DIR, book.goodreads_id);
@@ -970,7 +970,7 @@ function analyzeReflectionContent(content, book) {
 
   let currentSection = '';
   let sectionContent = [];
-  let completedSections = [];
+  const completedSections = [];
   
   // Sentiment indicators
   const positiveWords = ['love', 'loved', 'amazing', 'fantastic', 'wonderful', 'great', 'excellent', 'enjoyed', 'favorite', 'perfect', 'brilliant', 'captivating', 'engaging', 'compelling'];
@@ -1018,10 +1018,10 @@ function analyzeReflectionContent(content, book) {
       // Simple sentiment analysis
       const lowerLine = line.toLowerCase();
       positiveWords.forEach(word => {
-        if (lowerLine.includes(word)) sentimentScore++;
+        if (lowerLine.includes(word)) {sentimentScore++;}
       });
       negativeWords.forEach(word => {
-        if (lowerLine.includes(word)) sentimentScore--;
+        if (lowerLine.includes(word)) {sentimentScore--;}
       });
       
       // Extract recommendation intent
@@ -1098,7 +1098,7 @@ async function getReflectionAnalytics(allBooks) {
   const reflectionAnalyses = [];
 
   for (const book of allBooks) {
-    if (!book.goodreads_id) continue;
+    if (!book.goodreads_id) {continue;}
     
     try {
       const reflectionDir = path.join(REFLECTIONS_DIR, book.goodreads_id);
@@ -1288,7 +1288,7 @@ function calculateReadingVelocity(finishedBooks) {
 }
 
 function calculateReadingStreak(sortedBooks) {
-  if (sortedBooks.length === 0) return 0;
+  if (sortedBooks.length === 0) {return 0;}
 
   const now = new Date();
   let streak = 0;
@@ -1321,7 +1321,7 @@ function analyzeGenreTrends(finishedBooks, timeframe) {
 
       // Track monthly trends
       const month = new Date(book.user_read_at).toISOString().slice(0, 7);
-      if (!monthlyGenres[month]) monthlyGenres[month] = {};
+      if (!monthlyGenres[month]) {monthlyGenres[month] = {};}
       monthlyGenres[month][book.genre] = (monthlyGenres[month][book.genre] || 0) + 1;
     }
   });
@@ -1485,8 +1485,8 @@ function analyzeRatingTrends(finishedBooks) {
     earlierBooks.reduce((sum, book) => sum + book.user_rating, 0) / earlierBooks.length : 0;
 
   let trend = 'stable';
-  if (recentAvg > earlierAvg + 0.3) trend = 'increasing';
-  if (recentAvg < earlierAvg - 0.3) trend = 'decreasing';
+  if (recentAvg > earlierAvg + 0.3) {trend = 'increasing';}
+  if (recentAvg < earlierAvg - 0.3) {trend = 'decreasing';}
 
   return {
     averageRating,
@@ -1909,11 +1909,11 @@ app.get('/api/books', async (req, res) => {
     
     // Build filters object for cache
     const filters = {};
-    if (status) filters.status = status;
-    if (author) filters.author = author;
-    if (genre) filters.genre = genre;
-    if (subgenre) filters.subgenre = subgenre;
-    if (search) filters.search = search;
+    if (status) {filters.status = status;}
+    if (author) {filters.author = author;}
+    if (genre) {filters.genre = genre;}
+    if (subgenre) {filters.subgenre = subgenre;}
+    if (search) {filters.search = search;}
     
     // Use cached paginated query with enhanced filtering
     const result = await bookCache.getPaginatedBooks(pageNum, limitNum, filters);
@@ -1964,8 +1964,8 @@ app.get('/api/books', async (req, res) => {
         let bValue = b[sort];
         
         // Handle null/undefined values
-        if (aValue === null || aValue === undefined) aValue = '';
-        if (bValue === null || bValue === undefined) bValue = '';
+        if (aValue === null || aValue === undefined) {aValue = '';}
+        if (bValue === null || bValue === undefined) {bValue = '';}
         
         // Convert to strings for comparison
         aValue = String(aValue).toLowerCase();
@@ -2231,23 +2231,23 @@ app.post('/api/v2/match-classification', classificationHandler.matchClassificati
 
 // Queue routes with lazy loading (queueManager initialized after preferences)
 app.get('/api/v2/queue', (req, res) => {
-  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  if (!queueManager) {return res.status(503).json({ error: 'Queue manager not ready' });}
   return queueManager.getQueue(req, res);
 });
 app.get('/api/v2/queue/tbr', (req, res) => {
-  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  if (!queueManager) {return res.status(503).json({ error: 'Queue manager not ready' });}
   return queueManager.getTbrQueue(req, res);
 });
 app.post('/api/v2/queue/reorder', (req, res) => {
-  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  if (!queueManager) {return res.status(503).json({ error: 'Queue manager not ready' });}
   return queueManager.reorderQueue(req, res);
 });
 app.post('/api/v2/queue/promote', (req, res) => {
-  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  if (!queueManager) {return res.status(503).json({ error: 'Queue manager not ready' });}
   return queueManager.promoteBook(req, res);
 });
 app.get('/api/v2/queue/insights', (req, res) => {
-  if (!queueManager) return res.status(503).json({ error: 'Queue manager not ready' });
+  if (!queueManager) {return res.status(503).json({ error: 'Queue manager not ready' });}
   return queueManager.getQueueInsights(req, res);
 });
 
@@ -2770,7 +2770,7 @@ app.post('/api/ai-research', async (req, res) => {
     const book = books[bookIndex];
     
     // Validate findings against fuzzy matcher if available
-    let validationResults = {};
+    const validationResults = {};
     if (fuzzyMatcherReady && findings) {
       try {
         if (findings.genre) {
@@ -2952,7 +2952,7 @@ app.get('/api/recommendations', async (req, res) => {
         }
       }
       
-      if (recommendations.length >= parseInt(limit)) break;
+      if (recommendations.length >= parseInt(limit)) {break;}
     }
     
     res.json({
@@ -3026,7 +3026,7 @@ app.post('/api/recommendations/query', async (req, res) => {
           }
         }
         
-        if (bookRecommendations.length >= parseInt(limit)) break;
+        if (bookRecommendations.length >= parseInt(limit)) {break;}
       }
       
       response.results = bookRecommendations;
@@ -3112,16 +3112,16 @@ app.get('/api/recommendations/similar/:bookId', async (req, res) => {
         }
       }
       
-      if (similarBooks.length >= parseInt(limit)) break;
+      if (similarBooks.length >= parseInt(limit)) {break;}
     }
     
     // Add similarity reasons
     similarBooks.forEach(book => {
       const reasons = [];
-      if (book.genre === targetBook.genre) reasons.push('Same genre');
-      if (book.author_name === targetBook.author_name) reasons.push('Same author');
-      if (book.series_name === targetBook.series_name) reasons.push('Same series');
-      if (book.tropes?.some(t => targetBook.tropes?.includes(t))) reasons.push('Shared tropes');
+      if (book.genre === targetBook.genre) {reasons.push('Same genre');}
+      if (book.author_name === targetBook.author_name) {reasons.push('Same author');}
+      if (book.series_name === targetBook.series_name) {reasons.push('Same series');}
+      if (book.tropes?.some(t => targetBook.tropes?.includes(t))) {reasons.push('Shared tropes');}
       book.similarity_reasons = reasons;
     });
     
@@ -3583,7 +3583,7 @@ app.get('/api/availability/status', async (req, res) => {
     const stats = {
       total_books: books.length,
       checked_recently: books.filter(b => {
-        if (!b.availability_last_checked) return false;
+        if (!b.availability_last_checked) {return false;}
         const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         return new Date(b.availability_last_checked) > oneWeekAgo;
       }).length,
@@ -3680,7 +3680,7 @@ app.get('/api/library/status', async (req, res) => {
       total_books: books.length,
       with_availability: books.filter(b => b.library_availability).length,
       checked_recently: books.filter(b => {
-        if (!b.availability_last_checked) return false;
+        if (!b.availability_last_checked) {return false;}
         const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         return new Date(b.availability_last_checked) > oneWeekAgo;
       }).length,
@@ -3724,7 +3724,7 @@ app.get('/api/availability/dual-format', async (req, res) => {
     // Filter books with both ebook and audio availability
     const dualFormatBooks = books.filter(book => {
       // Check status filter
-      if (status && book.status !== status) return false;
+      if (status && book.status !== status) {return false;}
       
       // Check ebook availability
       const hasEbook = book.ku_availability || 
@@ -4726,8 +4726,8 @@ app.get('/api/queue/tbr', async (req, res) => {
         break;
       case 'series':
         sortedBooks = scoredBooks.sort((a, b) => {
-          if (a.series_name && !b.series_name) return -1;
-          if (!a.series_name && b.series_name) return 1;
+          if (a.series_name && !b.series_name) {return -1;}
+          if (!a.series_name && b.series_name) {return 1;}
           return b._priority_score - a._priority_score;
         });
         break;
@@ -5106,7 +5106,7 @@ function getPublicationYearSpread(books) {
     .filter(book => book.publication_year)
     .map(book => book.publication_year);
   
-  if (years.length === 0) return { no_data: true };
+  if (years.length === 0) {return { no_data: true };}
   
   const sortedYears = years.sort((a, b) => a - b);
   const currentYear = new Date().getFullYear();
