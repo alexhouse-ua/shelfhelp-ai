@@ -6,7 +6,7 @@
 const KindleUnlimitedScraper = require('./kindle-unlimited-scraper');
 const HooplaScraper = require('./hoopla-scraper');
 const LibraryScraper = require('./library-scraper');
-const logger = require('../logger');
+const logger = require('../../../scripts/core/logger');
 
 class ScraperOrchestrator {
   constructor(config = {}) {
@@ -58,22 +58,30 @@ class ScraperOrchestrator {
       const scraperResults = await Promise.allSettled(scraperPromises);
       
       // Process results
+      let sourcesSuccessful = 0;
+      
       scraperResults.forEach((result, index) => {
         const scraperNames = ['kindle_unlimited', 'hoopla', 'libraries'];
         const scraperName = scraperNames[index];
         
         if (result.status === 'fulfilled') {
           results.sources[scraperName] = result.value;
-          this.stats.successfulChecks++;
+          sourcesSuccessful++;
         } else {
           results.sources[scraperName] = {
             error: result.reason.message,
             checked_at: new Date().toISOString(),
             source: scraperName
           };
-          this.stats.failedChecks++;
         }
       });
+      
+      // Update stats correctly (per book, not per source)
+      if (sourcesSuccessful > 0) {
+        this.stats.successfulChecks++;
+      } else {
+        this.stats.failedChecks++;
+      }
 
       this.stats.totalChecks++;
       this.updateAverageResponseTime(Date.now() - startTime);
@@ -82,6 +90,7 @@ class ScraperOrchestrator {
       
     } catch (error) {
       this.stats.failedChecks++;
+      this.stats.totalChecks++; // Ensure total is updated on error
       logger.error(`Orchestrator error for book ${book.goodreads_id}:`, error);
       
       return {

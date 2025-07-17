@@ -1,8 +1,10 @@
 # Session Workflow Protocol - ShelfHelp AI
 
 **Created**: July 14, 2025  
+**Updated**: July 17, 2025  
 **Purpose**: Ensure consistent task management across all development sessions  
-**Audience**: All developers and AI assistants working on ShelfHelp AI
+**Audience**: All developers and AI assistants working on ShelfHelp AI  
+**Version**: 1.2
 
 ---
 
@@ -10,10 +12,11 @@
 
 ### **1. Mandatory Session Checklist**
 - [ ] **Read CLAUDE.md** - Review current project state and requirements
-- [ ] **Check Task Management Guide** - `_knowledge/Task_Management_Guide.md`
+- [ ] **Check Task Management Guide** - `docs/workflows/Task_Management_Guide.md`
 - [ ] **Identify Active Tasks** - Find tasks with status 🔄 **IN PROGRESS** 
 - [ ] **Review Dependencies** - Ensure prerequisites are met
 - [ ] **Select Priority Task** - Choose highest priority available task
+- [ ] **Load Systematic Workflow** - Reference implementation workflow for current phase
 
 ### **2. Task Selection Criteria**
 - **⚡ CRITICAL**: Must complete immediately (blocking other work)
@@ -28,6 +31,8 @@
 **Selected Task**: [Task ID] - [Task Name]
 **Dependencies**: [List any blocking requirements]
 **Estimated Time**: [Hours/Days]
+**Risk Level**: [High/Medium/Low]
+**Parallel Opportunities**: [List tasks that can run simultaneously]
 ```
 
 ---
@@ -42,9 +47,12 @@
 
 ### **2. Development Process**
 - **Follow CLAUDE.md Guidelines**: Adhere to code style and quality standards
+- **Use Systematic Workflow**: Reference phase-specific implementation patterns
+- **Apply SuperClaude Commands**: Use documented commands for consistent execution
 - **Make Incremental Progress**: Small, focused changes over large rewrites
 - **Document Changes**: Update relevant files as work progresses
 - **Test Frequently**: Validate changes with sample data
+- **Monitor Performance**: Track response times and quality metrics
 
 ### **3. Progress Tracking**
 - **Status Updates**: Update task status as work progresses
@@ -59,9 +67,11 @@
 ### **1. Completion Checklist**
 - [ ] **All Success Criteria Met** - Verify each requirement is satisfied
 - [ ] **Tests Passing** - Run relevant tests and validate results
+- [ ] **Performance Targets Met** - Verify response times and quality metrics
 - [ ] **Documentation Updated** - Update code comments and knowledge files
 - [ ] **Dependencies Satisfied** - Ensure dependent tasks can proceed
 - [ ] **Quality Gates Passed** - Meet all quality standards
+- [ ] **Security Validation** - Confirm security requirements are met
 
 ### **2. Status Updates**
 - **Mark Task Complete**: Update status to ✅ **COMPLETED**
@@ -134,6 +144,8 @@
 - **Blocking Communication**: Clearly communicate when blocked
 - **Parallel Opportunities**: Identify tasks that can run simultaneously
 - **Critical Path**: Understand impact of delays on overall timeline
+- **Risk Assessment**: Evaluate task complexity and potential issues
+- **Mitigation Strategies**: Plan for potential blockers and workarounds
 
 ---
 
@@ -201,8 +213,11 @@
 **Selected Task**: [Task ID] - [Task Name]  
 **Status**: Changed to 🔄 IN PROGRESS  
 **Estimated Time**: [Hours]  
+**Risk Level**: [High/Medium/Low]
 **Dependencies**: [List]  
 **Success Criteria**: [List]  
+**SuperClaude Commands**: [Relevant commands for this task]  
+**Validation Framework**: [Use unified confidence scoring if applicable]
 ```
 
 ### **Task Completion Template**
@@ -211,9 +226,12 @@
 **Completed**: [Date/Time]  
 **Status**: Changed to ✅ COMPLETED  
 **Actual Time**: [Hours]  
+**Performance**: [Response times, quality metrics]  
+**Validation Results**: [Confidence scores, false positive rates if applicable]
 **Success Criteria**: All met ✅  
 **Notes**: [Any important learnings]  
 **Next Task**: [Next priority task]  
+**Risk Mitigation**: [Any risks addressed]
 ```
 
 ### **Blocker Report Template**
@@ -224,15 +242,17 @@
 **Issue**: [Description of blocking problem]  
 **Resolution**: [What needs to happen]  
 **Impact**: [Effect on timeline]  
+**Alternative Approaches**: [Workaround options]
+**Risk Level**: [High/Medium/Low]
 **Escalation**: [If needed]  
 ```
 
 ---
 
-**File Location**: `_knowledge/Session_Workflow_Protocol.md`  
+**File Location**: `docs/workflows/Session_Workflow_Protocol.md`  
 **Maintained By**: Development Team  
 **Update Frequency**: As needed based on process improvements  
-**Version**: 1.0  
+**Version**: 1.1 (Updated with Systematic Implementation Workflow)  
 **Integration**: Referenced by CLAUDE.md and Task Management Guide
 
-*This protocol ensures consistent task management and progress tracking across all development sessions, preventing task duplication and ensuring continuous project advancement.*
+*This protocol ensures consistent task management and progress tracking across all development sessions, preventing task duplication and ensuring continuous project advancement. Enhanced with systematic workflow patterns, risk assessment, and SuperClaude command integration for improved efficiency and quality.*

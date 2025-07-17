@@ -4,7 +4,7 @@
  */
 
 const axios = require('axios');
-const logger = require('../logger');
+const logger = require('../../../scripts/core/logger');
 
 class BaseScraper {
   constructor(config = {}) {

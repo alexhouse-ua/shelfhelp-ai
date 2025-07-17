@@ -185,35 +185,40 @@ class KindleUnlimitedScraper extends BaseScraper {
   }
 
   /**
-   * Calculate KU-specific confidence score
+   * Calculate KU-specific confidence score with enhanced validation
    */
   calculateKUConfidence(indicators, titleMatch, authorMatch) {
     let confidence = 0.0;
     
-    // Base confidence from indicators
+    // Base confidence from indicators (reduced to prevent false positives)
     if (indicators.strong) {
-      confidence += 0.5;
+      confidence += 0.4; // Reduced from 0.5
     } else if (indicators.medium) {
-      confidence += 0.3;
+      confidence += 0.2; // Reduced from 0.3
     } else if (indicators.weak) {
-      confidence += 0.1;
+      confidence += 0.05; // Reduced from 0.1
     }
     
-    // Boost for content matching
+    // Boost for content matching (increased importance)
     if (titleMatch && authorMatch) {
-      confidence += 0.4;
+      confidence += 0.5; // Increased from 0.4
     } else if (titleMatch || authorMatch) {
-      confidence += 0.2;
+      confidence += 0.2; // Same
     }
     
-    // Strong indicators + strong matching = high confidence
+    // Strong indicators + strong matching = high confidence (capped lower)
     if (indicators.strong && titleMatch && authorMatch) {
-      confidence = Math.min(confidence + 0.1, 1.0);
+      confidence = Math.min(confidence + 0.05, 0.9); // Capped at 0.9 instead of 1.0
     }
     
-    // Require at least some matching for positive results
+    // Stricter requirements for positive results
     if (!titleMatch && !authorMatch) {
-      confidence = Math.max(confidence - 0.3, 0.0);
+      confidence = 0.0; // Zero confidence without content match
+    }
+    
+    // Additional validation: require both strong indicator AND content match for high confidence
+    if (confidence > 0.7 && (!indicators.strong || (!titleMatch && !authorMatch))) {
+      confidence = Math.max(confidence * 0.6, 0.3);
     }
     
     return Math.round(confidence * 100) / 100;
