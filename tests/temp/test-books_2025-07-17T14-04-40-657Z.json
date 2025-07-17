@@ -1,0 +1,25 @@
+[
+  {
+    "id": "book1",
+    "title": "Test Book 1",
+    "author_name": "Test Author",
+    "status": "read",
+    "genre": "Fiction",
+    "user_rating": 4,
+    "book_published": 2023,
+    "user_read_at": "2024-01-15T10:00:00Z",
+    "created_at": "2024-01-01T10:00:00Z",
+    "updated_at": "2024-01-01T10:00:00Z"
+  },
+  {
+    "id": "book2",
+    "title": "Test Book 2",
+    "author_name": "Another Author",
+    "status": "to-read",
+    "genre": "Mystery",
+    "book_published": 2022,
+    "user_date_added": "2024-02-01T10:00:00Z",
+    "created_at": "2024-02-01T10:00:00Z",
+    "updated_at": "2024-02-01T10:00:00Z"
+  }
+]
