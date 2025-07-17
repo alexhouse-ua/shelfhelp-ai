@@ -243,7 +243,7 @@ class ValidationFramework {
       .map(item => item.result.confidence || 0)
       .filter(conf => conf > 0);
     
-    if (confidences.length === 0) return originalResults;
+    if (confidences.length === 0) {return originalResults;}
 
     const avgConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length;
     const consensusThreshold = 0.6;
