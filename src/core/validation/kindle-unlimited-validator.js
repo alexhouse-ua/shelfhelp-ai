@@ -47,11 +47,12 @@ class KindleUnlimitedValidator extends AvailabilityValidator {
    * Validate KU-specific availability result
    * @param {Object} result - KU availability check result
    * @param {Object} book - Book data
+   * @param {number} normalizedConfidence - Normalized confidence from base validator
    * @returns {Object} KU-specific validation result
    */
-  validateServiceSpecific(result, book) {
+  validateServiceSpecific(result, book, normalizedConfidence = 0) {
     const validation = {
-      adjustedConfidence: result.confidence || 0,
+      adjustedConfidence: normalizedConfidence,
       factors: [],
       warnings: [],
       errors: []
@@ -122,7 +123,7 @@ class KindleUnlimitedValidator extends AvailabilityValidator {
 
     // Apply confidence adjustments
     validation.adjustedConfidence = this.adjustConfidence(
-      result.confidence || 0,
+      normalizedConfidence,
       validation.factors
     );
 
@@ -172,6 +173,12 @@ class KindleUnlimitedValidator extends AvailabilityValidator {
    */
   validatePricing(result) {
     const content = this.extractContent(result);
+    
+    // If no metadata searchContent available, skip pricing validation
+    if (!result.metadata || !result.metadata.searchContent) {
+      return { suspicious: false };
+    }
+    
     const priceFound = this.kuConfig.priceKeywords.some(keyword => 
       content.includes(keyword)
     );
@@ -197,6 +204,17 @@ class KindleUnlimitedValidator extends AvailabilityValidator {
     const content = this.extractContent(result);
     const title = (book.book_title || book.title || '').toLowerCase();
     const author = (book.author_name || '').toLowerCase();
+    
+    // If no metadata searchContent available, return neutral score to avoid penalties
+    if (!result.metadata || !result.metadata.searchContent) {
+      return {
+        confidence: 0.5, // Neutral score - no penalty or boost
+        titleScore: 0,
+        authorScore: 0,
+        titleMatches: 0,
+        authorMatches: 0
+      };
+    }
     
     // Simple matching logic
     const titleWords = title.split(' ').filter(word => word.length > 2);

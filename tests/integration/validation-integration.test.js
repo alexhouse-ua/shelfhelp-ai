@@ -37,7 +37,7 @@ describe('Validation Integration', () => {
         confidence: 0.9,
         details: 'Book found on Kindle Unlimited with strong indicators',
         metadata: {
-          searchContent: 'kindle unlimited included with kindle unlimited read for free'
+          searchContent: 'Test Romance Novel Jane Author kindle unlimited included with kindle unlimited read for free'
         }
       };
       
@@ -79,7 +79,7 @@ describe('Validation Integration', () => {
       
       expect(validation.valid).toBe(true);
       expect(validation.adjustedConfidence).toBeLessThan(0.5);
-      expect(validation.factors.some(f => f.reason.includes('false positive'))).toBe(true);
+      expect(validation.factors.some(f => f.reason.includes('False positive'))).toBe(true);
     });
   });
   
@@ -104,7 +104,7 @@ describe('Validation Integration', () => {
         confidence: 0.8,
         details: 'Book available on Hoopla',
         metadata: {
-          searchContent: 'hoopla available on hoopla borrow from hoopla library card'
+          searchContent: 'Test Romance Novel Jane Author hoopla available on hoopla borrow from hoopla library card'
         }
       };
       

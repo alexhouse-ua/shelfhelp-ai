@@ -65,8 +65,8 @@ class AvailabilityValidator {
       validation.adjustedConfidence = validation.confidence;
     }
 
-    // Service-specific validation
-    const serviceValidation = this.validateServiceSpecific(result, book);
+    // Service-specific validation - pass normalized confidence
+    const serviceValidation = this.validateServiceSpecific(result, book, validation.confidence);
     validation.adjustedConfidence = serviceValidation.adjustedConfidence;
     validation.factors.push(...serviceValidation.factors);
     validation.warnings.push(...serviceValidation.warnings);
@@ -87,12 +87,10 @@ class AvailabilityValidator {
    * Service-specific validation - must be implemented by subclasses
    * @param {Object} result - Availability check result
    * @param {Object} book - Book data
+   * @param {number} normalizedConfidence - Normalized confidence from base validator
    * @returns {Object} Service-specific validation result
    */
-  validateServiceSpecific(result, _book) {
-    // Use normalized confidence from the validation process
-    const normalizedConfidence = Math.max(0, Math.min(1, result.confidence || 0));
-    
+  validateServiceSpecific(result, _book, normalizedConfidence = 0) {
     return {
       adjustedConfidence: normalizedConfidence,
       factors: [],

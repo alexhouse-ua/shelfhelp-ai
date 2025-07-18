@@ -1,8 +1,8 @@
 # ShelfHelp AI - Complete Project Plan
 
-**Last Updated**: July 14, 2025  
-**Status**: Core Features Complete - Ready for Conversational Interface Development  
-**Task Management**: See `_knowledge/Task_Management_Guide.md` for active tasks and progress tracking
+**Last Updated**: July 18, 2025  
+**Status**: Core Features Complete - Architecture Refactoring Complete, Ready for Production  
+**Task Management**: See `docs/workflows/Task_Management_Guide.md` for active tasks and progress tracking
 
 ## Project Overview
 
@@ -12,7 +12,7 @@ AI-powered reading assistant with real-time queue management, intelligent book c
 
 ## Task Management Integration
 
-**Primary Reference**: `_knowledge/Task_Management_Guide.md` contains the complete task breakdown with 52 tracked tasks across 4 phases. This document provides strategic context while the Task Management Guide provides operational task tracking.
+**Primary Reference**: `docs/workflows/Task_Management_Guide.md` contains the complete task breakdown with 64 tracked tasks across 4 phases. This document provides strategic context while the Task Management Guide provides operational task tracking.
 
 ## Completed Core Systems ✅
 

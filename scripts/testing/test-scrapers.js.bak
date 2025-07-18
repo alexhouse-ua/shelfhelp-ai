@@ -28,25 +28,25 @@ const testBooks = [
 ];
 
 async function testIndividualScrapers() {
-  logger.info('🧪 Testing Individual Scrapers\n');
+  console.log('🧪 Testing Individual Scrapers\n');
   
   const scraperTypes = ['kindle_unlimited', 'hoopla', 'library'];
   
   for (const type of scraperTypes) {
-    logger.info(`📖 Testing ${type.toUpperCase()} Scraper:`);
+    console.log(`📖 Testing ${type.toUpperCase()} Scraper:`);
     
     try {
       const scraper = createScraper(type);
       const testBook = testBooks[0];
       
-      logger.info(`   📚 Book: "${testBook.book_title}" by ${testBook.author_name}`);
+      console.log(`   📚 Book: "${testBook.book_title}" by ${testBook.author_name}`);
       
       const startTime = Date.now();
       const result = await scraper.checkAvailability(testBook);
       const responseTime = Date.now() - startTime;
       
-      logger.info(`   ⏱️  Response time: ${responseTime}ms`);
-      logger.info('Result', {
+      console.log(`   ⏱️  Response time: ${responseTime}ms`);
+      console.log(`   📊 Result:`, {
         source: result.source,
         availability: extractAvailabilityInfo(result, type),
         confidence: result.confidence || 'N/A',
@@ -55,13 +55,13 @@ async function testIndividualScrapers() {
       
       // Get health stats
       const health = scraper.getServiceHealth();
-      logger.info(`   🏥 Health: ${health.status} (${health.successRate}% success rate)`);
+      console.log(`   🏥 Health: ${health.status} (${health.successRate}% success rate)`);
       
     } catch (error) {
-      logger.info(`   ❌ Error: ${error.message}`);
+      console.log(`   ❌ Error: ${error.message}`);
     }
     
-    logger.info('');
+    console.log('');
   }
 }
 
@@ -92,7 +92,7 @@ function extractAvailabilityInfo(result, scraperType) {
 }
 
 async function testOrchestrator() {
-  logger.info('🎼 Testing Scraper Orchestrator\n');
+  console.log('🎼 Testing Scraper Orchestrator\n');
   
   try {
     const orchestrator = createOrchestrator({
@@ -100,74 +100,73 @@ async function testOrchestrator() {
       maxConcurrent: 1
     });
     
-    logger.info('📋 Testing single book check:');
+    console.log('📋 Testing single book check:');
     const testBook = testBooks[0];
-    logger.info(`   📚 Book: "${testBook.book_title}" by ${testBook.author_name}`);
+    console.log(`   📚 Book: "${testBook.book_title}" by ${testBook.author_name}`);
     
     const startTime = Date.now();
     const result = await orchestrator.checkBookAvailability(testBook);
     const responseTime = Date.now() - startTime;
     
-    logger.info(`   ⏱️  Total response time: ${responseTime}ms`);
-    logger.info(`   📊 Sources checked: ${Object.keys(result.sources).length}`);
+    console.log(`   ⏱️  Total response time: ${responseTime}ms`);
+    console.log(`   📊 Sources checked: ${Object.keys(result.sources).length}`);
     
     // Display results by source
     for (const [source, sourceResult] of Object.entries(result.sources)) {
-      logger.info('Source result', {
-        source: source,
+      console.log(`   📖 ${source}:`, {
         status: sourceResult.error ? 'Error' : 'Success',
         availability: extractAvailabilityInfo(sourceResult, source),
         error: sourceResult.error || 'None'
       });
     }
     
-    logger.info('\n📦 Testing batch processing:');
+    console.log('\n📦 Testing batch processing:');
     const batchResult = await orchestrator.checkBooksInBatch(testBooks.slice(0, 2));
     
-    logger.info(`   📚 Processed: ${batchResult.results.length} books`);
-    logger.info(`   ❌ Errors: ${batchResult.errors.length}`);
-    logger.info(`   📊 Stats:`, batchResult.stats);
+    console.log(`   📚 Processed: ${batchResult.results.length} books`);
+    console.log(`   ❌ Errors: ${batchResult.errors.length}`);
+    console.log(`   📊 Stats:`, batchResult.stats);
     
-    logger.info('\n🏥 Orchestrator Health:');
+    console.log('\n🏥 Orchestrator Health:');
     const health = orchestrator.getScrapersHealth();
-    logger.info(`   Status: ${health.orchestrator.status}`);
-    logger.info(`   Total checks: ${health.orchestrator.totalChecks}`);
-    logger.info(`   Success rate: ${(health.orchestrator.successfulChecks / health.orchestrator.totalChecks * 100).toFixed(1)}%`);
+    console.log(`   Status: ${health.orchestrator.status}`);
+    console.log(`   Total checks: ${health.orchestrator.totalChecks}`);
+    console.log(`   Success rate: ${(health.orchestrator.successfulChecks / health.orchestrator.totalChecks * 100).toFixed(1)}%`);
     
   } catch (error) {
-    logger.info(`❌ Orchestrator error: ${error.message}`);
+    console.log(`❌ Orchestrator error: ${error.message}`);
   }
 }
 
 async function testConfiguration() {
-  logger.info('⚙️ Testing Configuration\n');
+  console.log('⚙️ Testing Configuration\n');
   
   try {
     const configManager = require('../../src/core/config-manager');
     await configManager.initialize();
     
     const services = configManager.getEnabledServices();
-    logger.info('📋 Enabled Services:');
-    logger.info(`   🔧 Scraping services: ${Object.keys(services.scraping_services).filter(k => services.scraping_services[k]).length}`);
-    logger.info(`   📚 Library systems: ${services.library_systems.count}`);
-    logger.info(`   🔗 Optional services: Firebase (${services.optional_services.firebase}), Goodreads RSS (${services.optional_services.goodreads_rss})`);
-    logger.info(`   📡 Method: ${services.scraping_method}`);
-    logger.info(`   🔌 API dependencies: ${services.api_dependencies}`);
+    console.log('📋 Enabled Services:');
+    console.log(`   🔧 Scraping services: ${Object.keys(services.scraping_services).filter(k => services.scraping_services[k]).length}`);
+    console.log(`   📚 Library systems: ${services.library_systems.count}`);
+    console.log(`   🔗 Optional services: Firebase (${services.optional_services.firebase}), Goodreads RSS (${services.optional_services.goodreads_rss})`);
+    console.log(`   📡 Method: ${services.scraping_method}`);
+    console.log(`   🔌 API dependencies: ${services.api_dependencies}`);
     
   } catch (error) {
-    logger.info(`❌ Configuration error: ${error.message}`);
+    console.log(`❌ Configuration error: ${error.message}`);
   }
 }
 
 async function testPerformance() {
-  logger.info('🚀 Performance Testing\n');
+  console.log('🚀 Performance Testing\n');
   
   try {
     const orchestrator = createOrchestrator({
       maxConcurrent: 2
     });
     
-    logger.info('📊 Testing concurrent scraping performance...');
+    console.log('📊 Testing concurrent scraping performance...');
     
     const startTime = Date.now();
     const results = await Promise.all([
@@ -177,11 +176,11 @@ async function testPerformance() {
     ]);
     const totalTime = Date.now() - startTime;
     
-    logger.info(`   ⏱️  Concurrent execution time: ${totalTime}ms`);
-    logger.info(`   📖 All scrapers completed: ${results.every(r => !r.error)}`);
+    console.log(`   ⏱️  Concurrent execution time: ${totalTime}ms`);
+    console.log(`   📖 All scrapers completed: ${results.every(r => !r.error)}`);
     
     // Test rate limiting
-    logger.info('\n⏳ Testing rate limiting...');
+    console.log('\n⏳ Testing rate limiting...');
     const kuScraper = orchestrator.getScraper('kindle_unlimited');
     
     const rateLimitStart = Date.now();
@@ -189,50 +188,47 @@ async function testPerformance() {
     await kuScraper.checkAvailability(testBooks[1]);
     const rateLimitTime = Date.now() - rateLimitStart;
     
-    logger.info(`   ⏱️  Two sequential requests: ${rateLimitTime}ms`);
-    logger.info(`   ✅ Rate limiting working: ${rateLimitTime >= kuScraper.config.rateLimitMs}`);
+    console.log(`   ⏱️  Two sequential requests: ${rateLimitTime}ms`);
+    console.log(`   ✅ Rate limiting working: ${rateLimitTime >= kuScraper.config.rateLimitMs}`);
     
   } catch (error) {
-    logger.info(`❌ Performance test error: ${error.message}`);
+    console.log(`❌ Performance test error: ${error.message}`);
   }
 }
 
 async function runAllTests() {
-  logger.info('🔬 ShelfHelp AI Scraper Test Suite\n');
-  logger.info('═'.repeat(50));
+  console.log('🔬 ShelfHelp AI Scraper Test Suite\n');
+  console.log('═'.repeat(50));
   
   try {
     await testConfiguration();
-    logger.info('\n' + '═'.repeat(50));
+    console.log('\n' + '═'.repeat(50));
     
     await testIndividualScrapers();
-    logger.info('═'.repeat(50));
+    console.log('═'.repeat(50));
     
     await testOrchestrator();
-    logger.info('\n' + '═'.repeat(50));
+    console.log('\n' + '═'.repeat(50));
     
     await testPerformance();
-    logger.info('\n' + '═'.repeat(50));
+    console.log('\n' + '═'.repeat(50));
     
-    logger.info('\n🎉 All tests completed!');
-    logger.info('\n💡 Notes:');
-    logger.info('   - Web scraping results may vary based on site changes');
-    logger.info('   - Rate limiting prevents overwhelming target sites');
-    logger.info('   - Confidence scores help filter false positives');
-    logger.info('   - No API keys required - all via web scraping');
+    console.log('\n🎉 All tests completed!');
+    console.log('\n💡 Notes:');
+    console.log('   - Web scraping results may vary based on site changes');
+    console.log('   - Rate limiting prevents overwhelming target sites');
+    console.log('   - Confidence scores help filter false positives');
+    console.log('   - No API keys required - all via web scraping');
     
   } catch (error) {
-    logger.error('\n❌ Test suite failed:', error.message);
+    console.error('\n❌ Test suite failed:', error.message);
     process.exit(1);
   }
 }
 
 // Run tests if script is executed directly
 if (require.main === module) {
-  runAllTests().catch(error => {
-    logger.error('Test suite failed', { error: error.message, stack: error.stack });
-    process.exit(1);
-  });
+  runAllTests().catch(console.error);
 }
 
 module.exports = { 

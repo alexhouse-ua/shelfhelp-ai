@@ -1,0 +1,8 @@
+# Directories to exclude from AI analysis
+history/
+data/backups/
+docs/archived/
+.husky/ # Husky hooks are git internal and not relevant for code logic review
+.claude/ # Claude's own configuration, not project code
+.git/ # Standard git directory
+node_modules/ # If you had this, it would be here. Good to include for future.

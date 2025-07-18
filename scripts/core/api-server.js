@@ -124,7 +124,7 @@ app.use('/api', knowledgeRouter);
     
     logger.info('Performance optimization active');
   } catch (error) {
-    console.error('Cache initialization failed:', error);
+    logger.error('Cache initialization failed', { error: error.message, stack: error.stack });
   }
 })();
 
@@ -553,14 +553,14 @@ async function createReflectionFile(book) {
     // Write reflection file
     await fs.writeFile(reflectionFile, processedTemplate);
     
-    console.log(`✅ Created reflection file: ${reflectionFile}`);
+    logger.info('Created reflection file', { reflectionFile });
     return {
       success: true,
       file: reflectionFile,
       message: 'Reflection file created successfully'
     };
   } catch (error) {
-    console.error('❌ Error creating reflection file:', error.message);
+    logger.error('Error creating reflection file', { error: error.message, stack: error.stack });
     return {
       success: false,
       error: error.message,
@@ -669,7 +669,7 @@ async function generateWeeklyReport(weekOffset = 0) {
       message: `Weekly report generated for week ${weekNumber}, ${year}`
     };
   } catch (error) {
-    console.error('❌ Error generating weekly report:', error.message);
+    logger.error('Error generating weekly report', { error: error.message, stack: error.stack });
     return {
       success: false,
       error: error.message,
@@ -941,7 +941,7 @@ async function getReflectionHighlights(finishedBooks) {
         }
       }
     } catch (error) {
-      console.log(`⚠️  Could not read reflection for ${book.title}: ${error.message}`);
+      logger.warn('Could not read reflection for book', { bookTitle: book.title, error: error.message });
     }
   }
   
@@ -1887,7 +1887,7 @@ async function saveWeeklyReport(weekNumber, year, content) {
   const reportPath = path.join(weeklyDir, filename);
   
   await fs.writeFile(reportPath, content);
-  console.log(`✅ Weekly report saved: ${reportPath}`);
+  logger.info('Weekly report saved', { reportPath });
   
   return reportPath;
 }
@@ -1994,7 +1994,7 @@ app.get('/api/books', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error reading books:', error);
+    logger.error('Error reading books', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2047,7 +2047,7 @@ app.post('/api/books', async (req, res) => {
       firebase_sync: syncResult
     });
   } catch (error) {
-    console.error('Error adding book:', error);
+    logger.error('Error adding book', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2118,12 +2118,12 @@ app.patch('/api/books/:id', async (req, res) => {
         // Create reflection file asynchronously
         createReflectionFile(books[bookIndex]).then(reflectionResult => {
           if (reflectionResult.success) {
-            console.log(`✅ Reflection created for "${books[bookIndex].title}"`);
+            logger.info('Reflection created for book', { bookTitle: books[bookIndex].title });
           } else {
-            console.error(`❌ Failed to create reflection for "${books[bookIndex].title}": ${reflectionResult.error}`);
+            logger.error('Failed to create reflection for book', { bookTitle: books[bookIndex].title, error: reflectionResult.error });
           }
         }).catch(error => {
-          console.error(`❌ Error creating reflection for "${books[bookIndex].title}": ${error.message}`);
+          logger.error('Error creating reflection for book', { bookTitle: books[bookIndex].title, error: error.message, stack: error.stack });
         });
       }
     }
@@ -2147,7 +2147,7 @@ app.patch('/api/books/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error updating book:', error);
+    logger.error('Error updating book', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2180,7 +2180,7 @@ app.get('/api/books/unclassified', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error fetching unclassified books:', error);
+    logger.error('Error fetching unclassified books', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2261,7 +2261,7 @@ app.get('/api/queue', async (req, res) => {
     
     res.json(queue);
   } catch (error) {
-    console.error('Error reading queue:', error);
+    logger.error('Error reading queue', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2317,7 +2317,7 @@ app.post('/api/generate_report', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Error generating report:', error);
+    logger.error('Error generating report', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2493,7 +2493,7 @@ app.get('/api/classifications', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Error reading classifications:', error);
+    logger.error('Error reading classifications', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2527,7 +2527,7 @@ app.post('/api/classify-book', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error in book classification:', error);
+    logger.error('Error in book classification', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Classification failed' });
   }
 });
@@ -2582,7 +2582,7 @@ app.post('/api/match-classification', async (req, res) => {
       confidence: result ? (Array.isArray(result) ? result.map(r => r.confidence) : result.confidence) : null
     });
   } catch (error) {
-    console.error('Error in classification matching:', error);
+    logger.error('Error in classification matching', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Matching failed' });
   }
 });
@@ -2601,7 +2601,7 @@ app.post('/api/backfill', async (req, res) => {
       phase = 'all' // 'classification', 'patterns', 'prompts', 'all'
     } = req.body;
     
-    console.log(`🚀 Starting backfill strategy: ${phase} phase`);
+    logger.info('Starting backfill strategy', { phase });
     
     await strategy.initialize();
     const books = await strategy.loadBooks();
@@ -2645,7 +2645,7 @@ app.post('/api/backfill', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Backfill error:', error);
+    logger.error('Backfill error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2674,7 +2674,7 @@ app.get('/api/backfill/analysis', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Analysis error:', error);
+    logger.error('Analysis error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2734,7 +2734,7 @@ app.post('/api/ai-classify', async (req, res) => {
     
     res.json(response);
   } catch (error) {
-    console.error('AI classify error:', error);
+    logger.error('AI classify error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2787,7 +2787,7 @@ app.post('/api/ai-research', async (req, res) => {
           );
         }
       } catch (error) {
-        console.warn('Fuzzy matching validation failed:', error.message);
+        logger.warn('Fuzzy matching validation failed', { error: error.message });
       }
     }
     
@@ -2823,7 +2823,7 @@ app.post('/api/ai-research', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('AI research error:', error);
+    logger.error('AI research error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2857,7 +2857,7 @@ app.get('/api/backfill/status', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Status check error:', error);
+    logger.error('Status check error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2964,7 +2964,7 @@ app.get('/api/recommendations', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Recommendation error:', error);
+    logger.error('Recommendation error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -3050,7 +3050,7 @@ app.post('/api/recommendations/query', async (req, res) => {
     res.json(response);
     
   } catch (error) {
-    console.error('Query recommendation error:', error);
+    logger.error('Query recommendation error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -3138,7 +3138,7 @@ app.get('/api/recommendations/similar/:bookId', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Similar books error:', error);
+    logger.error('Similar books error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -3237,7 +3237,7 @@ app.post('/api/recommendations/discover', async (req, res) => {
     res.json(discoveryResponse);
     
   } catch (error) {
-    console.error('Book discovery error:', error);
+    logger.error('Book discovery error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -3336,7 +3336,7 @@ app.post('/api/recommendations/validate', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Book validation error:', error);
+    logger.error('Book validation error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -3388,7 +3388,7 @@ app.get('/api/availability/check/:id', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error checking enhanced availability:', error);
+    logger.error('Error checking enhanced availability', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3432,7 +3432,7 @@ app.get('/api/library/check/:id', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error checking library availability:', error);
+    logger.error('Error checking library availability', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3495,13 +3495,13 @@ app.post('/api/availability/batch-check', async (req, res) => {
       
       await writeBooksFile(books);
       await syncToFirebase(books);
-      console.log(`✅ Enhanced batch availability check completed: ${results.length} books processed`);
+      logger.info('Enhanced batch availability check completed', { booksProcessed: results.length });
     }).catch(error => {
-      console.error('❌ Enhanced batch availability check failed:', error.message);
+      logger.error('Enhanced batch availability check failed', { error: error.message, stack: error.stack });
     });
     
   } catch (error) {
-    console.error('Error starting enhanced batch availability check:', error);
+    logger.error('Error starting enhanced batch availability check', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3565,13 +3565,13 @@ app.post('/api/library/batch-check', async (req, res) => {
       
       await writeBooksFile(books);
       await syncToFirebase(books);
-      console.log(`✅ Batch library check completed: ${results.length} books processed`);
+      logger.info('Batch library check completed', { booksProcessed: results.length });
     }).catch(error => {
-      console.error('❌ Batch library check failed:', error.message);
+      logger.error('Batch library check failed', { error: error.message, stack: error.stack });
     });
     
   } catch (error) {
-    console.error('Error starting batch library check:', error);
+    logger.error('Error starting batch library check', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3666,7 +3666,7 @@ app.get('/api/availability/status', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error getting availability status:', error);
+    logger.error('Error getting availability status', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3710,7 +3710,7 @@ app.get('/api/library/status', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error getting library status:', error);
+    logger.error('Error getting library status', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3781,7 +3781,7 @@ app.get('/api/availability/dual-format', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error finding dual-format books:', error);
+    logger.error('Error finding dual-format books', { error: error.message, stack: error.stack });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -3830,7 +3830,7 @@ app.get('/api/recommendations/sources', async (req, res) => {
     }
     
   } catch (error) {
-    console.error('Sources info error:', error);
+    logger.error('Sources info error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: error.message,
@@ -3863,7 +3863,7 @@ app.get('/api/preferences/analyze', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error analyzing preferences:', error);
+    logger.error('Error analyzing preferences', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to analyze preferences',
       details: error.message 
@@ -3895,7 +3895,7 @@ app.get('/api/preferences/profile', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating preference profile:', error);
+    logger.error('Error generating preference profile', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate preference profile',
       details: error.message 
@@ -3921,7 +3921,7 @@ app.get('/api/preferences/insights', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error getting preference insights:', error);
+    logger.error('Error getting preference insights', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to get preference insights',
       details: error.message 
@@ -3951,7 +3951,7 @@ app.post('/api/preferences/refresh', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error refreshing preferences:', error);
+    logger.error('Error refreshing preferences', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to refresh preferences',
       details: error.message 
@@ -3985,7 +3985,7 @@ app.get('/api/insights/yearly', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating yearly insights:', error);
+    logger.error('Error generating yearly insights', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate yearly insights',
       details: error.message 
@@ -4025,7 +4025,7 @@ app.get('/api/insights/yearly/:year', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating yearly insights:', error);
+    logger.error('Error generating yearly insights', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate yearly insights',
       details: error.message 
@@ -4066,7 +4066,7 @@ app.get('/api/insights/overview', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating overview insights:', error);
+    logger.error('Error generating overview insights', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate overview insights',
       details: error.message 
@@ -4111,7 +4111,7 @@ app.get('/api/insights/patterns', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error analyzing reading patterns:', error);
+    logger.error('Error analyzing reading patterns', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to analyze reading patterns',
       details: error.message 
@@ -4164,7 +4164,7 @@ app.get('/api/insights/recommendations', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating recommendations:', error);
+    logger.error('Error generating recommendations', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate recommendations',
       details: error.message 
@@ -4224,7 +4224,7 @@ app.get('/api/insights/compare/:year1/:year2', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error comparing years:', error);
+    logger.error('Error comparing years', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to compare years',
       details: error.message 
@@ -4271,7 +4271,7 @@ app.get('/api/queue/smart', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating smart queue:', error);
+    logger.error('Error generating smart queue', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate smart queue',
       details: error.message 
@@ -4322,7 +4322,7 @@ app.post('/api/queue/reorder', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error reordering queue:', error);
+    logger.error('Error reordering queue', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to reorder queue',
       details: error.message 
@@ -4342,7 +4342,7 @@ app.get('/api/queue/analytics', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error generating queue analytics:', error);
+    logger.error('Error generating queue analytics', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       error: 'Failed to generate queue analytics',
       details: error.message 
@@ -4615,7 +4615,7 @@ app.get('/api/cache/status', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error getting cache status:', error);
+    logger.error('Error getting cache status', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to get cache status',
@@ -4646,7 +4646,7 @@ app.post('/api/cache/invalidate', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error invalidating cache:', error);
+    logger.error('Error invalidating cache', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to invalidate cache',
@@ -4770,7 +4770,7 @@ app.get('/api/queue/tbr', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in /api/queue/tbr:', error);
+    logger.error('Error in /api/queue/tbr', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to get TBR queue',
@@ -4840,7 +4840,7 @@ app.post('/api/queue/reorder', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in /api/queue/reorder:', error);
+    logger.error('Error in /api/queue/reorder', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to reorder queue',
@@ -4913,7 +4913,7 @@ app.post('/api/queue/promote', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in /api/queue/promote:', error);
+    logger.error('Error in /api/queue/promote', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to promote book',
@@ -4986,7 +4986,7 @@ app.get('/api/queue/insights', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in /api/queue/insights:', error);
+    logger.error('Error in /api/queue/insights', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to get queue insights',

@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
+const logger = require('./logger');
 
 /**
  * Enhanced Availability Checker
@@ -71,7 +72,7 @@ class EnhancedAvailabilityChecker {
       const data = await fs.readFile(this.booksFile, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
-      console.error('❌ Error loading books:', error.message);
+      logger.error('Error loading books', { error: error.message, stack: error.stack });
       throw error;
     }
   }
@@ -79,9 +80,9 @@ class EnhancedAvailabilityChecker {
   async saveBooks(books) {
     try {
       await fs.writeFile(this.booksFile, JSON.stringify(books, null, 2));
-      console.log(`✅ Saved ${books.length} books with updated availability`);
+      logger.info('Saved books with updated availability', { booksCount: books.length });
     } catch (error) {
-      console.error('❌ Error saving books:', error.message);
+      logger.error('Error saving books', { error: error.message, stack: error.stack });
       throw error;
     }
   }
@@ -416,7 +417,7 @@ class EnhancedAvailabilityChecker {
     
     try {
       // Check Kindle Unlimited
-      console.log(`  🔍 Checking KU for: ${results.title}`);
+      logger.debug('Checking KU for book', { title: results.title });
       const kuResult = await this.checkKindleUnlimitedAvailability(book);
       results.ku = kuResult;
       if (kuResult.ku_availability) {
@@ -427,7 +428,7 @@ class EnhancedAvailabilityChecker {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Check Hoopla
-      console.log(`  📚 Checking Hoopla for: ${results.title}`);
+      logger.debug('Checking Hoopla for book', { title: results.title });
       const hooplaResult = await this.checkHooplaAvailability(book);
       results.hoopla = hooplaResult;
       if (hooplaResult.hoopla_ebook_available || hooplaResult.hoopla_audio_available) {
@@ -441,7 +442,7 @@ class EnhancedAvailabilityChecker {
       results.libraries = {};
       
       for (const [libraryKey, library] of Object.entries(this.libraries)) {
-        console.log(`  🏛️  Checking ${library.name} for: ${results.title}`);
+        logger.debug('Checking library for book', { libraryName: library.name, title: results.title });
         const libraryResult = await this.checkLibraryAvailability(book, libraryKey);
         results.libraries[libraryKey] = libraryResult;
         
@@ -632,7 +633,7 @@ class EnhancedAvailabilityChecker {
   }
 
   async checkBooksInBatch(books, batchSize = 5) {
-    console.log(`🔍 Checking comprehensive availability for ${books.length} books in batches of ${batchSize}...`);
+    logger.info('Starting comprehensive availability check', { booksCount: books.length, batchSize });
     
     const results = [];
     const batchValidations = [];
@@ -642,20 +643,20 @@ class EnhancedAvailabilityChecker {
       const batchNumber = Math.floor(i / batchSize) + 1;
       const totalBatches = Math.ceil(books.length / batchSize);
       
-      console.log(`\\n📚 Processing batch ${batchNumber}/${totalBatches} (${batch.length} books)...`);
+      logger.info('Processing batch', { batchNumber, totalBatches, batchSize: batch.length });
       
       const batchResults = [];
       
       for (let j = 0; j < batch.length; j++) {
         const book = batch[j];
         try {
-          console.log(`\\n  📖 [${j + 1}/${batch.length}] Processing: ${book.book_title || book.title}`);
+                    logger.debug('Processing book', { bookIndex: j + 1, batchSize: batch.length, title: book.book_title || book.title });
           const result = await this.checkBookAvailability(book);
           results.push(result);
           batchResults.push(result);
-          console.log(`  ✅ Completed: ${book.book_title || book.title}`);
+          logger.debug('Completed book processing', { title: book.book_title || book.title });
         } catch (error) {
-          console.log(`  ❌ Failed: ${book.book_title || book.title} - ${error.message}`);
+          logger.error('Failed book processing', { title: book.book_title || book.title, error: error.message });
           const errorResult = { book_id: book.goodreads_id, error: error.message };
           results.push(errorResult);
           batchResults.push(errorResult);
@@ -677,28 +678,28 @@ class EnhancedAvailabilityChecker {
       });
       
       // Progress update with validation
-      console.log(`\\n✅ Batch ${batchNumber} completed. Progress: ${Math.min(i + batchSize, books.length)}/${books.length} books`);
-      console.log(`   📊 Batch validation: ${batchValidation.valid}/${batchValidation.total} valid, ${batchValidation.kuFound} KU, ${batchValidation.hooplaFound} Hoopla, ${batchValidation.libraryFound} Library`);
-      console.log(`   🎯 Confidence: ${batchValidation.highConfidence} high, ${batchValidation.lowConfidence} low`);
+      logger.info('Batch completed', { batchNumber, progress: Math.min(i + batchSize, books.length), totalBooks: books.length });
+            logger.info('Batch validation', { valid: batchValidation.valid, total: batchValidation.total, kuFound: batchValidation.kuFound, hooplaFound: batchValidation.hooplaFound, libraryFound: batchValidation.libraryFound });
+            logger.info('Confidence metrics', { highConfidence: batchValidation.highConfidence, lowConfidence: batchValidation.lowConfidence });
       
       // Longer delay between batches
       if (i + batchSize < books.length) {
-        console.log('⏳ Waiting between batches to respect rate limits...');
+        logger.debug('Waiting between batches to respect rate limits');
         await new Promise(resolve => setTimeout(resolve, 5000));
       }
     }
     
     // Overall validation summary
     const overallValidation = await this.validateBatchResults(results);
-    console.log(`\\n📊 Overall Batch Validation Summary:`);
-    console.log(`   📚 Total processed: ${overallValidation.total}`);
-    console.log(`   ✅ Valid results: ${overallValidation.valid} (${(overallValidation.valid/overallValidation.total*100).toFixed(1)}%)`);
-    console.log(`   📖 KU found: ${overallValidation.kuFound} (${(overallValidation.kuFound/overallValidation.total*100).toFixed(1)}%)`);
-    console.log(`   🎧 Hoopla found: ${overallValidation.hooplaFound} (${(overallValidation.hooplaFound/overallValidation.total*100).toFixed(1)}%)`);
-    console.log(`   🏛️ Library found: ${overallValidation.libraryFound} (${(overallValidation.libraryFound/overallValidation.total*100).toFixed(1)}%)`);
-    console.log(`   🎯 High confidence: ${overallValidation.highConfidence} (${(overallValidation.highConfidence/overallValidation.total*100).toFixed(1)}%)`);
-    console.log(`   ⚠️ Low confidence: ${overallValidation.lowConfidence} (${(overallValidation.lowConfidence/overallValidation.total*100).toFixed(1)}%)`);
-    console.log(`   ❌ Errors: ${overallValidation.errors} (${(overallValidation.errors/overallValidation.total*100).toFixed(1)}%)`);
+    logger.info('Overall batch validation summary');
+        logger.info('Total processed', { total: overallValidation.total });
+        logger.info('Valid results', { valid: overallValidation.valid, percentage: (overallValidation.valid/overallValidation.total*100).toFixed(1) });
+        logger.info('KU found', { kuFound: overallValidation.kuFound, percentage: (overallValidation.kuFound/overallValidation.total*100).toFixed(1) });
+        logger.info('Hoopla found', { hooplaFound: overallValidation.hooplaFound, percentage: (overallValidation.hooplaFound/overallValidation.total*100).toFixed(1) });
+        logger.info('Library found', { libraryFound: overallValidation.libraryFound, percentage: (overallValidation.libraryFound/overallValidation.total*100).toFixed(1) });
+        logger.info('High confidence', { highConfidence: overallValidation.highConfidence, percentage: (overallValidation.highConfidence/overallValidation.total*100).toFixed(1) });
+        logger.warn('Low confidence', { lowConfidence: overallValidation.lowConfidence, percentage: (overallValidation.lowConfidence/overallValidation.total*100).toFixed(1) });
+        logger.error('Processing errors', { errors: overallValidation.errors, percentage: (overallValidation.errors/overallValidation.total*100).toFixed(1) });
     
     return {
       results,
@@ -708,29 +709,29 @@ class EnhancedAvailabilityChecker {
   }
 
   printStats() {
-    console.log('\\n📊 Enhanced Availability Check Statistics:');
-    console.log(`📚 Books checked: ${this.stats.checked}`);
-    console.log(`📖 KU available: ${this.stats.ku_found}`);
-    console.log(`🏛️  Library available: ${this.stats.library_found}`);
-    console.log(`🎧 Hoopla available: ${this.stats.hoopla_found}`);
-    console.log(`🔄 Books updated: ${this.stats.updated}`);
-    console.log(`❌ Errors encountered: ${this.stats.errors}`);
+    logger.info('Enhanced availability check statistics');
+        logger.info('Books checked', { checked: this.stats.checked });
+        logger.info('KU available', { kuFound: this.stats.ku_found });
+        logger.info('Library available', { libraryFound: this.stats.library_found });
+        logger.info('Hoopla available', { hooplaFound: this.stats.hoopla_found });
+        logger.info('Books updated', { updated: this.stats.updated });
+        logger.error('Errors encountered', { errors: this.stats.errors });
     
     if (this.stats.checked > 0) {
       const successRate = ((this.stats.checked - this.stats.errors) / this.stats.checked * 100).toFixed(1);
       const totalFound = this.stats.ku_found + this.stats.library_found + this.stats.hoopla_found;
       const foundRate = (totalFound / this.stats.checked * 100).toFixed(1);
-      console.log(`📈 Success rate: ${successRate}%`);
-      console.log(`📖 Total availability found: ${foundRate}%`);
+            logger.info('Success rate', { successRate });
+            logger.info('Total availability found', { foundRate });
     }
   }
 
   async run(filters = {}) {
     try {
-      console.log('🚀 Starting enhanced availability check...\\n');
+      logger.info('Starting enhanced availability check');
       
       const books = await this.loadBooks();
-      console.log(`📚 Loaded ${books.length} books`);
+            logger.info('Loaded books', { booksCount: books.length });
       
       // Filter books based on criteria
       let booksToCheck = books;
@@ -739,7 +740,7 @@ class EnhancedAvailabilityChecker {
         booksToCheck = booksToCheck.filter(book => 
           filters.status.includes(book.status)
         );
-        console.log(`📋 Filtered to ${booksToCheck.length} books with status: ${filters.status.join(', ')}`);
+                logger.info('Filtered books by status', { filteredCount: booksToCheck.length, statusFilters: filters.status });
       }
       
       if (filters.unprocessed) {
@@ -747,16 +748,16 @@ class EnhancedAvailabilityChecker {
           !book.availability_last_checked || 
           new Date(book.availability_last_checked) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
         );
-        console.log(`📋 Filtered to ${booksToCheck.length} books needing availability updates`);
+        logger.info('Filtered books needing updates', { filteredCount: booksToCheck.length });
       }
       
       if (filters.limit) {
         booksToCheck = booksToCheck.slice(0, filters.limit);
-        console.log(`📋 Limited to first ${booksToCheck.length} books`);
+        logger.info('Limited books', { limitedCount: booksToCheck.length });
       }
       
       if (booksToCheck.length === 0) {
-        console.log('✅ No books need availability checking.');
+        logger.info('No books need availability checking');
         return { success: true, message: 'No books to process' };
       }
       
@@ -765,7 +766,7 @@ class EnhancedAvailabilityChecker {
       const availabilityResults = batchResults.results;
       
       // Update books with availability data
-      console.log('\\n🔄 Updating books with availability data...');
+      logger.info('Updating books with availability data');
       for (const result of availabilityResults) {
         if (result && !result.error) {
           const book = books.find(b => b.goodreads_id === result.book_id);
@@ -781,7 +782,7 @@ class EnhancedAvailabilityChecker {
       // Print statistics
       this.printStats();
       
-      console.log('\\n🎉 Enhanced availability check completed successfully!');
+      logger.info('Enhanced availability check completed successfully');
       return {
         success: true,
         stats: this.stats,
@@ -791,7 +792,7 @@ class EnhancedAvailabilityChecker {
       };
       
     } catch (error) {
-      console.error('\\n❌ Enhanced availability check failed:', error.message);
+      logger.error('Enhanced availability check failed', { error: error.message, stack: error.stack });
       throw error;
     }
   }
@@ -815,30 +816,13 @@ if (require.main === module) {
         filters.limit = parseInt(args[++i]) || 10;
         break;
       case '--help':
-        console.log(`
-Enhanced Availability Checker
-
-Usage: node enhanced-availability-checker.js [options]
-
-Options:
-  --status <statuses>    Check books with specific statuses (comma-separated)
-                        Default: all statuses
-  --unprocessed         Only check books not checked in last 7 days  
-  --limit <number>      Limit number of books to check (recommended: 5-10 for testing)
-  --help               Show this help message
-
-Features:
-  ✅ Kindle Unlimited availability with expiration dates
-  ✅ Hoopla ebook and audiobook availability
-  ✅ Library availability for Tuscaloosa, Camellia Net, Seattle
-  ✅ Separate ebook and audiobook tracking
-  ✅ Smart source prioritization: Library → KU → Hoopla → Purchase
-
-Examples:
-  node enhanced-availability-checker.js --status TBR --limit 5
-  node enhanced-availability-checker.js --unprocessed --limit 3
-  node enhanced-availability-checker.js --status "TBR,Reading" --limit 10
-        `);
+        logger.info('Enhanced Availability Checker Help', {
+          usage: 'node enhanced-availability-checker.js [options]',
+          options: {
+            '--status <statuses>': 'Check books with specific statuses (comma-separated)',
+            '--unprocessed': 'Only check books not checked in last 7 days'
+          }
+        });
         process.exit(0);
         break;
     }
@@ -846,7 +830,7 @@ Examples:
   
   const checker = new EnhancedAvailabilityChecker();
   checker.run(filters).catch(error => {
-    console.error('Script failed:', error.message);
+    logger.error('Script failed', { error: error.message, stack: error.stack });
     process.exit(1);
   });
 }
