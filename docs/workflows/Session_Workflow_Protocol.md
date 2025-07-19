@@ -4,19 +4,36 @@
 **Updated**: July 18, 2025  
 **Purpose**: Ensure consistent task management across all development sessions  
 **Audience**: All developers and AI assistants working on ShelfHelp AI  
-**Version**: 1.3
+**Version**: 1.4
 
 ---
+## 🍏 **Core Principle**
+
+All development sessions are driven by a sequential, command-based interaction model. The AI assistant must follow the steps outlined in the `SESSION COMMAND PROTOCOL` section of `CLAUDE.md` at all times.
+
+## 💧 **Workflow**
+
+1.  **Session Start:** The user will provide a task from the `Task_Management_Guide.md`.
+2.  **AI Execution:** The AI assistant will follow the `SESSION COMMAND PROTOCOL` in `CLAUDE.md` to plan, execute, and verify the task step-by-step, awaiting user confirmation at each stage.
+3.  **Session End:** The session concludes when the task is marked as 'COMPLETED' in the `Task_Management_Guide.md`.
 
 ## 🎯 **SESSION START PROTOCOL**
 
 ### **1. Mandatory Session Checklist**
 - [ ] **Read CLAUDE.md** - Review current project state and requirements
+- [ ] **Read Session_Workflow_Protocol.md** - Understand task execution protocol
 - [ ] **Check Task Management Guide** - `docs/workflows/Task_Management_Guide.md`
 - [ ] **Identify Active Tasks** - Find tasks with status 🔄 **IN PROGRESS** 
 - [ ] **Review Dependencies** - Ensure prerequisites are met
 - [ ] **Select Priority Task** - Choose highest priority available task
 - [ ] **Load Systematic Workflow** - Reference implementation workflow for current phase
+
+### **1a. Session Start Commands** 🚀
+**Primary Command**: `/sc:load --uc` (Load project context in ultracompressed mode)  
+**Alternative Commands**:
+- `/sc:spawn --persona=architect --goal="Start session and initiate Session Start Protocol" --uc`
+- `/sc:analyze --type=structure --uc` (For structural analysis sessions)
+- Review current task from Task Management Guide and execute appropriate command
 
 ### **2. Task Selection Criteria**
 - **⚡ CRITICAL**: Must complete immediately (blocking other work)
@@ -60,6 +77,20 @@
 - **Time Tracking**: Monitor actual vs. estimated time
 - **Quality Validation**: Ensure all success criteria are met
 
+### **4. Task Completion Checkpoint** 🛑
+- **MANDATORY STOP**: After each individual task is complete, AI assistant must:
+  1. Update the `Task_Management_Guide.md` with completion status
+  2. Add any newly discovered tasks to the guide
+  3. Provide completion summary with success criteria validation
+  4. **AWAIT USER CONFIRMATION**: Wait for user `/continue` command before proceeding
+
+### **5. Information Request Protocol** 🛑
+- **MANDATORY STOP**: If information is needed during task execution, AI assistant must:
+  1. Stop current work immediately
+  2. Provide exact interactive slash command needed to obtain the information
+  3. Explain why the information is required
+  4. **AWAIT USER RESPONSE**: Wait for user to provide the information or command execution results
+
 ---
 
 ## ✅ **TASK COMPLETION PROTOCOL**
@@ -84,6 +115,13 @@
 - **Update Phase Progress**: Recalculate phase completion percentage
 - **Plan Next Task**: Identify next priority task
 - **Communicate Status**: Update team on progress
+
+### **4. Git Commit Protocol** 📝
+- **MANDATORY COMMIT**: Trigger git commit in the following scenarios:
+  1. **After every completed batch** - All tasks in a batch are finished
+  2. **At session end** - Any session that makes code changes
+  3. **After feature implementation** - Any feature that requires testing
+  4. **Generate commit command** - Never commit automatically, provide command to user
 
 ---
 
@@ -122,6 +160,13 @@
 - **Dependency Updates**: Update any changed dependencies
 - **Context Notes**: Leave clear notes for next session
 - **Commit Preparation**: Generate git commit command if work is complete
+
+### **4. Session End Commands** 🏁
+**Primary Command**: `/sc:git commit -m "Session end: [summary of work completed]"`  
+**Alternative Commands**:
+- `/sc:document --action update --file "Task_Management_Guide.md" --requirements "Update progress and status"`
+- `/sc:analyze --type status --output "session_summary.md"` (For complex sessions)
+- Generate git commit command but never execute automatically
 
 ---
 
@@ -252,7 +297,7 @@
 **File Location**: `docs/workflows/Session_Workflow_Protocol.md`  
 **Maintained By**: Development Team  
 **Update Frequency**: As needed based on process improvements  
-**Version**: 1.1 (Updated with Systematic Implementation Workflow)  
+**Version**: 1.4 (Updated with mandatory checkpoints and git commit protocols)  
 **Integration**: Referenced by CLAUDE.md and Task Management Guide
 
 *This protocol ensures consistent task management and progress tracking across all development sessions, preventing task duplication and ensuring continuous project advancement. Enhanced with systematic workflow patterns, risk assessment, and SuperClaude command integration for improved efficiency and quality.*

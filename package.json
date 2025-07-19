@@ -2,10 +2,10 @@
   "name": "shelfhelp-ai",
   "version": "1.0.0",
   "description": "AI-powered reading assistant with real-time queue management and intelligent book classification",
-  "main": "scripts/api-server.js",
+  "main": "scripts/core/api-server-monolithic.js",
   "scripts": {
-    "dev": "nodemon scripts/core/api-server.js",
-    "start": "node scripts/core/api-server.js",
+    "dev": "nodemon scripts/core/api-server-monolithic.js",
+    "start": "node scripts/core/api-server-monolithic.js",
     "test": "jest",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",

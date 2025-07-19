@@ -4,11 +4,16 @@ const logger = require('./logger');
 const { setupMiddleware } = require('./middleware');
 
 // Import route modules
-const booksRouter = require('./routes/books');
-const classificationsRouter = require('./routes/classifications');
-const queueRouter = require('./routes/queue');
-const healthRouter = require('./routes/health');
-const knowledgeRouter = require('./knowledge-api');
+// const booksRouter = require('./routes/books');
+// const classificationsRouter = require('./routes/classifications');
+// const queueRouter = require('./routes/queue');
+// const healthRouter = require('./routes/health');
+// const recommendationsRouter = require('./routes/recommendations-simple');
+// const backfillRouter = require('./routes/backfill');
+// const availabilityRouter = require('./routes/availability');
+// const preferencesRouter = require('./routes/preferences');
+// const insightsRouter = require('./routes/insights');
+// const knowledgeRouter = require('./knowledge-api');
 
 // Import cache initialization
 const bookCache = require('../../src/core/book-cache');
@@ -59,18 +64,23 @@ class APIServer {
 
   registerRoutes() {
     // Health check (no auth required)
-    this.app.use('/health', healthRouter);
+    // this.app.use('/health', healthRouter);
     
     // API routes (with auth)
-    this.app.use('/api/books', booksRouter);
-    this.app.use('/api/classifications', classificationsRouter);
-    this.app.use('/api/queue', queueRouter);
-    this.app.use('/api', knowledgeRouter);
+    // this.app.use('/api/books', booksRouter);
+    // this.app.use('/api/classifications', classificationsRouter);
+    // this.app.use('/api/queue', queueRouter);
+    // this.app.use('/api/recommendations', recommendationsRouter);
+    // this.app.use('/api/backfill', backfillRouter);
+    // this.app.use('/api/availability', availabilityRouter);
+    // this.app.use('/api/preferences', preferencesRouter);
+    // this.app.use('/api/insights', insightsRouter);
+    // this.app.use('/api', knowledgeRouter);
     
     // Legacy v2 routes (temporary compatibility)
-    this.app.use('/api/v2/books', booksRouter);
-    this.app.use('/api/v2/classifications', classificationsRouter);
-    this.app.use('/api/v2/queue', queueRouter);
+    // this.app.use('/api/v2/books', booksRouter);
+    // this.app.use('/api/v2/classifications', classificationsRouter);
+    // this.app.use('/api/v2/queue', queueRouter);
     
     logger.info('Routes registered successfully');
   }
@@ -87,6 +97,11 @@ class APIServer {
           books: 'GET/POST/PATCH /api/books',
           classifications: 'GET/POST /api/classifications',
           queue: 'GET/POST /api/queue',
+          recommendations: 'GET/POST /api/recommendations',
+          backfill: 'GET/POST /api/backfill',
+          availability: 'GET/POST /api/availability',
+          preferences: 'GET/POST /api/preferences',
+          insights: 'GET /api/insights',
           health: 'GET /health'
         }
       });

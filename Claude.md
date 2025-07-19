@@ -1,5 +1,15 @@
 # Claude.md - ShelfHelp AI Assistant
 
+# SESSION COMMAND PROTOCOL
+
+**IMPORTANT: Follow these steps sequentially. Do not proceed to the next step without explicit user confirmation.**
+
+1.  **Acknowledge Task:** State the task you are about to perform based on the `Task_Management_Guide.md`.
+2.  **Request Plan Approval:** Present a concise, numbered plan to accomplish the task. Await user approval before proceeding.
+3.  **Execute Step-by-Step:** Execute the plan one step at a time. After each tool use or code modification, state the outcome and wait for the user to provide the next command (e.g., `/continue`, `/test`, `/commit`).
+4.  **Verify Changes:** After implementing changes, run relevant tests (`/sc:test`) or validation commands as specified in the plan.
+5.  **Update Task Guide:** Upon completion, generate the command to update the `Task_Management_Guide.md` to mark the task as 'COMPLETED'.
+
 ## How to Use This File
 - This file contains essential project information needed for every development session
 - Detailed documentation can be found in referenced files in the `docs/` directory
