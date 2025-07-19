@@ -33,8 +33,12 @@
  * npm start    # Uses scripts/core/server.js
  */
 
-console.error('\n❌ DEPRECATED: This file has been replaced by the modular architecture.');
-console.error('Please use "npm run dev" or "npm start" instead.');
-console.error('Entry point: scripts/core/server.js\n');
+// DEPRECATED: This file has been replaced by the modular architecture.
+// Please use the monolithic server while debugging path-to-regexp issues.
+// Entry point: scripts/core/api-server-monolithic.js
+
+process.stderr.write('\n❌ DEPRECATED: This file has been replaced by the modular architecture.\n');
+process.stderr.write('Please use "npm run dev" or "npm start" instead.\n');
+process.stderr.write('Entry point: scripts/core/api-server-monolithic.js\n\n');
 
 process.exit(1);
